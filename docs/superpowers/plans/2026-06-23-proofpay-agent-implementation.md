@@ -209,25 +209,25 @@ git commit -m "feat: add Casper attestation adapter"
 - Create: `apps/web/src/components/AssessmentPanel.tsx`
 - Create: `apps/web/src/components/ProofPanel.tsx`
 
-- [ ] **Step 1: Build main workflow**
+- [x] **Step 1: Build main workflow**
 
 The page must import seeded scenarios, call `assessEvidence`, create an attestation payload, submit a demo transaction, and render the result.
 
-- [ ] **Step 2: Build operational dashboard UI**
+- [x] **Step 2: Build operational dashboard UI**
 
 Use tabs or segmented controls for seeded scenarios, icon buttons from lucide-react, compact panels, status chips, tables, and a proof panel. Avoid landing-page copy and make the first screen the product.
 
-- [ ] **Step 3: Add responsive CSS**
+- [x] **Step 3: Add responsive CSS**
 
 Desktop should show a multi-column dashboard. Mobile should stack panels with stable button and table dimensions.
 
-- [ ] **Step 4: Run build**
+- [x] **Step 4: Run build**
 
 Run: `npm run build`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit UI**
+- [x] **Step 5: Commit UI**
 
 Run:
 
@@ -247,25 +247,25 @@ git commit -m "feat: build ProofPay dashboard"
 - Create: `docs/casper-testnet.md`
 - Create: `README.md`
 
-- [ ] **Step 1: Add Odra/Casper contract source**
+- [x] **Step 1: Add Odra/Casper contract source**
 
 Create a minimal Casper contract path with Odra-first documentation. If Odra dependencies cannot be installed quickly, include a raw Casper Rust fallback with `#![no_std]`, `#![no_main]`, and `call()` that stores an attestation record under a named key derived from `milestone_id`. The README must explain which path is implemented and how to deploy it to testnet.
 
-- [ ] **Step 2: Add submission docs**
+- [x] **Step 2: Add submission docs**
 
 Document setup, run commands, demo flow, architecture, DoraHacks BUIDL submission fields, CSPR.fans community voting note, Casper ecosystem alignment, and the testnet deployment path.
 
-- [ ] **Step 3: Run docs sanity checks**
+- [x] **Step 3: Run docs sanity checks**
 
 Run:
 
 ```bash
-rg -n "TBD|FIXME" README.md docs contracts || true
+rg -n "TBD|FIXME" README.md docs/*.md contracts || true
 ```
 
 Expected: no incomplete markers.
 
-- [ ] **Step 4: Commit docs and contract**
+- [x] **Step 4: Commit docs and contract**
 
 Run:
 
@@ -279,7 +279,7 @@ git commit -m "docs: add submission materials and Casper contract"
 **Files:**
 - Modify if needed: app, packages, docs.
 
-- [ ] **Step 1: Run automated checks**
+- [x] **Step 1: Run automated checks**
 
 Run:
 

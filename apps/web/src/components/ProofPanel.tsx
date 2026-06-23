@@ -45,7 +45,12 @@ export function ProofPanel({ payload, transaction }: ProofPanelProps) {
         </div>
       </dl>
 
-      <a className="doc-link" href="/docs/casper-testnet.md" aria-disabled="true">
+      <a
+        className="doc-link"
+        href="https://github.com/Sskift/casper-proofpay-agent/blob/main/docs/casper-testnet.md"
+        rel="noreferrer"
+        target="_blank"
+      >
         <ExternalLink aria-hidden="true" size={15} />
         Testnet deployment instructions live in repository docs
       </a>

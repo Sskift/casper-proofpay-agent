@@ -3,5 +3,7 @@ node_modules/
 dist/
 coverage/
 .turbo/
+target/
+contracts/*/target/
 *.tsbuildinfo
 packages/*/node_modules/.vite/
