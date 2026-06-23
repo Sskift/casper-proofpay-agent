@@ -1,0 +1,20 @@
+{
+  "name": "casper-proofpay-agent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ProofPay Agent: agentic RWA milestone escrow with Casper attestations.",
+  "type": "module",
+  "scripts": {
+    "dev": "npm --workspace apps/web run dev",
+    "build": "npm --workspace apps/web run build",
+    "test": "npm --workspaces --if-present run test",
+    "typecheck": "npm --workspaces --if-present run typecheck"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  }
+}
