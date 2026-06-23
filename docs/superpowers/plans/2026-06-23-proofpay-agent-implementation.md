@@ -301,7 +301,7 @@ Expected: Next.js serves the app at `http://127.0.0.1:3000`.
 
 Use browser automation to verify the dashboard renders, judge-mode scenario buttons work, and desktop/mobile layouts do not overlap.
 
-- [ ] **Step 4: Final commit and push**
+- [x] **Step 4: Final commit and push**
 
 If verification required fixes, commit them. Push `main` to `origin`.
 
