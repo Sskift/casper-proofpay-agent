@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a submission-ready ProofPay Agent prototype for the Casper Agentic Buildathon.
+**Goal:** Build a DoraHacks-submission-ready ProofPay Agent prototype for the Casper Agentic Buildathon.
 
-**Architecture:** Use a TypeScript npm workspace with a Next.js app, a deterministic evidence agent package, and a Casper adapter package. The app runs a polished judge-mode workflow locally, produces evidence hashes and attestation payloads, and documents the path to a real Casper testnet transaction.
+**Architecture:** Use a TypeScript npm workspace with a Next.js app, a deterministic evidence agent package, a Casper adapter package, and an Odra/Casper smart contract package. The app runs a polished judge-mode workflow locally, produces evidence hashes and attestation payloads, and treats Casper Testnet transaction production as the submission target.
 
-**Tech Stack:** Next.js, React, TypeScript, Vitest, lucide-react, npm workspaces, Casper Rust contract source, `casper-js-sdk` documentation-backed adapter boundary.
+**Tech Stack:** Next.js, React, TypeScript, Vitest, lucide-react, npm workspaces, Odra/Casper Rust contract source, `casper-js-sdk`/Casper CLI documentation-backed testnet path.
 
 ---
 
@@ -23,10 +23,35 @@
 - `packages/casper`: attestation payload builder, demo transaction adapter, testnet configuration boundary.
 - `packages/casper/src/casper.test.ts`: unit tests for deterministic hashes and payload shape.
 - `contracts/proofpay-attestation`: Casper contract source and README.
+- `docs/hackathon-constraints.md`: canonical DoraHacks/Casper constraints that implementation must satisfy.
 - `docs/demo-script.md`: 2 to 3 minute video script.
 - `docs/submission-checklist.md`: DoraHacks requirement mapping.
 - `docs/casper-testnet.md`: key, faucet, deploy, and transaction instructions.
 - `README.md`: project overview, setup, architecture, demo flow, and submission notes.
+
+## Task 0: Hackathon Constraints Baseline
+
+**Files:**
+- Create: `docs/hackathon-constraints.md`
+- Modify: `docs/superpowers/specs/2026-06-23-proofpay-agent-design.md`
+- Modify: `docs/superpowers/plans/2026-06-23-proofpay-agent-implementation.md`
+
+- [x] **Step 1: Record DoraHacks and Casper constraints**
+
+Record the required BUIDL submission path, GitHub/demo video requirements, Casper Testnet transaction-producing component requirement, judging criteria, CSPR.fans path, and Casper ecosystem tooling priorities.
+
+- [x] **Step 2: Update design and plan**
+
+Update spec and plan so local demo mode is only a fallback, while Odra/Casper Testnet attestation is the submission target.
+
+- [x] **Step 3: Commit constraints**
+
+Run:
+
+```bash
+git add docs/hackathon-constraints.md docs/superpowers/specs/2026-06-23-proofpay-agent-design.md docs/superpowers/plans/2026-06-23-proofpay-agent-implementation.md
+git commit -m "docs: capture Casper buildathon constraints"
+```
 
 ## Task 1: Workspace Scaffold
 
@@ -41,7 +66,7 @@
 - Create: `packages/casper/package.json`
 - Create: `packages/casper/tsconfig.json`
 
-- [ ] **Step 1: Create workspace manifests**
+- [x] **Step 1: Create workspace manifests**
 
 Create npm workspaces for `apps/*` and `packages/*`, with scripts:
 
@@ -57,13 +82,13 @@ Create npm workspaces for `apps/*` and `packages/*`, with scripts:
 }
 ```
 
-- [ ] **Step 2: Install dependencies**
+- [x] **Step 2: Install dependencies**
 
 Run: `npm install`
 
 Expected: `package-lock.json` is created and workspace dependencies resolve.
 
-- [ ] **Step 3: Commit scaffold**
+- [x] **Step 3: Commit scaffold**
 
 Run:
 
@@ -82,7 +107,7 @@ git commit -m "chore: scaffold ProofPay workspace"
 - Create: `packages/agent/src/index.ts`
 - Create: `packages/agent/src/agent.test.ts`
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 Tests must cover:
 
@@ -97,11 +122,11 @@ Run: `npm --workspace @proofpay/agent run test`
 
 Expected: FAIL because implementation files are not complete.
 
-- [ ] **Step 2: Implement types and seeded data**
+- [x] **Step 2: Implement types and seeded data**
 
 Define `Deal`, `Milestone`, `EvidenceBundle`, `AgentAssessment`, `Decision`, and seeded scenarios named `clean`, `amountMismatch`, and `duplicateInvoice`.
 
-- [ ] **Step 3: Implement deterministic scoring**
+- [x] **Step 3: Implement deterministic scoring**
 
 Implement `assessEvidence(bundle)` so:
 
@@ -109,13 +134,13 @@ Implement `assessEvidence(bundle)` so:
 - amount mismatch holds with a risk flag containing `amount_mismatch`.
 - duplicate invoice rejects with a risk flag containing `duplicate_invoice`.
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `npm --workspace @proofpay/agent run test`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit agent package**
+- [x] **Step 5: Commit agent package**
 
 Run:
 
@@ -133,7 +158,7 @@ git commit -m "feat: add deterministic RWA evidence agent"
 - Create: `packages/casper/src/index.ts`
 - Create: `packages/casper/src/casper.test.ts`
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 Tests must cover:
 
@@ -150,21 +175,21 @@ Run: `npm --workspace @proofpay/casper run test`
 
 Expected: FAIL before implementation.
 
-- [ ] **Step 2: Implement payload builder**
+- [x] **Step 2: Implement payload builder**
 
 Build a normalized payload containing milestone id, evidence hash, decision, confidence, risk score, risk flags, agent id, and ISO timestamp.
 
-- [ ] **Step 3: Implement demo adapter**
+- [x] **Step 3: Implement local demo adapter**
 
-Return deterministic transaction-like hashes from payload hashes. Label network as `casper-testnet-demo` and expose `explorerUrl` as `null`.
+Return deterministic transaction-like hashes from payload hashes. Label network as `casper-testnet-demo`, expose `explorerUrl` as `null`, and make UI/documentation clear that this mode does not satisfy the final buildathon eligibility gate by itself.
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `npm --workspace @proofpay/casper run test`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit Casper adapter**
+- [x] **Step 5: Commit Casper adapter**
 
 Run:
 
@@ -222,13 +247,13 @@ git commit -m "feat: build ProofPay dashboard"
 - Create: `docs/casper-testnet.md`
 - Create: `README.md`
 
-- [ ] **Step 1: Add Casper contract source**
+- [ ] **Step 1: Add Odra/Casper contract source**
 
-Create a minimal Rust contract with `#![no_std]`, `#![no_main]`, and `call()` that stores an attestation record under a named key derived from `milestone_id`.
+Create a minimal Casper contract path with Odra-first documentation. If Odra dependencies cannot be installed quickly, include a raw Casper Rust fallback with `#![no_std]`, `#![no_main]`, and `call()` that stores an attestation record under a named key derived from `milestone_id`. The README must explain which path is implemented and how to deploy it to testnet.
 
 - [ ] **Step 2: Add submission docs**
 
-Document setup, run commands, demo flow, architecture, DoraHacks requirement mapping, and the testnet deployment path.
+Document setup, run commands, demo flow, architecture, DoraHacks BUIDL submission fields, CSPR.fans community voting note, Casper ecosystem alignment, and the testnet deployment path.
 
 - [ ] **Step 3: Run docs sanity checks**
 

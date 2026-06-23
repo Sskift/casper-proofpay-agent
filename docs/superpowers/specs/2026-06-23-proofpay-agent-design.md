@@ -18,19 +18,21 @@ The product should feel like a credible financial workflow, not a toy chatbot. T
 
 ## Hackathon Fit
 
-The Casper requirements observed on DoraHacks are:
+The hard buildathon constraints are documented in `docs/hackathon-constraints.md`. The Casper requirements observed on DoraHacks are:
 
 - Working prototype deployed on Casper Testnet with a transaction-producing on-chain component.
 - Open-source GitHub repository with README and usage instructions.
 - Demo video explaining the project, features, and walkthrough.
 - Focus on Agentic AI applications, especially DeFi and RWA on Casper.
+- Final submission through the DoraHacks `Submit BUIDL` flow; GitHub is a required artifact, not the submission destination.
+- Strong alignment with Casper ecosystem tooling: Odra, x402, MCP servers, CSPR.click AI Agent Skill, CSPR.cloud APIs, Casper SDK, and CSPR tooling.
 
 ProofPay Agent will satisfy these by shipping:
 
-- A usable local web app with a judge-friendly seeded demo mode.
-- A Casper smart contract package for milestone and attestation records.
-- A transaction adapter that can run in demo mode and testnet mode.
-- README, architecture notes, judging criteria mapping, and demo video script.
+- A usable local web app with a judge-friendly seeded workflow.
+- An Odra/Casper smart contract package for milestone and attestation records.
+- A Casper adapter that treats demo mode as a local fallback and testnet mode as the submission target.
+- README, architecture notes, judging criteria mapping, CSPR.fans presentation notes, DoraHacks BUIDL checklist, and demo video script.
 
 ## Primary User Journey
 
@@ -40,7 +42,7 @@ ProofPay Agent will satisfy these by shipping:
 4. ProofPay Agent extracts the key claims, checks consistency, scores risk, and recommends approve, hold, or reject.
 5. The app hashes the evidence bundle and records an attestation transaction through the Casper adapter.
 6. The dashboard shows the transaction hash, decision, score, evidence hash, and audit trail.
-7. Judge mode can replay the full flow without external accounts, then switch to testnet configuration when keys and faucet funds are available.
+7. Judge mode can replay the full flow locally, then show the exact Casper Testnet deploy hash and contract/package reference once the transaction path is configured.
 
 ## Product Surface
 
@@ -56,8 +58,8 @@ Evidence review shows submitted documents, extracted claims, consistency checks,
 
 The proof panel shows:
 
-- Casper network mode: local demo or testnet.
-- Contract package or mock contract reference.
+- Casper network mode: local demo or Casper Testnet.
+- Contract package/hash or explicit testnet deployment blocker.
 - Transaction hash or local simulated hash.
 - Evidence bundle hash.
 - Milestone id.
@@ -80,8 +82,8 @@ The repository will use a TypeScript monorepo-style layout:
 
 - `apps/web`: frontend and local API routes.
 - `packages/agent`: evidence analysis, scoring, and decision policy.
-- `packages/casper`: Casper transaction adapter, local simulator, and contract interface.
-- `contracts/proofpay-attestation`: smart contract source and deployment notes.
+- `packages/casper`: Casper transaction adapter, local simulator, testnet payload model, and contract interface.
+- `contracts/proofpay-attestation`: Odra/Casper smart contract source and deployment notes.
 - `docs`: architecture, demo script, screenshots, and submission checklist.
 
 The frontend will use Next.js with React, TypeScript, and npm workspaces. The app must run locally with a single command and include seeded data.
@@ -118,11 +120,11 @@ The agent must be transparent enough for judges to trust the result, while still
 
 The Casper layer has two modes:
 
-### Demo Mode
+### Local Demo Mode
 
-Demo mode simulates transaction production locally and returns deterministic transaction-like hashes. This keeps the product usable without testnet funds and is clearly labeled as local demo mode.
+Local demo mode simulates transaction production locally and returns deterministic transaction-like hashes. This keeps the product usable while developing and is clearly labeled as non-qualifying for submission.
 
-### Testnet Mode
+### Casper Testnet Mode
 
 Testnet mode uses a generated or user-provided Casper key and a funded testnet account. The contract records milestone attestations with:
 
@@ -134,7 +136,19 @@ Testnet mode uses a generated or user-provided Casper key and a funded testnet a
 - assessor public key or agent id
 - timestamp
 
-The implementation target is a real Casper testnet transaction before submission. If the only blocker is external testnet funding or account setup, the repository will still include contract code, transaction adapter boundaries, demo-mode transaction production, and exact deployment instructions; however, the project is not considered fully submission-ready until the testnet transaction path has either succeeded or the blocker is documented.
+The implementation target is a real Casper Testnet transaction before DoraHacks submission. If the only blocker is external testnet funding or account setup, the repository will still include contract code, transaction adapter boundaries, local transaction simulation, exact deployment instructions, and a visible blocker note. The project is not considered fully submission-ready until the testnet transaction path has either succeeded or the blocker is documented.
+
+## DoraHacks BUIDL Submission
+
+The final submission is a DoraHacks BUIDL. The repository must prepare:
+
+- GitHub repository URL.
+- Public demo video URL.
+- Optional live demo URL.
+- Project summary, problem statement, and technical overview.
+- Casper Testnet deploy hash and contract reference.
+- Team/member information prepared for manual form entry.
+- CSPR.fans-friendly pitch copy for community voting.
 
 ## Error Handling
 
@@ -178,7 +192,8 @@ The project is ready for submission when:
 - The app starts locally from the documented command.
 - Judge mode demonstrates at least three assessment outcomes.
 - Each assessment creates an evidence hash and Casper attestation payload.
-- The Casper adapter can run in demo mode and has a documented testnet path.
+- The Casper adapter can run in local demo mode and has a documented Casper Testnet path.
 - A real Casper testnet transaction is completed, or the remaining external blocker is documented with a reproducible deployment path.
 - Tests and build pass.
 - The public GitHub repository contains all required documentation.
+- The DoraHacks BUIDL submission assets are ready for manual entry.
