@@ -26,6 +26,7 @@ Explain:
 - Invoice, bill of lading, delivery note, temperature log, and vendor registry align.
 - The agent recommends `approve`.
 - The evidence bundle hash and decision hash are generated.
+- The proof panel shows readiness status, faucet public key, post-funding commands, and Casper session args.
 - The local demo transaction is shown, but the panel clearly states that Casper Testnet deployment is required for eligibility.
 
 ## Scene 3: Hold For Finance
@@ -61,6 +62,8 @@ Mention:
 - Raw Casper Rust fallback with `call()`.
 - Odra module sketch for Casper framework alignment.
 - Deployment arguments match the dashboard payload.
+- `npm run attestation:export -- clean` prints the exact payload used in the UI.
+- `npm run contract:deploy:testnet` sends the Casper 5 `put-transaction session` after faucet funding.
 - Final submission records the Casper Testnet deploy hash in `docs/casper-testnet.md`.
 
 ## Closing

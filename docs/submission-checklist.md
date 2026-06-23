@@ -49,6 +49,7 @@ ProofPay Agent lets autonomous agents release real-world payments only when evid
 - `npm run build` passes.
 - `npm run casper:check` shows a funded Testnet account.
 - `npm run contract:deploy:testnet` returns a real Casper transaction hash.
+- Dashboard proof panel shows readiness, faucet public key, post-funding commands, and Casper session args.
 - Demo video URL is public.
 - Casper Testnet deploy hash is documented in `docs/casper-testnet.md`, or the faucet/account funding blocker is clearly documented.
 - README links to contract, testnet docs, and demo script.

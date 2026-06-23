@@ -1,7 +1,12 @@
 "use client";
 
 import { assessEvidence, createEvidenceHash, seededDeals, seededEvidenceBundles } from "@proofpay/agent";
-import { createAttestationPayload, submitDemoAttestation, type DemoCasperTransaction } from "@proofpay/casper";
+import {
+  createAttestationPayload,
+  createCasperDeployPlan,
+  submitDemoAttestation,
+  type DemoCasperTransaction
+} from "@proofpay/casper";
 import { useEffect, useMemo, useState } from "react";
 
 import { AssessmentPanel } from "@/components/AssessmentPanel";
@@ -43,6 +48,14 @@ export default function Home() {
         assessment
       }),
     [assessment, evidenceHash, milestone]
+  );
+  const deployPlan = useMemo(
+    () =>
+      createCasperDeployPlan({
+        payload,
+        scenario
+      }),
+    [payload, scenario]
   );
 
   useEffect(() => {
@@ -97,7 +110,7 @@ export default function Home() {
         <DealRail deal={deal} milestone={milestone} assessment={assessment} />
         <EvidencePanel bundle={bundle} evidenceHash={evidenceHash} />
         <AssessmentPanel assessment={assessment} />
-        <ProofPanel payload={payload} transaction={transaction} />
+        <ProofPanel deployPlan={deployPlan} payload={payload} transaction={transaction} />
       </section>
     </main>
   );

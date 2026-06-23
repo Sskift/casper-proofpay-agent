@@ -32,3 +32,44 @@ export interface DemoCasperTransaction {
   explorerUrl: null;
   payload: CasperAttestationPayload;
 }
+
+export interface CreateCasperDeployPlanInput {
+  payload: CasperAttestationPayload;
+  scenario: string;
+  nodeAddress?: string;
+  chainName?: string;
+  secretKeyPath?: string;
+  wasmPath?: string;
+  paymentAmount?: string;
+  gasPriceTolerance?: string;
+  publicKeyHex?: string;
+  accountHash?: string;
+  faucetUrl?: string;
+  testnetAccountFunded?: boolean;
+}
+
+export type CasperReadinessStatus = "ready" | "blocked" | "manual";
+
+export interface CasperReadinessItem {
+  id: "payload" | "contract" | "testnet-account" | "buidl";
+  label: string;
+  status: CasperReadinessStatus;
+  detail: string;
+}
+
+export interface CasperDeployPlan {
+  network: "Casper Testnet";
+  nodeAddress: string;
+  chainName: string;
+  wasmPath: string;
+  paymentAmount: string;
+  gasPriceTolerance: string;
+  secretKeyPath: string;
+  publicKeyHex: string;
+  accountHash: string;
+  faucetUrl: string;
+  readiness: CasperReadinessItem[];
+  sessionArgs: string[];
+  cliCommand: string;
+  postFundingCommands: string[];
+}

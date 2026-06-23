@@ -26,7 +26,7 @@ ProofPay simulates a buyer/supplier RWA escrow workflow:
 3. The agent extracts claims, checks consistency, scores risk, and chooses `approve`, `hold`, or `reject`.
 4. The app creates an evidence hash and decision hash.
 5. The Casper adapter creates an attestation payload for the on-chain contract.
-6. The dashboard shows the audit trail, local demo transaction hash, and Casper Testnet readiness status.
+6. The dashboard shows the audit trail, local demo transaction hash, Casper Testnet readiness status, faucet public key, and copy-ready deploy commands.
 
 ## Repository Layout
 
