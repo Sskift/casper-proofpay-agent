@@ -8,6 +8,7 @@ This document tracks the path from local ProofPay attestation payloads to a real
 - Casper contract source is present in `contracts/proofpay-attestation`.
 - The contract builds locally to Wasm with `cargo build --release --target wasm32-unknown-unknown`.
 - A real Casper Testnet deploy hash still needs to be produced before final DoraHacks submission.
+- CLI deployment steps are captured in `docs/casper-cli-runbook.md`.
 
 ## Prerequisites
 
@@ -19,9 +20,7 @@ This document tracks the path from local ProofPay attestation payloads to a real
 ## Build Contract
 
 ```bash
-cd contracts/proofpay-attestation
-rustup target add wasm32-unknown-unknown
-cargo build --release --target wasm32-unknown-unknown
+npm run contract:build
 ```
 
 Expected Wasm:
@@ -45,7 +44,7 @@ risk_score
 
 ## Casper Testnet Command Shape
 
-Use Casper CLI or SDK tooling to send the Wasm deploy with named args. The exact command depends on the installed Casper tooling version, but the deploy must include:
+Use Casper CLI or SDK tooling to send the Wasm deploy with named args. `docs/casper-cli-runbook.md` documents the `casper-client` command shapes. The exact command depends on the installed Casper tooling version, but the deploy must include:
 
 ```text
 chain-name: casper-test

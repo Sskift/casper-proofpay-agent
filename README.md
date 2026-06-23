@@ -71,6 +71,16 @@ Current structure:
 
 The local dashboard shows deterministic demo transaction hashes while development is in progress. These local hashes are not enough for DoraHacks eligibility. The final submission must include a Casper Testnet deploy hash, documented in [docs/casper-testnet.md](docs/casper-testnet.md).
 
+## Casper CLI Path
+
+Casper does have CLI tooling for the hard part of this project:
+
+- `casper-client` sends deploys/transactions, checks deploy status, queries global state, and can verify contracts.
+- `cargo-casper` scaffolds Casper Wasm contract projects and tests.
+- `odra-cli` is the optional path if the raw contract is migrated into a full Odra module with deploy scripts.
+
+DoraHacks itself still appears to be a manual BUIDL website submission flow, not a CLI flow. The operational CLI notes are captured in [docs/casper-cli-runbook.md](docs/casper-cli-runbook.md).
+
 ## DoraHacks Submission Assets
 
 Prepared in this repository:
@@ -78,6 +88,7 @@ Prepared in this repository:
 - [docs/submission-checklist.md](docs/submission-checklist.md)
 - [docs/demo-script.md](docs/demo-script.md)
 - [docs/casper-testnet.md](docs/casper-testnet.md)
+- [docs/casper-cli-runbook.md](docs/casper-cli-runbook.md)
 - [docs/hackathon-constraints.md](docs/hackathon-constraints.md)
 
 Manual submission still requires the user to open DoraHacks, accept the organizer disclaimer, and submit the BUIDL form.
@@ -89,6 +100,8 @@ npm run test       # package unit tests
 npm run typecheck  # TypeScript checks
 npm run build      # Next.js production build
 npm run dev        # local dashboard
+npm run contract:build         # build Casper Wasm
+npm run contract:deploy:print  # print Casper Testnet deploy command shapes
 ```
 
 ## Prototype Boundary
