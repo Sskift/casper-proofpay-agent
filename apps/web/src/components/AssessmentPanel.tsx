@@ -43,6 +43,14 @@ export function AssessmentPanel({ assessment }: AssessmentPanelProps) {
         ))}
       </div>
 
+      <div className="flag-list" aria-label="Risk flags">
+        {assessment.flags.length > 0 ? (
+          assessment.flags.map((flag) => <span key={flag}>{flag}</span>)
+        ) : (
+          <span>no_risk_flags</span>
+        )}
+      </div>
+
       <div className="claim-table" role="table" aria-label="Extracted claims">
         {assessment.extractedClaims.map((claim) => (
           <div className={`claim-row ${claim.status}`} key={`${claim.label}-${claim.source}`} role="row">

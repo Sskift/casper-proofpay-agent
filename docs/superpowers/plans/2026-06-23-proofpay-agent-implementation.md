@@ -291,13 +291,13 @@ npm run build
 
 Expected: all pass.
 
-- [ ] **Step 2: Run local app**
+- [x] **Step 2: Run local app**
 
 Run: `npm run dev -- --hostname 127.0.0.1 --port 3000`
 
 Expected: Next.js serves the app at `http://127.0.0.1:3000`.
 
-- [ ] **Step 3: Browser verify**
+- [x] **Step 3: Browser verify**
 
 Use browser automation to verify the dashboard renders, judge-mode scenario buttons work, and desktop/mobile layouts do not overlap.
 
