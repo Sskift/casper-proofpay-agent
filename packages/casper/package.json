@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@noble/hashes": "^2.2.0",
     "@proofpay/agent": "0.1.0"
   },
   "devDependencies": {
