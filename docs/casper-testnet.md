@@ -9,6 +9,33 @@ This document tracks the path from local ProofPay attestation payloads to a real
 - The contract builds locally to Wasm with `cargo build --release --target wasm32-unknown-unknown`.
 - A real Casper Testnet deploy hash still needs to be produced before final DoraHacks submission.
 - CLI deployment steps are captured in `docs/casper-cli-runbook.md`.
+- `casper-client 5.0.1` and `cargo-casper 3.0.0` are installed locally.
+- Current verified `casper-client` node address: `https://node.testnet.casper.network`.
+- The generated CLI Testnet account does not exist on-chain until funded by faucet.
+
+## Local Testnet Account
+
+Generated outside the repository:
+
+```text
+key directory: ~/.casper/proofpay-testnet-20260623
+public_key_hex: 01275bb5c5b24490df3996c0ce68a1b757b27567499c8f81b9df13e29835db054e
+account_hash: account-hash-537db3bdbf915dfcfdf3568411087c4535c1b6cc15aa3e207f52d27de1cebd3d
+```
+
+Latest query before faucet funding:
+
+```text
+state_get_account_info: No such account
+```
+
+Faucet URL:
+
+```text
+https://testnet.cspr.live/tools/faucet
+```
+
+The faucet requires a connected Casper wallet and reCAPTCHA. For CLI deployment, the funded account must match `CASPER_SECRET_KEY`.
 
 ## Prerequisites
 

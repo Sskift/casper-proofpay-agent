@@ -35,7 +35,20 @@ cargo-casper --version
 odra --version
 ```
 
-At the time this document was added, these CLIs were not installed in the local shell environment.
+Current local checkpoint:
+
+```text
+casper-client 5.0.1
+cargo-casper 3.0.0
+```
+
+Use this Testnet node address with `casper-client`:
+
+```bash
+export CASPER_NODE_ADDRESS="https://node.testnet.casper.network"
+```
+
+Do not include `/rpc` in `CASPER_NODE_ADDRESS` when using `casper-client`; the client appends the RPC path itself. For raw `curl` calls, use `https://node.testnet.casper.network/rpc`.
 
 ## Build ProofPay Contract
 
@@ -63,23 +76,27 @@ Before a real deploy:
 Suggested local environment variables:
 
 ```bash
-export CASPER_NODE_ADDRESS="http://65.21.235.219:7777"
+export CASPER_NODE_ADDRESS="https://node.testnet.casper.network"
 export CASPER_SECRET_KEY="$HOME/.casper/keys/proofpay/secret_key.pem"
 export CASPER_CHAIN_NAME="casper-test"
 export CASPER_PAYMENT_AMOUNT="30000000000"
 ```
 
-## Print A Deploy Command
-
-The dashboard proof panel emits the values required by the contract. Feed them into the helper script:
+Check the account and node:
 
 ```bash
-PROOFPAY_MILESTONE_ID="ms-delivery-acceptance" \
-PROOFPAY_EVIDENCE_HASH="0x..." \
-PROOFPAY_DECISION="approve" \
-PROOFPAY_DECISION_HASH="0x..." \
-PROOFPAY_CONFIDENCE="94" \
-PROOFPAY_RISK_SCORE="12" \
+npm run casper:check
+```
+
+The CSPR.live faucet requires a connected Casper wallet and Google reCAPTCHA. The faucet request is not a simple unauthenticated CLI call.
+
+## Print A Deploy Command
+
+The dashboard proof panel emits the values required by the contract. The same payload can be exported from the repo:
+
+```bash
+npm run attestation:export -- clean
+npm run attestation:export -- --env clean
 npm run contract:deploy:print
 ```
 
@@ -88,7 +105,35 @@ The script prints both command families currently visible in Casper docs:
 - `put-deploy`, which is still used throughout the quickstart and contract-calling docs.
 - `put-transaction session`, which appears in the newer installing-contracts docs.
 
-Run `casper-client put-deploy --show-arg-examples` and `casper-client put-transaction session --help` after installing the CLI to confirm the exact argument grammar supported by the installed version.
+Run `casper-client put-deploy --show-arg-examples` and `casper-client put-transaction session --show-simple-arg-examples` after installing the CLI to confirm the exact argument grammar supported by the installed version.
+
+## Deploy After Funding
+
+Once `npm run casper:check` shows the funded account exists, deploy the contract:
+
+```bash
+PROOFPAY_SCENARIO="clean" npm run contract:deploy:testnet
+```
+
+The script builds from the same attestation payload used by the dashboard and sends:
+
+```bash
+casper-client put-transaction session \
+  --node-address "$CASPER_NODE_ADDRESS" \
+  --chain-name "casper-test" \
+  --secret-key "$CASPER_SECRET_KEY" \
+  --wasm-path "contracts/proofpay-attestation/target/wasm32-unknown-unknown/release/proofpay_attestation.wasm" \
+  --payment-amount "$CASPER_PAYMENT_AMOUNT" \
+  --gas-price-tolerance "1" \
+  --install-upgrade \
+  --session-entry-point call \
+  --session-arg "milestone_id:string='ms-delivery-acceptance'" \
+  --session-arg "evidence_hash:string='0x...'" \
+  --session-arg "decision:string='approve'" \
+  --session-arg "decision_hash:string='0x...'" \
+  --session-arg "confidence:u64='94'" \
+  --session-arg "risk_score:u64='12'"
+```
 
 ## After Sending The Transaction
 

@@ -100,8 +100,11 @@ npm run test       # package unit tests
 npm run typecheck  # TypeScript checks
 npm run build      # Next.js production build
 npm run dev        # local dashboard
+npm run attestation:export     # print a scenario's Casper attestation payload
+npm run casper:check           # verify Casper CLI, Testnet RPC, and local account status
 npm run contract:build         # build Casper Wasm
 npm run contract:deploy:print  # print Casper Testnet deploy command shapes
+npm run contract:deploy:testnet # send the Casper Testnet transaction after account funding
 ```
 
 ## Prototype Boundary

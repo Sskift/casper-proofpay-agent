@@ -47,7 +47,26 @@ ProofPay Agent lets autonomous agents release real-world payments only when evid
 - `npm run test` passes.
 - `npm run typecheck` passes.
 - `npm run build` passes.
+- `npm run casper:check` shows a funded Testnet account.
+- `npm run contract:deploy:testnet` returns a real Casper transaction hash.
 - Demo video URL is public.
-- Casper Testnet deploy hash is documented, or blocker is clearly documented.
+- Casper Testnet deploy hash is documented in `docs/casper-testnet.md`, or the faucet/account funding blocker is clearly documented.
 - README links to contract, testnet docs, and demo script.
 - The user explicitly confirms action-time submission on DoraHacks.
+
+## Current External Blocker
+
+The local Casper CLI path is ready, but the generated Testnet account is not funded yet:
+
+```text
+public_key_hex: 01275bb5c5b24490df3996c0ce68a1b757b27567499c8f81b9df13e29835db054e
+account_hash: account-hash-537db3bdbf915dfcfdf3568411087c4535c1b6cc15aa3e207f52d27de1cebd3d
+status: state_get_account_info -> No such account
+```
+
+Fund the matching account through the CSPR.live Testnet faucet, then run:
+
+```bash
+npm run casper:check
+PROOFPAY_SCENARIO="clean" npm run contract:deploy:testnet
+```
