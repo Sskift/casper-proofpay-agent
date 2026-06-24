@@ -43,6 +43,7 @@ import {
 } from "@/components/DashboardCharts";
 
 type ScenarioKey = keyof typeof seededEvidenceBundles;
+type SectionId = "cockpit" | "charts" | "evidence" | "casper";
 type ChipColor = "success" | "warning" | "danger" | "default" | "accent";
 
 const scenarioCopy: Record<ScenarioKey, { label: string; short: string; operator: string }> = {
@@ -63,6 +64,35 @@ const scenarioCopy: Record<ScenarioKey, { label: string; short: string; operator
   }
 };
 
+const dashboardSections: Array<{ id: SectionId; label: string; eyebrow: string; detail: string }> = [
+  {
+    id: "cockpit",
+    label: "Cockpit",
+    eyebrow: "01",
+    detail: "Release decision"
+  },
+  {
+    id: "charts",
+    label: "Charts",
+    eyebrow: "02",
+    detail: "Risk and cash"
+  },
+  {
+    id: "evidence",
+    label: "Evidence",
+    eyebrow: "03",
+    detail: "Claims and documents"
+  },
+  {
+    id: "casper",
+    label: "Casper",
+    eyebrow: "04",
+    detail: "Testnet proof"
+  }
+];
+
+const dashboardSectionIds = dashboardSections.map((section) => section.id);
+
 function chipColor(value: string): ChipColor {
   const normalized = value.toLowerCase();
   if (["approve", "ready", "matched", "positive", "complete", "success"].includes(normalized)) return "success";
@@ -82,6 +112,50 @@ function shortHash(value: string, left = 10, right = 8) {
   return `${value.slice(0, left)}...${value.slice(-right)}`;
 }
 
+function useScrollSpy(sectionIds: SectionId[], offset = 118) {
+  const [activeSection, setActiveSection] = useState<SectionId>(sectionIds[0]);
+
+  useEffect(() => {
+    const updateActiveSection = () => {
+      const sectionMetrics = sectionIds
+        .map((id) => {
+          const element = document.getElementById(id);
+          if (!element) return null;
+          const rect = element.getBoundingClientRect();
+          return {
+            id,
+            top: rect.top,
+            distance: Math.abs(rect.top - offset)
+          };
+        })
+        .filter((metric): metric is { id: SectionId; top: number; distance: number } => Boolean(metric));
+
+      if (sectionMetrics.length === 0) return;
+
+      const passedSection = [...sectionMetrics]
+        .filter((metric) => metric.top <= offset)
+        .sort((a, b) => b.top - a.top)[0];
+      const closestSection = [...sectionMetrics].sort((a, b) => a.distance - b.distance)[0];
+      const nextSection = passedSection?.id ?? closestSection.id;
+
+      setActiveSection((current) => (current === nextSection ? current : nextSection));
+    };
+
+    updateActiveSection();
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+    window.addEventListener("resize", updateActiveSection);
+    window.addEventListener("hashchange", updateActiveSection);
+
+    return () => {
+      window.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener("resize", updateActiveSection);
+      window.removeEventListener("hashchange", updateActiveSection);
+    };
+  }, [offset, sectionIds]);
+
+  return activeSection;
+}
+
 function MetricCard({ metric }: { metric: OperationsDashboardModel["cockpitMetrics"][number] }) {
   return (
     <div className="metric">
@@ -92,8 +166,36 @@ function MetricCard({ metric }: { metric: OperationsDashboardModel["cockpitMetri
   );
 }
 
+function SectionHeading({
+  step,
+  eyebrow,
+  title,
+  sub,
+  action
+}: {
+  step: string;
+  eyebrow: string;
+  title: string;
+  sub?: string;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="section-heading">
+      <div className="section-marker">{step}</div>
+      <div className="section-copy">
+        <span className="section-kicker">{eyebrow}</span>
+        <h2 className="section-title">{title}</h2>
+        {sub ? <p className="section-sub">{sub}</p> : null}
+      </div>
+      {action ? <div className="section-action">{action}</div> : null}
+    </div>
+  );
+}
+
 function ShellCard({
   id,
+  step,
+  eyebrow,
   title,
   sub,
   action,
@@ -101,6 +203,8 @@ function ShellCard({
   className = ""
 }: {
   id?: string;
+  step: string;
+  eyebrow: string;
   title: string;
   sub?: string;
   action?: ReactNode;
@@ -108,15 +212,9 @@ function ShellCard({
   className?: string;
 }) {
   return (
-    <section id={id} className={`section ${className}`}>
-      <Card className="card" variant="default">
-        <Card.Header className="card-header">
-          <div>
-            <h2 className="card-title">{title}</h2>
-            {sub ? <p className="card-sub">{sub}</p> : null}
-          </div>
-          {action}
-        </Card.Header>
+    <section id={id} className={`section section-frame ${className}`}>
+      <SectionHeading action={action} eyebrow={eyebrow} step={step} sub={sub} title={title} />
+      <Card className="card section-card" variant="default">
         <Card.Content>{children}</Card.Content>
       </Card>
     </section>
@@ -198,74 +296,83 @@ function CockpitSection({
 }) {
   const deployment = deployPlan.deployment;
   return (
-    <section id="cockpit" className="section cockpit-grid">
-      <Card className="card cockpit-main" variant="default">
-        <Card.Header className="card-header">
-          <div>
-            <h2 className="card-title">Can ProofPay release now?</h2>
-            <p className="card-sub">One-screen readiness: evidence, AI decision, payout state, and Casper anchor.</p>
-          </div>
-          <Chip color={chipColor(assessment.decision)} variant="soft">{decisionLabel(assessment.decision)}</Chip>
-        </Card.Header>
-        <Card.Content>
-          <div className="cockpit-kpis">
-            {model.cockpitMetrics.map((metric) => (
-              <MetricCard key={metric.id} metric={metric} />
-            ))}
-          </div>
+    <section id="cockpit" className="section section-frame cockpit-section">
+      <SectionHeading
+        action={<Chip color={chipColor(assessment.decision)} variant="soft">{decisionLabel(assessment.decision)}</Chip>}
+        eyebrow="Decision command"
+        step="01"
+        sub="Evidence score, AI decision, payout state, and Casper anchor in one operator surface."
+        title="Can ProofPay release now?"
+      />
+      <div className="cockpit-grid">
+        <Card className="card cockpit-main" variant="default">
+          <Card.Header className="card-header">
+            <div>
+              <h3 className="card-title">Release readiness</h3>
+              <p className="card-sub">The metrics a reviewer needs before signing a milestone payment.</p>
+            </div>
+            <ShieldCheck aria-hidden="true" size={20} />
+          </Card.Header>
+          <Card.Content>
+            <div className="cockpit-kpis">
+              {model.cockpitMetrics.map((metric) => (
+                <MetricCard key={metric.id} metric={metric} />
+              ))}
+            </div>
 
-          <div className="status-strip">
-            <div>
-              <ShieldCheck aria-hidden="true" size={16} />
-              <span>Policy</span>
-              <strong>{assessment.policyVersion}</strong>
-            </div>
-            <div>
-              <ClipboardCheck aria-hidden="true" size={16} />
-              <span>Evidence hash</span>
-              <code>{shortHash(payload.evidenceHash)}</code>
-            </div>
-            <div>
-              <GitBranch aria-hidden="true" size={16} />
-              <span>Decision hash</span>
-              <code>{shortHash(payload.decisionHash)}</code>
-            </div>
-            <div>
-              <RadioTower aria-hidden="true" size={16} />
-              <span>Testnet</span>
-              <strong>{deployment ? `block ${deployment.blockHeight}` : "scenario pending"}</strong>
-            </div>
-          </div>
-        </Card.Content>
-      </Card>
-
-      <Card className="card" variant="default">
-        <Card.Header className="card-header">
-          <div>
-            <h2 className="card-title">Action queue</h2>
-            <p className="card-sub">Human-readable next steps for the buyer, supplier, and reviewer.</p>
-          </div>
-          <Activity aria-hidden="true" size={20} />
-        </Card.Header>
-        <Card.Content>
-          <div className="action-list">
-            {model.actionQueue.map((item) => (
-              <div className={`action-item action-item--${item.status}`} key={item.id}>
-                <span className="action-line" />
-                <div>
-                  <div className="action-title">{item.title}</div>
-                  <div className="action-detail">{item.detail}</div>
-                </div>
-                <Chip color={chipColor(item.status)} variant="soft">{item.status}</Chip>
+            <div className="status-strip">
+              <div>
+                <ShieldCheck aria-hidden="true" size={16} />
+                <span>Policy</span>
+                <strong>{assessment.policyVersion}</strong>
               </div>
-            ))}
-          </div>
-          <div className="hash-pair">
-            <span>Local demo tx</span>
-            <code>{transaction?.hash ?? "creating..."}</code>
-          </div>
-        </Card.Content>
-      </Card>
+              <div>
+                <ClipboardCheck aria-hidden="true" size={16} />
+                <span>Evidence hash</span>
+                <code>{shortHash(payload.evidenceHash)}</code>
+              </div>
+              <div>
+                <GitBranch aria-hidden="true" size={16} />
+                <span>Decision hash</span>
+                <code>{shortHash(payload.decisionHash)}</code>
+              </div>
+              <div>
+                <RadioTower aria-hidden="true" size={16} />
+                <span>Testnet</span>
+                <strong>{deployment ? `block ${deployment.blockHeight}` : "scenario pending"}</strong>
+              </div>
+            </div>
+          </Card.Content>
+        </Card>
+
+        <Card className="card" variant="default">
+          <Card.Header className="card-header">
+            <div>
+              <h3 className="card-title">Action queue</h3>
+              <p className="card-sub">Human-readable next steps for the buyer, supplier, and reviewer.</p>
+            </div>
+            <Activity aria-hidden="true" size={20} />
+          </Card.Header>
+          <Card.Content>
+            <div className="action-list">
+              {model.actionQueue.map((item) => (
+                <div className={`action-item action-item--${item.status}`} key={item.id}>
+                  <span className="action-line" />
+                  <div>
+                    <div className="action-title">{item.title}</div>
+                    <div className="action-detail">{item.detail}</div>
+                  </div>
+                  <Chip color={chipColor(item.status)} variant="soft">{item.status}</Chip>
+                </div>
+              ))}
+            </div>
+            <div className="hash-pair">
+              <span>Local demo tx</span>
+              <code>{transaction?.hash ?? "creating..."}</code>
+            </div>
+          </Card.Content>
+        </Card>
+      </div>
     </section>
   );
 }
@@ -274,6 +381,8 @@ function ChartsSection({ model }: { model: OperationsDashboardModel }) {
   return (
     <ShellCard
       id="charts"
+      eyebrow="Signal room"
+      step="02"
       title="Risk, cash, and evidence charts"
       sub="Charts mirror money-run's dense operating style, but tuned for RWA escrow evidence."
       action={<Chip color="accent" variant="soft">Recharts + Lightweight Charts</Chip>}
@@ -295,55 +404,122 @@ function EvidenceSection({
   assessment: AgentAssessment;
   model: OperationsDashboardModel;
 }) {
-  const claimRows = assessment.extractedClaims.map((claim) => [
-    claim.label,
-    <span className={`mono ${claim.status}`}>{claim.value}</span>,
-    claim.source,
-    <Chip color={chipColor(claim.status)} variant="soft">{claim.status}</Chip>
-  ]);
-  const documentRows = model.evidenceMatrix.map((row) => [
-    <span className="doc-cell"><FileText aria-hidden="true" size={15} />{row.title}</span>,
-    row.coverage,
-    <code>{row.fingerprint}</code>,
-    row.keyClaim,
-    <Chip color={chipColor(row.status)} variant="soft">{row.status}</Chip>
-  ]);
+  const matchedDocuments = model.evidenceMatrix.filter((row) => row.status === "matched");
+  const exceptionDocuments = model.evidenceMatrix.filter((row) => row.status !== "matched");
+  const followUpItems = assessment.requiredFollowUp.length
+    ? assessment.requiredFollowUp
+    : ["No manual follow-up required for this scenario."];
 
   return (
     <ShellCard
       id="evidence"
+      eyebrow="Evidence review"
+      step="03"
       title="Evidence room"
-      sub="Drill down into documents, normalized claims, and exception handling."
+      sub="A reviewer-first workspace for documents, normalized claims, and exception handling."
       action={<Bot aria-hidden="true" size={20} />}
     >
-      <Tabs defaultSelectedKey="documents" variant="primary">
-        <Tabs.List aria-label="Evidence drilldown">
-          <Tabs.Tab id="documents">Documents</Tabs.Tab>
-          <Tabs.Tab id="claims">Claims</Tabs.Tab>
-          <Tabs.Tab id="timeline">Timeline</Tabs.Tab>
-        </Tabs.List>
-        <Tabs.Panel id="documents">
-          <DataTable label="evidence documents" columns={["document", "coverage", "fingerprint", "key claim", "status"]} rows={documentRows} />
-        </Tabs.Panel>
-        <Tabs.Panel id="claims">
-          <DataTable label="extracted claims" columns={["claim", "value", "source", "status"]} rows={claimRows} />
-        </Tabs.Panel>
-        <Tabs.Panel id="timeline">
-          <div className="timeline-list">
-            {model.timeline.map((event) => (
-              <div className={`timeline-item ${event.status}`} key={event.id}>
-                <span />
-                <div>
-                  <strong>{event.label}</strong>
-                  <p>{event.detail}</p>
-                  <code>{event.timestamp}</code>
-                </div>
-                <Chip color={chipColor(event.status)} variant="soft">{event.status}</Chip>
+      <div className="evidence-workbench">
+        <aside className="review-rail" aria-label="Evidence review summary">
+          <div className={`verdict-card verdict-card--${assessment.decision}`}>
+            <span>Agent verdict</span>
+            <strong>{decisionLabel(assessment.decision)}</strong>
+            <p>{assessment.confidence}% confidence · risk score {assessment.riskScore}/100</p>
+          </div>
+          <div className="review-stat-grid">
+            <div>
+              <span>Documents cleared</span>
+              <strong>{matchedDocuments.length}/{model.evidenceMatrix.length}</strong>
+            </div>
+            <div>
+              <span>Exceptions</span>
+              <strong>{exceptionDocuments.length}</strong>
+            </div>
+            <div>
+              <span>Policy</span>
+              <strong>{assessment.policyVersion}</strong>
+            </div>
+            <div>
+              <span>Flags</span>
+              <strong>{assessment.flags.length || "none"}</strong>
+            </div>
+          </div>
+          <div className="followup-card">
+            <div className="mini-title">Operator follow-up</div>
+            {followUpItems.map((item) => (
+              <p key={item}>{item}</p>
+            ))}
+          </div>
+          <div className="reason-stack">
+            {assessment.reasons.map((reason) => (
+              <div className="reason-pill" key={reason}>
+                <CheckCircle2 aria-hidden="true" size={14} />
+                <span>{reason}</span>
               </div>
             ))}
           </div>
-        </Tabs.Panel>
-      </Tabs>
+        </aside>
+
+        <div className="evidence-drilldown">
+          <Tabs defaultSelectedKey="documents" variant="primary">
+            <Tabs.List aria-label="Evidence drilldown">
+              <Tabs.Tab id="documents">Documents</Tabs.Tab>
+              <Tabs.Tab id="claims">Claims</Tabs.Tab>
+              <Tabs.Tab id="timeline">Timeline</Tabs.Tab>
+            </Tabs.List>
+            <Tabs.Panel id="documents">
+              <div className="document-grid">
+                {model.evidenceMatrix.map((row) => (
+                  <article className={`document-card document-card--${row.status}`} key={row.id}>
+                    <div className="document-card__head">
+                      <FileText aria-hidden="true" size={17} />
+                      <div>
+                        <span>{row.documentType.replaceAll("_", " ")}</span>
+                        <strong>{row.title}</strong>
+                      </div>
+                      <Chip color={chipColor(row.status)} variant="soft">{row.status}</Chip>
+                    </div>
+                    <p>{row.keyClaim}</p>
+                    <div className="document-card__meta">
+                      <span>{row.coverage}</span>
+                      <code title={row.fingerprint}>{shortHash(row.fingerprint, 12, 8)}</code>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </Tabs.Panel>
+            <Tabs.Panel id="claims">
+              <div className="claim-grid">
+                {assessment.extractedClaims.map((claim) => (
+                  <article className={`claim-card claim-card--${claim.status}`} key={`${claim.label}-${claim.source}`}>
+                    <div>
+                      <span>{claim.label}</span>
+                      <strong className="mono">{claim.value}</strong>
+                    </div>
+                    <p>{claim.source}</p>
+                    <Chip color={chipColor(claim.status)} variant="soft">{claim.status}</Chip>
+                  </article>
+                ))}
+              </div>
+            </Tabs.Panel>
+            <Tabs.Panel id="timeline">
+              <div className="timeline-list">
+                {model.timeline.map((event) => (
+                  <div className={`timeline-item ${event.status}`} key={event.id}>
+                    <span />
+                    <div>
+                      <strong>{event.label}</strong>
+                      <p>{event.detail}</p>
+                      <code>{event.timestamp}</code>
+                    </div>
+                    <Chip color={chipColor(event.status)} variant="soft">{event.status}</Chip>
+                  </div>
+                ))}
+              </div>
+            </Tabs.Panel>
+          </Tabs>
+        </div>
+      </div>
     </ShellCard>
   );
 }
@@ -356,30 +532,47 @@ function CasperSection({
   payload: CasperAttestationPayload;
 }) {
   const deployment = deployPlan.deployment;
-  const readinessRows = deployPlan.readiness.map((item) => [
-    item.label,
-    <Chip color={chipColor(item.status)} variant="soft">{item.status}</Chip>,
-    item.detail
-  ]);
-  const proofRows = [
-    ["network", deployPlan.network],
-    ["milestone", payload.milestoneId],
-    ["testnet tx", deployment?.transactionHash ?? "not recorded for this scenario"],
-    ["named key", deployment?.namedKey ?? "pending scenario deploy"],
-    ["stored URef", deployment?.uref ?? "pending scenario deploy"],
-    ["block", deployment ? `${deployment.blockHeight} / ${deployment.blockHash}` : "pending scenario deploy"],
-    ["public key", deployPlan.publicKeyHex]
-  ].map(([label, value]) => [label, <code>{value}</code>]);
+  const proofFacts = [
+    { label: "Network", value: deployPlan.network, display: deployPlan.network },
+    { label: "Milestone", value: payload.milestoneId, display: payload.milestoneId },
+    {
+      label: "Testnet tx",
+      value: deployment?.transactionHash ?? "not recorded for this scenario",
+      display: deployment ? shortHash(deployment.transactionHash, 14, 10) : "pending deploy"
+    },
+    {
+      label: "Named key",
+      value: deployment?.namedKey ?? "pending scenario deploy",
+      display: deployment?.namedKey ?? "pending deploy"
+    },
+    {
+      label: "Stored URef",
+      value: deployment?.uref ?? "pending scenario deploy",
+      display: deployment ? shortHash(deployment.uref, 18, 12) : "pending deploy"
+    },
+    {
+      label: "Block",
+      value: deployment ? `${deployment.blockHeight} / ${deployment.blockHash}` : "pending scenario deploy",
+      display: deployment ? String(deployment.blockHeight) : "pending deploy"
+    },
+    {
+      label: "Public key",
+      value: deployPlan.publicKeyHex,
+      display: shortHash(deployPlan.publicKeyHex, 14, 10)
+    }
+  ];
 
   return (
     <ShellCard
       id="casper"
+      eyebrow="On-chain proof"
+      step="04"
       title="Casper attestation"
       sub={deployment ? "Clean scenario is anchored on Casper Testnet." : "This scenario can be reproduced with the command below."}
       action={<Chip color={deployment ? "success" : "warning"} variant="soft">{deployment ? "on-chain" : "manual deploy"}</Chip>}
     >
-      <div className="casper-grid">
-        <div>
+      <div className="proof-workbench">
+        <div className="proof-main">
           <div className={deployment ? "proof-banner success" : "proof-banner warning"}>
             {deployment ? <CheckCircle2 aria-hidden="true" size={18} /> : <TriangleAlert aria-hidden="true" size={18} />}
             <p>
@@ -388,7 +581,14 @@ function CasperSection({
                 : "Local demo transaction exists; deploy this scenario to add a matching Testnet attestation."}
             </p>
           </div>
-          <DataTable label="casper proof" columns={["field", "value"]} rows={proofRows} />
+          <div className="proof-summary-grid">
+            {proofFacts.map((fact) => (
+              <div className="proof-stat-card" key={fact.label}>
+                <span>{fact.label}</span>
+                <code title={fact.value}>{fact.display}</code>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="command-panel">
           <h3>Deploy command</h3>
@@ -400,8 +600,17 @@ function CasperSection({
           </div>
         </div>
       </div>
-      <div className="readiness-table">
-        <DataTable label="submission readiness" columns={["gate", "status", "detail"]} rows={readinessRows} />
+      <div className="readiness-grid" aria-label="Submission readiness">
+        {deployPlan.readiness.map((item) => (
+          <article className={`readiness-card readiness-card--${item.status}`} key={item.id}>
+            <div>
+              <span>{item.id.replaceAll("-", " ")}</span>
+              <strong>{item.label}</strong>
+            </div>
+            <Chip color={chipColor(item.status)} variant="soft">{item.status}</Chip>
+            <p>{item.detail}</p>
+          </article>
+        ))}
       </div>
     </ShellCard>
   );
@@ -444,6 +653,7 @@ export default function Home() {
       }),
     [assessment, bundle, deal, evidenceHash, milestone]
   );
+  const activeSection = useScrollSpy(dashboardSectionIds);
 
   useEffect(() => {
     let cancelled = false;
@@ -469,10 +679,18 @@ export default function Home() {
             <strong>ProofPay Agent</strong>
           </div>
           <nav className="side-nav" aria-label="Dashboard sections">
-            <a href="#cockpit">Cockpit</a>
-            <a href="#charts">Charts</a>
-            <a href="#evidence">Evidence</a>
-            <a href="#casper">Casper</a>
+            {dashboardSections.map((section) => (
+              <a
+                aria-current={activeSection === section.id ? "page" : undefined}
+                className={activeSection === section.id ? "is-active" : undefined}
+                href={`#${section.id}`}
+                key={section.id}
+              >
+                <span>{section.eyebrow}</span>
+                <strong>{section.label}</strong>
+                <em>{section.detail}</em>
+              </a>
+            ))}
           </nav>
           <div className="side-status">
             <span>Buildathon gate</span>
