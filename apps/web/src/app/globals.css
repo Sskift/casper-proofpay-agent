@@ -1246,6 +1246,239 @@ h1 {
   background: #fff7fa;
 }
 
+.dossier-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.42fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.dossier-main,
+.dossier-side {
+  min-width: 0;
+}
+
+.dossier-side {
+  display: grid;
+  gap: 10px;
+}
+
+.dossier-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr) minmax(0, 0.8fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.dossier-summary > div,
+.verification-panel,
+.checklist-panel,
+.dossier-json,
+.trace-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.dossier-summary > div {
+  display: grid;
+  gap: 5px;
+  min-height: 98px;
+  padding: 11px;
+}
+
+.dossier-summary span,
+.json-head span,
+.trace-card__head span,
+.verification-row span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.dossier-summary strong,
+.json-head strong,
+.trace-card__head strong {
+  display: block;
+  color: #1d2939;
+  font-size: 0.9rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.dossier-summary p,
+.trace-card p,
+.checklist-panel li {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.dossier-summary--approve > div {
+  border-color: #c7ead4;
+  background: #fbfffd;
+}
+
+.dossier-summary--hold > div {
+  border-color: #f0d7a5;
+  background: #fffdf7;
+}
+
+.dossier-summary--reject > div {
+  border-color: #f4b5ca;
+  background: #fff7fa;
+}
+
+.trace-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.trace-card {
+  display: grid;
+  gap: 10px;
+  min-height: 236px;
+  padding: 11px;
+}
+
+.trace-card__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: start;
+}
+
+.trace-card dl {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.trace-card dl > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface-soft);
+}
+
+.trace-card dt {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.trace-card dd {
+  min-width: 0;
+  margin: 0;
+  color: #1d2939;
+  font-family: var(--font-num);
+  font-size: 0.76rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.trace-card--passed {
+  border-color: #c7ead4;
+}
+
+.trace-card--warning,
+.trace-card--pending {
+  border-color: #f0d7a5;
+  background: #fffdf7;
+}
+
+.trace-card--failed {
+  border-color: #f4b5ca;
+  background: #fff7fa;
+}
+
+.trace-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.trace-sources code {
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #ffffff;
+  color: #475467;
+}
+
+.verification-panel,
+.checklist-panel,
+.dossier-json {
+  display: grid;
+  gap: 8px;
+  padding: 11px;
+}
+
+.verification-row {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface-soft);
+}
+
+.verification-row code {
+  color: #1d2939;
+}
+
+.checklist-panel {
+  background: #f8fbff;
+}
+
+.checklist-panel ol {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.json-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.json-head svg {
+  color: var(--success);
+}
+
+.dossier-json {
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+.dossier-json .json-head span,
+.dossier-json .json-head strong {
+  color: #e5e7eb;
+}
+
+.dossier-json pre {
+  max-height: 420px;
+  overflow: auto;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.7rem;
+}
+
 @media (max-width: 1180px) {
   .app-shell {
     grid-template-columns: 1fr;
@@ -1265,13 +1498,14 @@ h1 {
   }
 
   .side-nav {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   .cockpit-grid,
   .evidence-workbench,
   .proof-workbench,
-  .viz-grid {
+  .viz-grid,
+  .dossier-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1309,7 +1543,9 @@ h1 {
   .document-grid,
   .claim-grid,
   .readiness-grid,
-  .proof-summary-grid {
+  .proof-summary-grid,
+  .dossier-summary,
+  .trace-grid {
     grid-template-columns: 1fr;
   }
 

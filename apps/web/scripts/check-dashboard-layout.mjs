@@ -24,7 +24,9 @@ const requiredPageContracts = [
   ["dashboardSections", "The dashboard nav should be generated from explicit section metadata, not a flat anchor list."],
   ["evidence-workbench", "Evidence should render as a review workbench instead of a plain table stack."],
   ["proof-workbench", "Casper proof should render as an operational proof workbench."],
-  ["readiness-grid", "Submission readiness should use visual gate cards instead of another table."]
+  ["readiness-grid", "Submission readiness should use visual gate cards instead of another table."],
+  ['id="dossier"', "The dashboard needs a Dossier section for judge-facing audit review."],
+  ["Audit dossier", "The Dossier section heading should be visible to reviewers."]
 ];
 
 for (const [needle, message] of requiredPageContracts) {
@@ -39,7 +41,9 @@ const requiredCssContracts = [
   [".evidence-drilldown .tabs__tab", "Evidence drilldown tabs need control styling rather than bare stacked text."],
   [".evidence-workbench", "Evidence workbench layout styles are missing."],
   [".proof-workbench", "Casper proof workbench layout styles are missing."],
-  [".readiness-grid", "Readiness gate card layout styles are missing."]
+  [".readiness-grid", "Readiness gate card layout styles are missing."],
+  [".dossier-grid", "Audit dossier layout styles are missing."],
+  [".trace-grid", "Audit trace grid styles are missing."]
 ];
 
 for (const [needle, message] of requiredCssContracts) {

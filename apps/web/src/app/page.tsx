@@ -2,11 +2,13 @@
 
 import {
   assessEvidence,
+  createAuditDossier,
   createEvidenceHash,
   createOperationsDashboard,
   seededDeals,
   seededEvidenceBundles,
   type AgentAssessment,
+  type AuditDossier,
   type OperationsDashboardModel
 } from "@proofpay/agent";
 import {
@@ -24,9 +26,11 @@ import {
   Bot,
   CheckCircle2,
   ClipboardCheck,
+  CopyCheck,
   ExternalLink,
   FileText,
   GitBranch,
+  PackageCheck,
   RadioTower,
   ScrollText,
   ShieldCheck,
@@ -43,7 +47,7 @@ import {
 } from "@/components/DashboardCharts";
 
 type ScenarioKey = keyof typeof seededEvidenceBundles;
-type SectionId = "cockpit" | "charts" | "evidence" | "casper";
+type SectionId = "cockpit" | "charts" | "evidence" | "casper" | "dossier";
 type ChipColor = "success" | "warning" | "danger" | "default" | "accent";
 
 const scenarioCopy: Record<ScenarioKey, { label: string; short: string; operator: string }> = {
@@ -88,6 +92,12 @@ const dashboardSections: Array<{ id: SectionId; label: string; eyebrow: string; 
     label: "Casper",
     eyebrow: "04",
     detail: "Testnet proof"
+  },
+  {
+    id: "dossier",
+    label: "Dossier",
+    eyebrow: "05",
+    detail: "Audit package"
   }
 ];
 
@@ -95,7 +105,7 @@ const dashboardSectionIds = dashboardSections.map((section) => section.id);
 
 function chipColor(value: string): ChipColor {
   const normalized = value.toLowerCase();
-  if (["approve", "ready", "matched", "positive", "complete", "success"].includes(normalized)) return "success";
+  if (["approve", "ready", "matched", "positive", "complete", "success", "passed"].includes(normalized)) return "success";
   if (["hold", "watch", "warning", "manual", "active", "pending"].includes(normalized)) return "warning";
   if (["reject", "blocked", "failed", "negative"].includes(normalized)) return "danger";
   return "default";
@@ -616,6 +626,113 @@ function CasperSection({
   );
 }
 
+function DossierSection({ dossier }: { dossier: AuditDossier }) {
+  const verificationFacts = [
+    { label: "Evidence hash", value: dossier.verification.evidenceHash },
+    { label: "Decision hash", value: dossier.verification.decisionHash },
+    { label: "Local tx", value: dossier.verification.localTransactionHash ?? "pending local transaction" },
+    { label: "Network", value: dossier.verification.network },
+    { label: "Casper tx", value: dossier.verification.casperTransactionHash ?? "pending scenario deploy" },
+    { label: "Stored URef", value: dossier.verification.storedURef ?? "pending scenario deploy" }
+  ];
+  const dossierJson = JSON.stringify(dossier, null, 2);
+
+  return (
+    <ShellCard
+      id="dossier"
+      eyebrow="Judge package"
+      step="05"
+      title="Audit dossier"
+      sub="One portable package for the decision trace, hashes, Casper proof facts, and reproduction checklist."
+      action={<PackageCheck aria-hidden="true" size={20} />}
+    >
+      <div className="dossier-grid">
+        <div className="dossier-main">
+          <div className={`dossier-summary dossier-summary--${dossier.decision}`}>
+            <div>
+              <span>Dossier</span>
+              <strong>{dossier.id}</strong>
+              <p>{dossier.policyVersion}</p>
+            </div>
+            <div>
+              <span>Decision</span>
+              <strong>{decisionLabel(dossier.decision)}</strong>
+              <p>{dossier.confidence}% confidence · risk {dossier.riskScore}/100</p>
+            </div>
+            <div>
+              <span>Release amount</span>
+              <strong>{dossier.releaseAmount}</strong>
+              <p>{dossier.scenario}</p>
+            </div>
+          </div>
+
+          <div className="trace-grid" aria-label="Audit reasoning trace">
+            {dossier.trace.map((step) => (
+              <article className={`trace-card trace-card--${step.status}`} key={step.id}>
+                <div className="trace-card__head">
+                  <div>
+                    <span>{step.id.replaceAll("-", " ")}</span>
+                    <strong>{step.label}</strong>
+                  </div>
+                  <Chip color={chipColor(step.status)} variant="soft">{step.status}</Chip>
+                </div>
+                <dl>
+                  <div>
+                    <dt>Expected</dt>
+                    <dd>{step.expected}</dd>
+                  </div>
+                  <div>
+                    <dt>Observed</dt>
+                    <dd>{step.observed}</dd>
+                  </div>
+                </dl>
+                <p>{step.impact}</p>
+                <div className="trace-sources">
+                  {step.sources.map((source) => (
+                    <code key={`${step.id}-${source}`}>{source}</code>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <aside className="dossier-side" aria-label="Portable audit package">
+          <div className="verification-panel">
+            <div className="mini-title">Verification chain</div>
+            {verificationFacts.map((fact) => (
+              <div className="verification-row" key={fact.label}>
+                <span>{fact.label}</span>
+                <code title={fact.value}>{fact.value}</code>
+              </div>
+            ))}
+          </div>
+
+          <div className="checklist-panel">
+            <div className="mini-title">Reviewer checklist</div>
+            <ol>
+              {dossier.reviewChecklist.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ol>
+          </div>
+
+          <div className="dossier-json">
+            <div className="json-head">
+              <div>
+                <span>Portable JSON</span>
+                <strong>Copy-ready audit package</strong>
+              </div>
+              <CopyCheck aria-hidden="true" size={18} />
+            </div>
+            <pre><code>{dossierJson}</code></pre>
+          </div>
+        </aside>
+      </div>
+    </ShellCard>
+  );
+}
+
 export default function Home() {
   const [scenario, setScenario] = useState<ScenarioKey>("clean");
   const [transaction, setTransaction] = useState<DemoCasperTransaction | null>(null);
@@ -641,6 +758,27 @@ export default function Home() {
         scenario
       }),
     [payload, scenario]
+  );
+  const dossier = useMemo(
+    () =>
+      createAuditDossier({
+        deal,
+        milestone,
+        bundle,
+        assessment,
+        evidenceHash,
+        decisionHash: payload.decisionHash,
+        casper: {
+          network: deployPlan.network,
+          transactionHash: deployPlan.deployment?.transactionHash,
+          blockHeight: deployPlan.deployment?.blockHeight,
+          namedKey: deployPlan.deployment?.namedKey,
+          storedURef: deployPlan.deployment?.uref
+        },
+        localTransactionHash: transaction?.hash,
+        cliCommand: deployPlan.cliCommand
+      }),
+    [assessment, bundle, deal, deployPlan, evidenceHash, milestone, payload.decisionHash, transaction]
   );
   const model = useMemo(
     () =>
@@ -759,6 +897,7 @@ export default function Home() {
           <ChartsSection model={model} />
           <EvidenceSection assessment={assessment} model={model} />
           <CasperSection deployPlan={deployPlan} payload={payload} />
+          <DossierSection dossier={dossier} />
         </div>
       </div>
     </main>

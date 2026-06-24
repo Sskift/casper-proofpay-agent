@@ -107,3 +107,39 @@ export interface AgentAssessment {
   policyVersion: string;
   assessedAt: string;
 }
+
+export type AuditTraceStatus = "passed" | "warning" | "failed" | "pending";
+
+export interface AuditTraceStep {
+  id: string;
+  label: string;
+  expected: string;
+  observed: string;
+  status: AuditTraceStatus;
+  impact: string;
+  sources: string[];
+}
+
+export interface AuditDossier {
+  id: string;
+  scenario: EvidenceBundle["scenario"];
+  decision: Decision;
+  confidence: number;
+  riskScore: number;
+  policyVersion: string;
+  releaseAmount: string;
+  generatedAt: string;
+  verification: {
+    evidenceHash: `0x${string}`;
+    decisionHash: `0x${string}` | string;
+    localTransactionHash?: string;
+    network: string;
+    casperTransactionHash?: string;
+    blockHeight?: number;
+    namedKey?: string;
+    storedURef?: string;
+    cliCommand: string;
+  };
+  trace: AuditTraceStep[];
+  reviewChecklist: string[];
+}

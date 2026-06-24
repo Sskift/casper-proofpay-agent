@@ -24,9 +24,9 @@ The agent normalizes five evidence sources: invoice, bill of lading, signed deli
 - `hold`: delivery evidence is credible, but finance must review an amount mismatch.
 - `reject`: duplicate invoice evidence blocks release.
 
-Every assessment produces an evidence hash and decision hash. The clean release scenario is anchored on Casper Testnet through the `proofpay-attestation` contract path. The dashboard shows the Testnet transaction hash, block height, named key, stored URef, public key, deploy command, session arguments, and submission readiness gates.
+Every assessment produces an evidence hash and decision hash. The clean release scenario is anchored on Casper Testnet through the `proofpay-attestation` contract path. The dashboard shows the Testnet transaction hash, block height, named key, stored URef, public key, deploy command, session arguments, submission readiness gates, and a portable Audit Dossier.
 
-The user experience is designed for judges and operators: a scroll-tracked left navigation, clear Cockpit, Charts, Evidence, and Casper sections, an Evidence review workbench, and a Casper proof workbench with checklist-style submission gates.
+The user experience is designed for judges and operators: a scroll-tracked left navigation, clear Cockpit, Charts, Evidence, Casper, and Dossier sections, an Evidence review workbench, a Casper proof workbench with checklist-style submission gates, and an Audit Dossier that packages the reasoning trace, hashes, Testnet proof facts, CLI command, and reviewer checklist into a copy-ready JSON artifact.
 
 ## Casper Integration
 
@@ -62,6 +62,7 @@ ProofPay combines:
 - DeFi: milestone escrow release logic and payment decision auditability.
 - Real-World Assets: delivery, invoice, registry, and cold-chain proof for a physical shipment.
 - Casper Testnet: transaction-producing attestation component with documented on-chain state.
+- Auditability: judge-facing dossier with policy trace, normalized observations, evidence hash, decision hash, Casper proof facts, and reproduction checklist.
 
 ## Technical Stack
 
@@ -97,9 +98,10 @@ The prepared video follows this flow:
 2. Select `Clean release` and explain the approve decision.
 3. Open the Evidence room and show document, claim, and timeline drilldowns.
 4. Open the Casper section and show the Testnet transaction hash, named key, stored URef, deploy command, and readiness gates.
-5. Switch to `Hold for finance` and explain amount mismatch handling.
-6. Switch to `Reject duplicate` and explain duplicate invoice blocking.
-7. Open the repository docs and point to `docs/casper-testnet.md`.
+5. Open the Dossier section and show the trace cards, verification chain, copy-ready JSON package, and reviewer checklist.
+6. Switch to `Hold for finance` and explain amount mismatch handling.
+7. Switch to `Reject duplicate` and explain duplicate invoice blocking.
+8. Open the repository docs and point to `docs/casper-testnet.md`.
 
 ## CSPR.fans Community Pitch
 
