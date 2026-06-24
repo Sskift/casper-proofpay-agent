@@ -1,80 +1,78 @@
 # ProofPay Agent Demo Script
 
-Target length: 2 to 3 minutes.
+Target length: 90 to 110 seconds.
 
-## Opening
+The submitted demo video uses AI text-to-speech narration with burned-in captions. The video file lives at `docs/demo/proofpay-agent-demo.mp4` so the DoraHacks BUIDL link can keep pointing at the same GitHub path after updates.
 
-ProofPay Agent is an autonomous milestone escrow agent for real-world assets on Casper. The use case is a temperature-controlled vaccine shipment. The buyer wants payment released only after delivery evidence is credible. The supplier wants payment without manual finance delays.
+## Scene 1: Cockpit
 
-## Scene 1: Dashboard
+ProofPay Agent is an agentic milestone escrow cockpit for real-world asset payments on Casper. It verifies delivery evidence before an escrow release can move forward.
 
-Show the dashboard cockpit and the buildathon hard gates:
+Show:
 
-- Open-source repository.
-- Demo video.
-- Casper Testnet transaction requirement.
-- DoraHacks Submit BUIDL flow.
+- Release readiness, risk, confidence, evidence coverage, and Casper anchor metrics.
+- Reviewer action queue.
+- Left navigation with the active Cockpit section.
 
-Point out the HeroUI operator layout:
+## Scene 2: Charts
 
-- Scroll-tracked left navigation with Cockpit, Charts, Evidence, and Casper sections.
-- Scenario switcher.
-- Release, risk, confidence, evidence, and Casper anchor metrics.
-- Action queue for human reviewers.
-- Deal strip with escrow amount, buyer, supplier, asset type, and milestone context.
+In the clean release scenario, the invoice, bill of lading, delivery note, vendor registry, and cold-chain telemetry all align. The agent recommends release with high confidence.
 
-## Scene 2: Clean Release
+Show:
 
-Select `Clean release`.
+- Risk tape.
+- Cold-chain telemetry.
+- Escrow cashflow and evidence coverage charts.
 
-Explain:
+## Scene 3: Evidence
 
-- Invoice, bill of lading, delivery note, temperature log, and vendor registry align.
-- The agent recommends `approve`.
-- The evidence bundle hash and decision hash are generated.
-- The Casper proof workbench shows the local demo transaction, the successful Casper Testnet transaction hash, block, named key, stored URef, public key, deploy command, and readiness gates.
-- The recorded Testnet transaction proves the exact clean-scenario attestation was written on-chain.
-- The charts show risk progression, cold-chain telemetry, escrow cashflow, and evidence coverage.
-- The Evidence room shows the reviewer summary on the left and document, claim, and timeline tabs on the right.
+The Evidence room keeps the decision explainable. Reviewers can inspect the source documents, extracted claims, and event timeline instead of trusting a black box.
 
-## Scene 3: Hold For Finance
+Show:
 
-Select `Hold for finance`.
+- Clean release decision and confidence.
+- Document status, claim extraction, and timeline tabs.
 
-Explain:
+## Scene 4: Casper
 
-- Delivery evidence is credible.
-- Invoice amount exceeds the milestone.
-- The agent chooses `hold`, flags `amount_mismatch`, and asks buyer finance to confirm the amount.
-
-## Scene 4: Reject Duplicate
-
-Select `Reject duplicate`.
-
-Explain:
-
-- Invoice fingerprint matches a previously settled invoice.
-- The agent chooses `reject`.
-- The decision is auditable because the payload can be anchored on Casper.
-
-## Scene 5: Casper Contract
-
-Open the repository contract folder:
-
-```text
-contracts/proofpay-attestation
-```
+The Casper panel exposes the real Testnet transaction, block height, named key, stored URef, public key, and the deploy command used for the attestation.
 
 Mention:
 
-- Raw Casper Rust fallback with `call()`.
-- Odra module sketch for Casper framework alignment.
-- Deployment arguments match the dashboard payload.
-- `npm run attestation:export -- clean` prints the exact payload used in the UI.
-- `npm run contract:deploy:testnet` sends the Casper 5 `put-transaction session`.
-- The successful Testnet transaction is `94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604`.
-- Final submission records the Casper Testnet evidence in `docs/casper-testnet.md`.
+- Successful Casper Testnet transaction `94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604`.
+- Stored URef `uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007`.
+- Contract and deploy details are documented in `docs/casper-testnet.md`.
+
+## Scene 5: Audit Dossier
+
+New in this iteration is the Audit Dossier. Every policy check becomes a trace card with expected value, observed value, status, impact, and evidence source.
+
+Show:
+
+- Passed trace cards for invoice amount, settlement currency, shipment identity, delivery confirmation, temperature band, and counterparty registry.
+- Verification chain with evidence hash, decision hash, local demo transaction, Casper Testnet transaction, and stored URef.
+- Copy-ready JSON audit package.
+
+## Scene 6: Hold Path
+
+When the invoice amount is too high, ProofPay changes the decision to human review. The dossier marks invoice amount as failed and asks buyer finance to resolve the mismatch.
+
+Show:
+
+- `Hold for finance` scenario.
+- Failed invoice amount trace.
+- Human review decision.
+
+## Scene 7: Reject Path
+
+When the invoice fingerprint is duplicated, ProofPay blocks release and escalates the payment to fraud review. The failed trace stays visible in the same dossier format.
+
+Show:
+
+- `Reject duplicate` scenario.
+- Blocked cockpit state.
+- Fraud review escalation.
 
 ## Closing
 
-ProofPay Agent turns off-chain RWA evidence into an auditable on-chain payment decision. AI verifies the milestone. Casper records the trust anchor. The result is faster, safer milestone escrow for real-world assets.
+ProofPay combines agentic evidence review, decentralized escrow operations, and Casper attestations. AI does the evidence work, while Casper makes the final payment decision auditable.
