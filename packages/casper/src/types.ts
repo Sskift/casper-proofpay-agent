@@ -51,10 +51,27 @@ export interface CreateCasperDeployPlanInput {
 export type CasperReadinessStatus = "ready" | "blocked" | "manual";
 
 export interface CasperReadinessItem {
-  id: "payload" | "contract" | "testnet-account" | "buidl";
+  id: "payload" | "contract" | "testnet-account" | "testnet-deploy" | "buidl";
   label: string;
   status: CasperReadinessStatus;
   detail: string;
+}
+
+export interface CasperDeploymentRecord {
+  transactionHash: string;
+  blockHash: string;
+  blockHeight: number;
+  publicKeyHex: string;
+  accountHash: string;
+  namedKey: string;
+  uref: string;
+  milestoneId: string;
+  evidenceHash: `0x${string}`;
+  decision: Decision;
+  decisionHash: `0x${string}`;
+  confidence: number;
+  riskScore: number;
+  submittedAt: string;
 }
 
 export interface CasperDeployPlan {
@@ -69,6 +86,7 @@ export interface CasperDeployPlan {
   accountHash: string;
   faucetUrl: string;
   readiness: CasperReadinessItem[];
+  deployment: CasperDeploymentRecord | null;
   sessionArgs: string[];
   cliCommand: string;
   postFundingCommands: string[];

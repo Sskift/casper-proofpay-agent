@@ -26,7 +26,7 @@ ProofPay simulates a buyer/supplier RWA escrow workflow:
 3. The agent extracts claims, checks consistency, scores risk, and chooses `approve`, `hold`, or `reject`.
 4. The app creates an evidence hash and decision hash.
 5. The Casper adapter creates an attestation payload for the on-chain contract.
-6. The dashboard shows the audit trail, local demo transaction hash, Casper Testnet readiness status, faucet public key, and copy-ready deploy commands.
+6. The dashboard shows the audit trail, local demo transaction hash, recorded Casper Testnet transaction, named key, stored URef, and copy-ready deploy commands.
 
 ## Repository Layout
 
@@ -69,7 +69,15 @@ Current structure:
 - `odra-module-sketch.rs`: Odra-style module sketch for the intended framework migration.
 - `README.md`: build and deploy argument reference.
 
-The local dashboard shows deterministic demo transaction hashes while development is in progress. These local hashes are not enough for DoraHacks eligibility. The final submission must include a Casper Testnet deploy hash, documented in [docs/casper-testnet.md](docs/casper-testnet.md).
+The local dashboard shows deterministic demo transaction hashes for repeatable judge-mode flows. The `clean` scenario also includes a successful Casper Testnet transaction-producing component:
+
+```text
+transaction_hash: 94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604
+named_key: proofpay_attestation_ms-delivery-acceptance
+stored_uref: uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007
+```
+
+Full Testnet evidence is documented in [docs/casper-testnet.md](docs/casper-testnet.md).
 
 ## Casper CLI Path
 
@@ -104,7 +112,7 @@ npm run attestation:export     # print a scenario's Casper attestation payload
 npm run casper:check           # verify Casper CLI, Testnet RPC, and local account status
 npm run contract:build         # build Casper Wasm
 npm run contract:deploy:print  # print Casper Testnet deploy command shapes
-npm run contract:deploy:testnet # send the Casper Testnet transaction after account funding
+npm run contract:deploy:testnet # send or reproduce a Casper Testnet transaction
 ```
 
 ## Prototype Boundary

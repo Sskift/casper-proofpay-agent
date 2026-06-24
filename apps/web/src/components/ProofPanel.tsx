@@ -29,6 +29,8 @@ function statusIcon(status: CasperDeployPlan["readiness"][number]["status"]) {
 }
 
 export function ProofPanel({ deployPlan, payload, transaction }: ProofPanelProps) {
+  const deployment = deployPlan.deployment;
+
   return (
     <section className="panel proof-panel">
       <div className="panel-header">
@@ -39,10 +41,17 @@ export function ProofPanel({ deployPlan, payload, transaction }: ProofPanelProps
         <RadioTower aria-hidden="true" size={22} />
       </div>
 
-      <div className="eligibility-warning">
-        <TriangleAlert aria-hidden="true" size={18} />
-        <p>Local demo transaction shown. DoraHacks eligibility still requires Casper Testnet deployment and a transaction-producing on-chain component.</p>
-      </div>
+      {deployment ? (
+        <div className="eligibility-warning success">
+          <CircleCheck aria-hidden="true" size={18} />
+          <p>Casper Testnet attestation executed. The local demo hash below is paired with the recorded on-chain transaction.</p>
+        </div>
+      ) : (
+        <div className="eligibility-warning">
+          <TriangleAlert aria-hidden="true" size={18} />
+          <p>This scenario has a local demo transaction. Run the Casper deploy command below to add a matching Testnet attestation.</p>
+        </div>
+      )}
 
       <div className="readiness-list" aria-label="Submission readiness">
         {deployPlan.readiness.map((item) => (
@@ -66,6 +75,10 @@ export function ProofPanel({ deployPlan, payload, transaction }: ProofPanelProps
           <dd><code>{transaction?.hash ?? "creating..."}</code></dd>
         </div>
         <div>
+          <dt><ScrollText aria-hidden="true" size={14} /> Testnet tx hash</dt>
+          <dd><code>{deployment?.transactionHash ?? "not recorded for this scenario"}</code></dd>
+        </div>
+        <div>
           <dt>Decision hash</dt>
           <dd><code>{payload.decisionHash}</code></dd>
         </div>
@@ -74,11 +87,19 @@ export function ProofPanel({ deployPlan, payload, transaction }: ProofPanelProps
           <dd>{payload.milestoneId}</dd>
         </div>
         <div>
-          <dt>Contract package</dt>
-          <dd><code>pending Casper Testnet deploy</code></dd>
+          <dt>Named key</dt>
+          <dd><code>{deployment?.namedKey ?? "pending scenario deploy"}</code></dd>
         </div>
         <div>
-          <dt>Faucet public key</dt>
+          <dt>Block</dt>
+          <dd><code>{deployment ? `${deployment.blockHeight} / ${deployment.blockHash}` : "pending scenario deploy"}</code></dd>
+        </div>
+        <div>
+          <dt>Stored URef</dt>
+          <dd><code>{deployment?.uref ?? "pending scenario deploy"}</code></dd>
+        </div>
+        <div>
+          <dt>Testnet public key</dt>
           <dd><code>{deployPlan.publicKeyHex}</code></dd>
         </div>
       </dl>
@@ -86,7 +107,7 @@ export function ProofPanel({ deployPlan, payload, transaction }: ProofPanelProps
       <div className="command-box">
         <div className="command-title">
           <Terminal aria-hidden="true" size={15} />
-          <strong>After faucet funding</strong>
+          <strong>{deployment ? "Reproduce deploy" : "Deploy this scenario"}</strong>
         </div>
         {deployPlan.postFundingCommands.map((command) => (
           <code key={command}>{command}</code>
@@ -110,7 +131,7 @@ export function ProofPanel({ deployPlan, payload, transaction }: ProofPanelProps
         target="_blank"
       >
         <ExternalLink aria-hidden="true" size={15} />
-        Testnet deployment instructions live in repository docs
+        Testnet deployment evidence in repository docs
       </a>
     </section>
   );

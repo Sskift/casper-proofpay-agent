@@ -46,6 +46,7 @@ casper-client put-transaction session \
   --secret-key "$SECRET_KEY" \
   --wasm-path "$WASM_PATH" \
   --payment-amount "$PAYMENT_AMOUNT" \
+  --standard-payment true \
   --gas-price-tolerance "$GAS_PRICE_TOLERANCE" \
   --install-upgrade \
   --session-entry-point call \

@@ -6,12 +6,12 @@ This document tracks the path from local ProofPay attestation payloads to a real
 
 - Local deterministic demo transactions are implemented in `packages/casper`.
 - Casper contract source is present in `contracts/proofpay-attestation`.
-- The contract builds locally to Wasm with `cargo build --release --target wasm32-unknown-unknown`.
-- A real Casper Testnet deploy hash still needs to be produced before final DoraHacks submission.
+- The contract builds to Casper-compatible Wasm with `npm run contract:build`.
+- The build path uses Rust plus Binaryen `wasm-opt` to remove Casper-incompatible bulk-memory instructions.
+- A real Casper Testnet transaction has executed successfully for the `clean` judge scenario.
 - CLI deployment steps are captured in `docs/casper-cli-runbook.md`.
 - `casper-client 5.0.1` and `cargo-casper 3.0.0` are installed locally.
 - Current verified `casper-client` node address: `https://node.testnet.casper.network`.
-- The generated CLI Testnet account does not exist on-chain until funded by faucet.
 
 ## Local Testnet Account
 
@@ -23,84 +23,128 @@ public_key_hex: 01275bb5c5b24490df3996c0ce68a1b757b27567499c8f81b9df13e29835db05
 account_hash: account-hash-537db3bdbf915dfcfdf3568411087c4535c1b6cc15aa3e207f52d27de1cebd3d
 ```
 
-Latest query before faucet funding:
+Current account state:
 
 ```text
-state_get_account_info: No such account
+named_key: proofpay_attestation_ms-delivery-acceptance
+named_key_uref: uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007
+balance_after_successful_deploy: 62068777606 motes
 ```
 
-Faucet URL:
+## Funding Path
+
+The user's CSPR.live Testnet wallet funded the local CLI deploy account.
 
 ```text
-https://testnet.cspr.live/tools/faucet
+source_wallet_public_key: 0202674c1836d2504e6c8ebefe3711c0c19f27a96ac5b43cfcec6a2c9d6a15b2462c
+source_wallet_account_hash: account-hash-6dba48834d42c2872bed07179850264a21c0e8267272bf6979c6fa0690314cf0
+faucet_deploy_hash: dd7b7025903cf40d03cf8224355ccefda5e4934f8fbc9be4a2bd6ebf0f06bd06
+wallet_to_cli_transfer_hash: 4c08848ff32deb0734ed524f7e7efcc35b07fa1c8a743fd2e649772baccc1f6e
+wallet_to_cli_transfer_amount: 100 CSPR
 ```
 
-The faucet requires a connected Casper wallet and reCAPTCHA. For CLI deployment, the funded account must match `CASPER_SECRET_KEY`.
+## Successful Casper Testnet Transaction
 
-## Prerequisites
+```text
+transaction_hash: 94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604
+block_hash: 30d1a199bb13ede3d22d6e96e3b01ef8153f203ca796ed251b3af1d2444da9e8
+block_height: 8282603
+initiator_public_key: 01275bb5c5b24490df3996c0ce68a1b757b27567499c8f81b9df13e29835db054e
+initiator_account_hash: account-hash-537db3bdbf915dfcfdf3568411087c4535c1b6cc15aa3e207f52d27de1cebd3d
+execution_error: null
+payment_amount: 30000000000 motes
+execution_consumed: 574963191
+execution_refund: 22068777606
+submitted_at: 2026-06-24T05:54:54.131Z
+```
 
-- Rust toolchain.
-- `wasm32-unknown-unknown` target.
-- Casper CLI or equivalent Casper SDK deploy tooling.
-- Funded Casper Testnet account.
+The transaction added this account named key:
 
-## Build Contract
+```text
+proofpay_attestation_ms-delivery-acceptance:
+  uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007
+```
+
+The URef stores the attestation payload:
+
+```json
+{
+  "milestone_id": "ms-delivery-acceptance",
+  "evidence_hash": "0x96232bd7a6224ade903c20cb89c38cc91e036facebe837475ab41cf26a4556e1",
+  "decision": "approve",
+  "decision_hash": "0x9f691d379eef71639e776e80d1272a464f39848d1c39566d8dfb0c0beb68f74c",
+  "confidence": 94,
+  "risk_score": 12
+}
+```
+
+## Verification Commands
+
+Build the contract and verify it has no bulk-memory operations:
 
 ```bash
 npm run contract:build
+wasm2wat contracts/proofpay-attestation/target/wasm32-unknown-unknown/release/proofpay_attestation.wasm \
+  | rg "memory\\.init|data\\.drop|memory\\.copy|memory\\.fill|table\\.init|elem\\.drop|table\\.copy"
 ```
 
-Expected Wasm:
+Query the transaction:
 
-```text
-target/wasm32-unknown-unknown/release/proofpay_attestation.wasm
+```bash
+casper-client get-transaction \
+  --node-address https://node.testnet.casper.network \
+  94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604
 ```
 
-## Deploy Arguments
+Query the stored attestation:
 
-Use values produced by the dashboard proof panel:
-
-```text
-milestone_id
-evidence_hash
-decision
-decision_hash
-confidence
-risk_score
+```bash
+casper-client query-global-state \
+  --node-address https://node.testnet.casper.network \
+  --key uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007
 ```
 
-## Casper Testnet Command Shape
-
-Use Casper CLI or SDK tooling to send the Wasm deploy with named args. `docs/casper-cli-runbook.md` documents the `casper-client` command shapes. The exact command depends on the installed Casper tooling version, but the deploy must include:
+Expected stored value:
 
 ```text
-chain-name: casper-test
-payment amount: sufficient testnet CSPR
-session wasm: proofpay_attestation.wasm
-named args:
-  milestone_id: "ms-delivery-acceptance"
-  evidence_hash: "0x..."
-  decision: "approve"
-  decision_hash: "0x..."
-  confidence: 94
-  risk_score: 12
+CLValue String:
+{"milestone_id":"ms-delivery-acceptance","evidence_hash":"0x96232bd7a6224ade903c20cb89c38cc91e036facebe837475ab41cf26a4556e1","decision":"approve","decision_hash":"0x9f691d379eef71639e776e80d1272a464f39848d1c39566d8dfb0c0beb68f74c","confidence":94,"risk_score":12}
 ```
 
-## Record After Deployment
+## Failed Attempt And Fix
 
-After a successful deploy, update this document with:
+An earlier transaction reached Testnet but failed execution:
 
 ```text
-Deploy hash:
-Account:
-Contract package/hash or named key:
-Explorer URL:
-Scenario:
-Evidence hash:
-Decision hash:
-Timestamp:
+transaction_hash: ced413b02d54522bdd23e582f3c85c81841e53e7b4042f1439188911b94f87bf
+block_height: 8282571
+error: Wasm preprocessing error: Deserialization error: Bulk memory operations are not supported
+```
+
+Root cause:
+
+- Rust's `wasm32-unknown-unknown` build still emitted `memory.copy`.
+- Casper Testnet rejected the Wasm during preprocessing.
+
+Fix:
+
+- Build with `RUSTFLAGS="-C target-feature=-bulk-memory"`.
+- Post-process with Binaryen:
+
+```bash
+wasm-opt proofpay_attestation.wasm \
+  --llvm-memory-copy-fill-lowering \
+  --strip-target-features \
+  -Oz \
+  -o proofpay_attestation.wasm
 ```
 
 ## DoraHacks Gate
 
-The project is not fully submission-ready until this document contains a real Casper Testnet deploy hash, or clearly documents that the only remaining blocker is external testnet account funding or tooling access.
+The Casper Testnet transaction-producing component requirement is satisfied by:
+
+```text
+transaction_hash: 94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604
+named_key: proofpay_attestation_ms-delivery-acceptance
+stored_uref: uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007
+```

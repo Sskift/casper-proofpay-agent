@@ -3,6 +3,7 @@ export { createCasperDeployPlan } from "./deploy-plan";
 export { createAttestationPayload } from "./payload";
 export type {
   CasperDeployPlan,
+  CasperDeploymentRecord,
   CasperAttestationPayload,
   CasperReadinessItem,
   CasperReadinessStatus,

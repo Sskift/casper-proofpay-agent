@@ -10,7 +10,7 @@ Use this checklist before manually submitting ProofPay Agent through the Casper 
 - Tag suggestions: `Agentic AI`, `DeFi`, `Real-World Assets`, `Casper Network`, `Web3`, `Rust`
 - Track: `Casper Innovation Track`
 - Public project summary: use the copy below.
-- Casper Testnet deploy hash: add after `docs/casper-testnet.md` is completed.
+- Casper Testnet transaction hash: `94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604`
 - Live demo link: optional; local demo runs from this repository.
 - Team members: fill manually in DoraHacks.
 
@@ -51,23 +51,33 @@ ProofPay Agent lets autonomous agents release real-world payments only when evid
 - `npm run contract:deploy:testnet` returns a real Casper transaction hash.
 - Dashboard proof panel shows readiness, faucet public key, post-funding commands, and Casper session args.
 - Demo video URL is public.
-- Casper Testnet deploy hash is documented in `docs/casper-testnet.md`, or the faucet/account funding blocker is clearly documented.
+- Casper Testnet transaction hash and stored attestation are documented in `docs/casper-testnet.md`.
 - README links to contract, testnet docs, and demo script.
 - The user explicitly confirms action-time submission on DoraHacks.
 
-## Current External Blocker
+## Current On-chain Evidence
 
-The local Casper CLI path is ready, but the generated Testnet account is not funded yet:
+The clean judge scenario has a successful Casper Testnet transaction:
 
 ```text
+transaction_hash: 94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604
+block_height: 8282603
 public_key_hex: 01275bb5c5b24490df3996c0ce68a1b757b27567499c8f81b9df13e29835db054e
 account_hash: account-hash-537db3bdbf915dfcfdf3568411087c4535c1b6cc15aa3e207f52d27de1cebd3d
-status: state_get_account_info -> No such account
+named_key: proofpay_attestation_ms-delivery-acceptance
+stored_uref: uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007
+execution_error: null
 ```
 
-Fund the matching account through the CSPR.live Testnet faucet, then run:
+The stored attestation payload is:
 
-```bash
-npm run casper:check
-PROOFPAY_SCENARIO="clean" npm run contract:deploy:testnet
+```json
+{
+  "milestone_id": "ms-delivery-acceptance",
+  "evidence_hash": "0x96232bd7a6224ade903c20cb89c38cc91e036facebe837475ab41cf26a4556e1",
+  "decision": "approve",
+  "decision_hash": "0x9f691d379eef71639e776e80d1272a464f39848d1c39566d8dfb0c0beb68f74c",
+  "confidence": 94,
+  "risk_score": 12
+}
 ```

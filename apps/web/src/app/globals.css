@@ -391,6 +391,12 @@ dd {
   margin-bottom: 10px;
 }
 
+.eligibility-warning.success {
+  background: #edf8f2;
+  border-color: #b7dec7;
+  color: var(--green);
+}
+
 .readiness-list {
   display: grid;
   gap: 7px;

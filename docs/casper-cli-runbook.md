@@ -1,6 +1,6 @@
 # Casper CLI Runbook
 
-Last reviewed: 2026-06-23
+Last reviewed: 2026-06-24
 
 This runbook captures the command-line path for turning ProofPay Agent from a local prototype into a Casper Testnet submission artifact.
 
@@ -19,6 +19,7 @@ DoraHacks submission is still a website flow. I did not find an official DoraHac
 ```bash
 cargo install casper-client
 cargo install cargo-casper
+brew install binaryen wabt
 ```
 
 Optional if migrating the contract to Odra:
@@ -40,6 +41,8 @@ Current local checkpoint:
 ```text
 casper-client 5.0.1
 cargo-casper 3.0.0
+wasm-opt available through Binaryen
+wasm2wat available through WABT
 ```
 
 Use this Testnet node address with `casper-client`:
@@ -57,6 +60,21 @@ From the repository root:
 ```bash
 npm run contract:build
 ```
+
+The build script compiles the Rust contract with bulk memory disabled, then lowers any remaining `memory.copy` / `memory.fill` instructions with Binaryen:
+
+```bash
+RUSTFLAGS="-C target-feature=-bulk-memory"
+wasm-opt --llvm-memory-copy-fill-lowering --strip-target-features -Oz
+```
+
+Install Binaryen before building if `wasm-opt` is unavailable:
+
+```bash
+brew install binaryen
+```
+
+Casper Testnet currently rejects Wasm modules containing bulk-memory operations. If WABT's `wasm2wat` is installed, the build script also checks the final artifact and fails when these operations remain.
 
 Expected Wasm:
 
@@ -107,7 +125,7 @@ The script prints both command families currently visible in Casper docs:
 
 Run `casper-client put-deploy --show-arg-examples` and `casper-client put-transaction session --show-simple-arg-examples` after installing the CLI to confirm the exact argument grammar supported by the installed version.
 
-## Deploy After Funding
+## Deploy Or Reproduce
 
 Once `npm run casper:check` shows the funded account exists, deploy the contract:
 
@@ -124,6 +142,7 @@ casper-client put-transaction session \
   --secret-key "$CASPER_SECRET_KEY" \
   --wasm-path "contracts/proofpay-attestation/target/wasm32-unknown-unknown/release/proofpay_attestation.wasm" \
   --payment-amount "$CASPER_PAYMENT_AMOUNT" \
+  --standard-payment true \
   --gas-price-tolerance "1" \
   --install-upgrade \
   --session-entry-point call \
@@ -137,25 +156,28 @@ casper-client put-transaction session \
 
 ## After Sending The Transaction
 
-Record the deploy hash immediately:
+Record the transaction hash immediately:
 
 ```bash
-casper-client get-deploy \
+casper-client get-transaction \
   --node-address "$CASPER_NODE_ADDRESS" \
-  "[DEPLOY_HASH]"
+  "[TRANSACTION_HASH]"
 ```
 
-Then update `docs/casper-testnet.md` with:
+Then query the stored attestation URef from the account named key:
+
+```bash
+casper-client query-global-state \
+  --node-address "$CASPER_NODE_ADDRESS" \
+  --key "[STORED_UREF]"
+```
+
+The clean scenario has already been executed on Casper Testnet:
 
 ```text
-Deploy hash:
-Account:
-Contract package/hash or named key:
-Explorer URL:
-Scenario:
-Evidence hash:
-Decision hash:
-Timestamp:
+transaction_hash: 94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604
+named_key: proofpay_attestation_ms-delivery-acceptance
+stored_uref: uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007
 ```
 
 ## Why This Matters

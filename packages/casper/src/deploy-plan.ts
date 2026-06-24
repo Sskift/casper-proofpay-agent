@@ -1,4 +1,9 @@
-import type { CasperAttestationPayload, CasperDeployPlan, CreateCasperDeployPlanInput } from "./types";
+import type {
+  CasperAttestationPayload,
+  CasperDeployPlan,
+  CasperDeploymentRecord,
+  CreateCasperDeployPlanInput
+} from "./types";
 
 const DEFAULT_NODE_ADDRESS = "https://node.testnet.casper.network";
 const DEFAULT_CHAIN_NAME = "casper-test";
@@ -10,6 +15,24 @@ const DEFAULT_SECRET_KEY_PATH = "$HOME/.casper/proofpay-testnet-20260623/secret_
 const DEFAULT_PUBLIC_KEY_HEX = "01275bb5c5b24490df3996c0ce68a1b757b27567499c8f81b9df13e29835db054e";
 const DEFAULT_ACCOUNT_HASH = "account-hash-537db3bdbf915dfcfdf3568411087c4535c1b6cc15aa3e207f52d27de1cebd3d";
 const DEFAULT_FAUCET_URL = "https://testnet.cspr.live/tools/faucet";
+const RECORDED_TESTNET_DEPLOYMENTS: CasperDeploymentRecord[] = [
+  {
+    transactionHash: "94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604",
+    blockHash: "30d1a199bb13ede3d22d6e96e3b01ef8153f203ca796ed251b3af1d2444da9e8",
+    blockHeight: 8282603,
+    publicKeyHex: DEFAULT_PUBLIC_KEY_HEX,
+    accountHash: DEFAULT_ACCOUNT_HASH,
+    namedKey: "proofpay_attestation_ms-delivery-acceptance",
+    uref: "uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007",
+    milestoneId: "ms-delivery-acceptance",
+    evidenceHash: "0x96232bd7a6224ade903c20cb89c38cc91e036facebe837475ab41cf26a4556e1",
+    decision: "approve",
+    decisionHash: "0x9f691d379eef71639e776e80d1272a464f39848d1c39566d8dfb0c0beb68f74c",
+    confidence: 94,
+    riskScore: 12,
+    submittedAt: "2026-06-24T05:54:54.131Z"
+  }
+];
 
 function sessionArgsFor(payload: CasperAttestationPayload): string[] {
   return [
@@ -38,6 +61,7 @@ function createCliCommand(input: {
     `  --secret-key "${input.secretKeyPath}" \\`,
     `  --wasm-path "${input.wasmPath}" \\`,
     `  --payment-amount "${input.paymentAmount}" \\`,
+    "  --standard-payment true \\",
     `  --gas-price-tolerance "${input.gasPriceTolerance}" \\`,
     "  --install-upgrade \\",
     "  --session-entry-point call \\",
@@ -60,9 +84,16 @@ export function createCasperDeployPlan({
   publicKeyHex = DEFAULT_PUBLIC_KEY_HEX,
   accountHash = DEFAULT_ACCOUNT_HASH,
   faucetUrl = DEFAULT_FAUCET_URL,
-  testnetAccountFunded = false
+  testnetAccountFunded = true
 }: CreateCasperDeployPlanInput): CasperDeployPlan {
   const sessionArgs = sessionArgsFor(payload);
+  const deployment =
+    RECORDED_TESTNET_DEPLOYMENTS.find(
+      (record) =>
+        record.decisionHash === payload.decisionHash &&
+        record.evidenceHash === payload.evidenceHash &&
+        record.milestoneId === payload.milestoneId
+    ) ?? null;
 
   return {
     network: "Casper Testnet",
@@ -97,12 +128,19 @@ export function createCasperDeployPlan({
           : "Fund this public key through CSPR.live faucet"
       },
       {
+        id: "testnet-deploy",
+        label: "Casper Testnet attestation",
+        status: deployment ? "ready" : "manual",
+        detail: deployment ? `Executed in block ${deployment.blockHeight}` : "Run the deploy script for this scenario"
+      },
+      {
         id: "buidl",
         label: "DoraHacks BUIDL",
         status: "manual",
         detail: "Submit repo, demo video, and Testnet hash in browser"
       }
     ],
+    deployment,
     sessionArgs,
     cliCommand: createCliCommand({
       nodeAddress,

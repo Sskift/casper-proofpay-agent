@@ -56,11 +56,17 @@ describe("ProofPay Casper adapter", () => {
     expect(plan.publicKeyHex).toBe("01275bb5c5b24490df3996c0ce68a1b757b27567499c8f81b9df13e29835db054e");
     expect(plan.accountHash).toBe("account-hash-537db3bdbf915dfcfdf3568411087c4535c1b6cc15aa3e207f52d27de1cebd3d");
     expect(plan.faucetUrl).toBe("https://testnet.cspr.live/tools/faucet");
-    expect(plan.readiness.find((item) => item.id === "testnet-account")?.status).toBe("blocked");
+    expect(plan.readiness.find((item) => item.id === "testnet-account")?.status).toBe("ready");
+    expect(plan.readiness.find((item) => item.id === "testnet-deploy")?.status).toBe("ready");
+    expect(plan.deployment?.transactionHash).toBe(
+      "94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604"
+    );
+    expect(plan.deployment?.namedKey).toBe("proofpay_attestation_ms-delivery-acceptance");
     expect(plan.sessionArgs).toContain("milestone_id:string='ms-delivery-acceptance'");
     expect(plan.sessionArgs).toContain(`evidence_hash:string='${payload.evidenceHash}'`);
     expect(plan.cliCommand).toContain("casper-client put-transaction session");
     expect(plan.cliCommand).toContain("--wasm-path \"contracts/proofpay-attestation/target/wasm32-unknown-unknown/release/proofpay_attestation.wasm\"");
+    expect(plan.cliCommand).toContain("--standard-payment true");
     expect(plan.cliCommand).toContain("--install-upgrade");
     expect(plan.postFundingCommands).toEqual([
       "npm run casper:check",
