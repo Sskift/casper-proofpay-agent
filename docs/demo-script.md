@@ -8,14 +8,19 @@ ProofPay Agent is an autonomous milestone escrow agent for real-world assets on 
 
 ## Scene 1: Dashboard
 
-Show the dashboard and the buildathon hard gates:
+Show the dashboard cockpit and the buildathon hard gates:
 
 - Open-source repository.
 - Demo video.
 - Casper Testnet transaction requirement.
 - DoraHacks Submit BUIDL flow.
 
-Point out the escrow amount, buyer, supplier, asset type, and milestone.
+Point out the HeroUI operator layout:
+
+- Scenario switcher.
+- Release, risk, confidence, evidence, and Casper anchor metrics.
+- Action queue for human reviewers.
+- Deal strip with escrow amount, buyer, supplier, asset type, and milestone context.
 
 ## Scene 2: Clean Release
 
@@ -28,6 +33,8 @@ Explain:
 - The evidence bundle hash and decision hash are generated.
 - The proof panel shows the local demo transaction, the successful Casper Testnet transaction hash, block, named key, and stored URef.
 - The recorded Testnet transaction proves the exact clean-scenario attestation was written on-chain.
+- The charts show risk progression, cold-chain telemetry, escrow cashflow, and evidence coverage.
+- The evidence room tabs show document status, extracted claims, and the attestation timeline.
 
 ## Scene 3: Hold For Finance
 

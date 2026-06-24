@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   assessEvidence,
+  createOperationsDashboard,
   createEvidenceHash,
   seededDeals,
   seededEvidenceBundles
@@ -44,5 +45,44 @@ describe("ProofPay evidence agent", () => {
   it("ships the seeded RWA deal expected by the judge-mode demo", () => {
     expect(seededDeals[0]?.assetType).toBe("Temperature-controlled vaccine shipment");
     expect(seededDeals[0]?.milestones[0]?.amount).toBe(42000);
+  });
+
+  it("builds an operations dashboard model with cockpit metrics and chart series", () => {
+    const deal = seededDeals[0];
+    const milestone = deal.milestones[0];
+    const bundle = seededEvidenceBundles.clean;
+    const assessment = assessEvidence(bundle);
+    const evidenceHash = createEvidenceHash(bundle);
+
+    const model = createOperationsDashboard({ deal, milestone, bundle, assessment, evidenceHash });
+
+    expect(model.cockpitMetrics.map((metric) => metric.id)).toEqual([
+      "release",
+      "risk",
+      "confidence",
+      "evidence",
+      "chain"
+    ]);
+    expect(model.cockpitMetrics.find((metric) => metric.id === "release")?.value).toBe("USD 42,000");
+    expect(model.evidenceMatrix).toHaveLength(bundle.documents.length);
+    expect(model.evidenceMatrix.every((row) => row.status === "matched")).toBe(true);
+    expect(model.chartSeries.temperature).toHaveLength(8);
+    expect(model.chartSeries.risk).toHaveLength(3);
+    expect(model.actionQueue[0]?.status).toBe("ready");
+  });
+
+  it("surfaces finance review actions and failed evidence rows for amount mismatch", () => {
+    const deal = seededDeals[0];
+    const milestone = deal.milestones[0];
+    const bundle = seededEvidenceBundles.amountMismatch;
+    const assessment = assessEvidence(bundle);
+    const evidenceHash = createEvidenceHash(bundle);
+
+    const model = createOperationsDashboard({ deal, milestone, bundle, assessment, evidenceHash });
+
+    expect(model.cockpitMetrics.find((metric) => metric.id === "release")?.tone).toBe("warning");
+    expect(model.evidenceMatrix.find((row) => row.documentType === "invoice")?.status).toBe("failed");
+    expect(model.actionQueue.map((item) => item.title).join(" ")).toContain("finance");
+    expect(model.chartSeries.risk.at(-1)?.score).toBe(assessment.riskScore);
   });
 });

@@ -26,7 +26,19 @@ ProofPay simulates a buyer/supplier RWA escrow workflow:
 3. The agent extracts claims, checks consistency, scores risk, and chooses `approve`, `hold`, or `reject`.
 4. The app creates an evidence hash and decision hash.
 5. The Casper adapter creates an attestation payload for the on-chain contract.
-6. The dashboard shows the audit trail, local demo transaction hash, recorded Casper Testnet transaction, named key, stored URef, and copy-ready deploy commands.
+6. The dashboard shows the audit trail, local demo transaction hash, recorded Casper Testnet transaction, named key, stored URef, charts, evidence drilldowns, and copy-ready deploy commands.
+
+## Dashboard Cockpit
+
+The web app has been refactored into a dense operator dashboard inspired by the local `money-run` cockpit:
+
+- HeroUI cards, chips, tables, tabs, and link controls.
+- Recharts for cold-chain telemetry, escrow cashflow, and evidence coverage.
+- Lightweight Charts for the agent risk tape.
+- Scenario switcher for `approve`, `hold`, and `reject` judge flows.
+- Evidence room with document, claim, and timeline tabs.
+- Action queue that turns agent findings into reviewer next steps.
+- Casper attestation panel with transaction hash, named key, stored URef, deploy command, and readiness table.
 
 ## Repository Layout
 
