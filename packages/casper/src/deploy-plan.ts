@@ -2,6 +2,7 @@ import type {
   CasperAttestationPayload,
   CasperDeployPlan,
   CasperDeploymentRecord,
+  CasperVerificationSummary,
   CreateCasperDeployPlanInput
 } from "./types";
 
@@ -152,5 +153,44 @@ export function createCasperDeployPlan({
       sessionArgs
     }),
     postFundingCommands: ["npm run casper:check", `PROOFPAY_SCENARIO="${scenario}" npm run contract:deploy:testnet`]
+  };
+}
+
+export function createCasperVerificationSummary(plan: CasperDeployPlan): CasperVerificationSummary {
+  if (plan.deployment) {
+    return {
+      state: "recorded",
+      label: "Verified on Casper Testnet",
+      detail: `Transaction executed in block ${plan.deployment.blockHeight} with stored attestation URef.`,
+      network: plan.network,
+      primaryHash: plan.deployment.transactionHash,
+      checkedAt: plan.deployment.submittedAt
+    };
+  }
+
+  const blockedGate = plan.readiness.find((item) => item.status === "blocked");
+
+  if (blockedGate) {
+    return {
+      state: "blocked",
+      label: blockedGate.label,
+      detail: blockedGate.detail,
+      network: plan.network,
+      primaryHash: plan.accountHash,
+      checkedAt: new Date(0).toISOString()
+    };
+  }
+
+  const decisionHash = plan.sessionArgs
+    .find((arg) => arg.startsWith("decision_hash:string="))
+    ?.match(/'([^']+)'/)?.[1];
+
+  return {
+    state: "pending",
+    label: "Ready for Testnet deploy",
+    detail: "Payload, account, and command are ready; run the scenario deploy to create a matching Testnet attestation.",
+    network: plan.network,
+    primaryHash: decisionHash ?? plan.accountHash,
+    checkedAt: new Date(0).toISOString()
   };
 }

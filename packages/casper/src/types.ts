@@ -74,6 +74,17 @@ export interface CasperDeploymentRecord {
   submittedAt: string;
 }
 
+export type CasperVerificationState = "recorded" | "pending" | "blocked";
+
+export interface CasperVerificationSummary {
+  state: CasperVerificationState;
+  label: string;
+  detail: string;
+  network: CasperDeployPlan["network"];
+  primaryHash: string;
+  checkedAt: string;
+}
+
 export interface CasperDeployPlan {
   network: "Casper Testnet";
   nodeAddress: string;

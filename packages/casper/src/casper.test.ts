@@ -1,7 +1,12 @@
 import { assessEvidence, createEvidenceHash, seededDeals, seededEvidenceBundles } from "@proofpay/agent";
 import { describe, expect, it } from "vitest";
 
-import { createAttestationPayload, createCasperDeployPlan, submitDemoAttestation } from "./index";
+import {
+  createAttestationPayload,
+  createCasperDeployPlan,
+  createCasperVerificationSummary,
+  submitDemoAttestation
+} from "./index";
 
 describe("ProofPay Casper adapter", () => {
   it("creates hashable attestation payloads from agent assessments", () => {
@@ -72,5 +77,40 @@ describe("ProofPay Casper adapter", () => {
       "npm run casper:check",
       "PROOFPAY_SCENARIO=\"clean\" npm run contract:deploy:testnet"
     ]);
+  });
+
+  it("summarizes recorded clean Testnet proof for the dashboard", () => {
+    const milestone = seededDeals[0].milestones[0];
+    const assessment = assessEvidence(seededEvidenceBundles.clean);
+    const evidenceHash = createEvidenceHash(seededEvidenceBundles.clean);
+    const payload = createAttestationPayload({ milestone, evidenceHash, assessment });
+    const plan = createCasperDeployPlan({ payload, scenario: "clean" });
+
+    const summary = createCasperVerificationSummary(plan);
+
+    expect(summary.state).toBe("recorded");
+    expect(summary.label).toBe("Verified on Casper Testnet");
+    expect(summary.primaryHash).toBe(plan.deployment?.transactionHash);
+    expect(summary.network).toBe("Casper Testnet");
+    expect(summary.checkedAt).toBe(plan.deployment?.submittedAt);
+  });
+
+  it("summarizes hold and reject scenarios as pending deployment", () => {
+    const milestone = seededDeals[0].milestones[0];
+
+    for (const scenario of ["amountMismatch", "duplicateInvoice"] as const) {
+      const bundle = seededEvidenceBundles[scenario];
+      const assessment = assessEvidence(bundle);
+      const evidenceHash = createEvidenceHash(bundle);
+      const payload = createAttestationPayload({ milestone, evidenceHash, assessment });
+      const plan = createCasperDeployPlan({ payload, scenario });
+
+      const summary = createCasperVerificationSummary(plan);
+
+      expect(summary.state).toBe("pending");
+      expect(summary.label).toBe("Ready for Testnet deploy");
+      expect(summary.primaryHash).toBe(payload.decisionHash);
+      expect(summary.detail).toContain("matching Testnet attestation");
+    }
   });
 });

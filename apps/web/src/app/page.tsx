@@ -14,6 +14,7 @@ import {
 import {
   createAttestationPayload,
   createCasperDeployPlan,
+  createCasperVerificationSummary,
   submitDemoAttestation,
   type CasperAttestationPayload,
   type CasperDeployPlan,
@@ -27,13 +28,19 @@ import {
   CheckCircle2,
   ClipboardCheck,
   CopyCheck,
+  Database,
   ExternalLink,
+  FileJson,
   FileText,
   GitBranch,
-  PackageCheck,
+  KeyRound,
+  Layers3,
+  ListChecks,
   RadioTower,
+  ReceiptText,
   ScrollText,
   ShieldCheck,
+  Terminal,
   Thermometer,
   TriangleAlert
 } from "lucide-react";
@@ -174,6 +181,16 @@ function MetricCard({ metric }: { metric: OperationsDashboardModel["cockpitMetri
       <div className="metric-sub">{metric.sub}</div>
     </div>
   );
+}
+
+function SectionBadge({
+  children,
+  tone = "accent"
+}: {
+  children: ReactNode;
+  tone?: "accent" | "success" | "warning";
+}) {
+  return <span className={`section-badge section-badge--${tone}`}>{children}</span>;
 }
 
 function SectionHeading({
@@ -542,13 +559,49 @@ function CasperSection({
   payload: CasperAttestationPayload;
 }) {
   const deployment = deployPlan.deployment;
-  const proofFacts = [
+  const verification = createCasperVerificationSummary(deployPlan);
+  const flowSteps = [
+    {
+      label: "Evidence sealed",
+      value: shortHash(payload.evidenceHash),
+      fullValue: payload.evidenceHash,
+      icon: <ClipboardCheck aria-hidden="true" size={17} />,
+      state: "complete"
+    },
+    {
+      label: "Agent decision",
+      value: payload.decision,
+      fullValue: payload.decisionHash,
+      icon: <Bot aria-hidden="true" size={17} />,
+      state: "complete"
+    },
+    {
+      label: "Casper write",
+      value: deployment ? `block ${deployment.blockHeight}` : "pending deploy",
+      fullValue: deployment?.transactionHash ?? deployPlan.cliCommand,
+      icon: <RadioTower aria-hidden="true" size={17} />,
+      state: deployment ? "complete" : "pending"
+    },
+    {
+      label: "Stored proof",
+      value: deployment ? shortHash(deployment.uref, 12, 8) : "URef pending",
+      fullValue: deployment?.uref ?? "Deploy this scenario to create a stored attestation URef.",
+      icon: <Database aria-hidden="true" size={17} />,
+      state: deployment ? "complete" : "pending"
+    }
+  ];
+  const transactionFacts = [
     { label: "Network", value: deployPlan.network, display: deployPlan.network },
-    { label: "Milestone", value: payload.milestoneId, display: payload.milestoneId },
+    { label: "State", value: verification.detail, display: verification.label },
     {
       label: "Testnet tx",
       value: deployment?.transactionHash ?? "not recorded for this scenario",
       display: deployment ? shortHash(deployment.transactionHash, 14, 10) : "pending deploy"
+    },
+    {
+      label: "Block",
+      value: deployment ? `${deployment.blockHeight} / ${deployment.blockHash}` : "pending scenario deploy",
+      display: deployment ? String(deployment.blockHeight) : "pending deploy"
     },
     {
       label: "Named key",
@@ -559,17 +612,15 @@ function CasperSection({
       label: "Stored URef",
       value: deployment?.uref ?? "pending scenario deploy",
       display: deployment ? shortHash(deployment.uref, 18, 12) : "pending deploy"
-    },
-    {
-      label: "Block",
-      value: deployment ? `${deployment.blockHeight} / ${deployment.blockHash}` : "pending scenario deploy",
-      display: deployment ? String(deployment.blockHeight) : "pending deploy"
-    },
-    {
-      label: "Public key",
-      value: deployPlan.publicKeyHex,
-      display: shortHash(deployPlan.publicKeyHex, 14, 10)
     }
+  ];
+  const payloadFacts = [
+    { label: "Milestone", value: payload.milestoneId, display: payload.milestoneId },
+    { label: "Decision", value: payload.decision, display: payload.decision },
+    { label: "Evidence hash", value: payload.evidenceHash, display: shortHash(payload.evidenceHash, 14, 10) },
+    { label: "Decision hash", value: payload.decisionHash, display: shortHash(payload.decisionHash, 14, 10) },
+    { label: "Agent", value: payload.agentId, display: payload.agentId },
+    { label: "Public key", value: deployPlan.publicKeyHex, display: shortHash(deployPlan.publicKeyHex, 14, 10) }
   ];
 
   return (
@@ -578,38 +629,90 @@ function CasperSection({
       eyebrow="On-chain proof"
       step="04"
       title="Casper attestation"
-      sub={deployment ? "Clean scenario is anchored on Casper Testnet." : "This scenario can be reproduced with the command below."}
-      action={<Chip color={deployment ? "success" : "warning"} variant="soft">{deployment ? "on-chain" : "manual deploy"}</Chip>}
+      sub={deployment ? "Clean scenario is anchored on Casper Testnet." : "This scenario is deploy-ready and waiting for a matching Testnet attestation."}
+      action={<SectionBadge tone={deployment ? "success" : "warning"}>{deployment ? "on-chain" : "deploy-ready"}</SectionBadge>}
     >
       <div className="proof-workbench">
-        <div className="proof-main">
-          <div className={deployment ? "proof-banner success" : "proof-banner warning"}>
-            {deployment ? <CheckCircle2 aria-hidden="true" size={18} /> : <TriangleAlert aria-hidden="true" size={18} />}
-            <p>
-              {deployment
-                ? "Casper Testnet transaction executed with error_message null and stored attestation URef."
-                : "Local demo transaction exists; deploy this scenario to add a matching Testnet attestation."}
-            </p>
+        <div className={`proof-status proof-status--${verification.state}`}>
+          <div className="proof-status__icon">
+            {verification.state === "recorded" ? (
+              <CheckCircle2 aria-hidden="true" size={22} />
+            ) : (
+              <TriangleAlert aria-hidden="true" size={22} />
+            )}
           </div>
-          <div className="proof-summary-grid">
-            {proofFacts.map((fact) => (
-              <div className="proof-stat-card" key={fact.label}>
-                <span>{fact.label}</span>
-                <code title={fact.value}>{fact.display}</code>
-              </div>
-            ))}
+          <div>
+            <span>{verification.network}</span>
+            <strong>{verification.label}</strong>
+            <p>{verification.detail}</p>
           </div>
+          <code title={verification.primaryHash}>{shortHash(verification.primaryHash, 14, 10)}</code>
         </div>
-        <div className="command-panel">
-          <h3>Deploy command</h3>
-          <pre><code>{deployPlan.cliCommand}</code></pre>
-          <div className="session-args">
-            {deployPlan.sessionArgs.map((arg) => (
-              <code key={arg}>{arg}</code>
-            ))}
-          </div>
+
+        <div className="proof-flow" aria-label="Casper verification path">
+          {flowSteps.map((step, index) => (
+            <div className={`proof-flow__node proof-flow__node--${step.state}`} key={step.label}>
+              <div className="proof-flow__icon">{step.icon}</div>
+              <div>
+                <span>{step.label}</span>
+                <code title={step.fullValue}>{step.value}</code>
+              </div>
+              {index < flowSteps.length - 1 ? <i aria-hidden="true" /> : null}
+            </div>
+          ))}
+        </div>
+
+        <div className="proof-tabs">
+          <Tabs defaultSelectedKey="transaction" variant="primary">
+            <Tabs.List aria-label="Casper proof detail tabs">
+              <Tabs.Tab id="transaction">
+                <ReceiptText aria-hidden="true" size={15} />
+                Transaction
+              </Tabs.Tab>
+              <Tabs.Tab id="payload">
+                <KeyRound aria-hidden="true" size={15} />
+                Payload
+              </Tabs.Tab>
+              <Tabs.Tab id="command">
+                <Terminal aria-hidden="true" size={15} />
+                Command
+              </Tabs.Tab>
+            </Tabs.List>
+            <Tabs.Panel id="transaction">
+              <div className="proof-detail-grid">
+                {transactionFacts.map((fact) => (
+                  <div className="proof-stat-card" key={fact.label}>
+                    <span>{fact.label}</span>
+                    <code title={fact.value}>{fact.display}</code>
+                  </div>
+                ))}
+              </div>
+            </Tabs.Panel>
+            <Tabs.Panel id="payload">
+              <div className="proof-detail-grid">
+                {payloadFacts.map((fact) => (
+                  <div className="proof-stat-card" key={fact.label}>
+                    <span>{fact.label}</span>
+                    <code title={fact.value}>{fact.display}</code>
+                  </div>
+                ))}
+              </div>
+            </Tabs.Panel>
+            <Tabs.Panel id="command">
+              <div className="command-panel">
+                <h3>{deployment ? "Reproduce deploy" : "Deploy this scenario"}</h3>
+                <pre><code>{deployPlan.cliCommand}</code></pre>
+                <div className="session-args">
+                  {deployPlan.sessionArgs.map((arg) => (
+                    <code key={arg}>{arg}</code>
+                  ))}
+                </div>
+              </div>
+            </Tabs.Panel>
+          </Tabs>
         </div>
       </div>
+
       <div className="readiness-grid" aria-label="Submission readiness">
         {deployPlan.readiness.map((item) => (
           <article className={`readiness-card readiness-card--${item.status}`} key={item.id}>
@@ -627,13 +730,44 @@ function CasperSection({
 }
 
 function DossierSection({ dossier }: { dossier: AuditDossier }) {
+  const traceStatuses: Array<AuditDossier["trace"][number]["status"]> = ["passed", "warning", "failed", "pending"];
+  const traceCounts = traceStatuses.map((status) => ({
+    status,
+    count: dossier.trace.filter((step) => step.status === status).length
+  }));
+  const passedTraceCount = traceCounts.find((item) => item.status === "passed")?.count ?? 0;
+  const onChainState = dossier.verification.casperTransactionHash ? "recorded" : "pending";
   const verificationFacts = [
-    { label: "Evidence hash", value: dossier.verification.evidenceHash },
-    { label: "Decision hash", value: dossier.verification.decisionHash },
-    { label: "Local tx", value: dossier.verification.localTransactionHash ?? "pending local transaction" },
-    { label: "Network", value: dossier.verification.network },
-    { label: "Casper tx", value: dossier.verification.casperTransactionHash ?? "pending scenario deploy" },
-    { label: "Stored URef", value: dossier.verification.storedURef ?? "pending scenario deploy" }
+    {
+      label: "Evidence hash",
+      value: dossier.verification.evidenceHash,
+      display: shortHash(dossier.verification.evidenceHash, 14, 10)
+    },
+    {
+      label: "Decision hash",
+      value: dossier.verification.decisionHash,
+      display: shortHash(String(dossier.verification.decisionHash), 14, 10)
+    },
+    {
+      label: "Local tx",
+      value: dossier.verification.localTransactionHash ?? "pending local transaction",
+      display: dossier.verification.localTransactionHash
+        ? shortHash(dossier.verification.localTransactionHash, 14, 10)
+        : "pending local tx"
+    },
+    { label: "Network", value: dossier.verification.network, display: dossier.verification.network },
+    {
+      label: "Casper tx",
+      value: dossier.verification.casperTransactionHash ?? "pending scenario deploy",
+      display: dossier.verification.casperTransactionHash
+        ? shortHash(dossier.verification.casperTransactionHash, 14, 10)
+        : "pending deploy"
+    },
+    {
+      label: "Stored URef",
+      value: dossier.verification.storedURef ?? "pending scenario deploy",
+      display: dossier.verification.storedURef ? shortHash(dossier.verification.storedURef, 18, 12) : "pending deploy"
+    }
   ];
   const dossierJson = JSON.stringify(dossier, null, 2);
 
@@ -644,7 +778,7 @@ function DossierSection({ dossier }: { dossier: AuditDossier }) {
       step="05"
       title="Audit dossier"
       sub="One portable package for the decision trace, hashes, Casper proof facts, and reproduction checklist."
-      action={<PackageCheck aria-hidden="true" size={20} />}
+      action={<SectionBadge>audit console</SectionBadge>}
     >
       <div className="dossier-grid">
         <div className="dossier-main">
@@ -660,10 +794,19 @@ function DossierSection({ dossier }: { dossier: AuditDossier }) {
               <p>{dossier.confidence}% confidence · risk {dossier.riskScore}/100</p>
             </div>
             <div>
-              <span>Release amount</span>
-              <strong>{dossier.releaseAmount}</strong>
-              <p>{dossier.scenario}</p>
+              <span>Trace passed</span>
+              <strong>{passedTraceCount}/{dossier.trace.length}</strong>
+              <p>{onChainState === "recorded" ? "Casper proof recorded" : "Scenario deploy pending"}</p>
             </div>
+          </div>
+
+          <div className="dossier-meter" aria-label="Audit trace status distribution">
+            {traceCounts.map((item) => (
+              <div className={`dossier-meter__item dossier-meter__item--${item.status}`} key={item.status}>
+                <span>{item.status}</span>
+                <strong>{item.count}</strong>
+              </div>
+            ))}
           </div>
 
           <div className="trace-grid" aria-label="Audit reasoning trace">
@@ -697,36 +840,56 @@ function DossierSection({ dossier }: { dossier: AuditDossier }) {
           </div>
         </div>
 
-        <aside className="dossier-side" aria-label="Portable audit package">
-          <div className="verification-panel">
-            <div className="mini-title">Verification chain</div>
-            {verificationFacts.map((fact) => (
-              <div className="verification-row" key={fact.label}>
-                <span>{fact.label}</span>
-                <code title={fact.value}>{fact.value}</code>
+        <aside className="dossier-side dossier-tabs" aria-label="Portable audit package">
+          <Tabs defaultSelectedKey="verification" variant="primary">
+            <Tabs.List aria-label="Audit package detail tabs">
+              <Tabs.Tab id="verification">
+                <Layers3 aria-hidden="true" size={15} />
+                Verification
+              </Tabs.Tab>
+              <Tabs.Tab id="checklist">
+                <ListChecks aria-hidden="true" size={15} />
+                Checklist
+              </Tabs.Tab>
+              <Tabs.Tab id="json">
+                <FileJson aria-hidden="true" size={15} />
+                JSON
+              </Tabs.Tab>
+            </Tabs.List>
+            <Tabs.Panel id="verification">
+              <div className="verification-panel">
+                <div className="mini-title">Verification chain</div>
+                {verificationFacts.map((fact) => (
+                  <div className="verification-row" key={fact.label}>
+                    <span>{fact.label}</span>
+                    <code title={fact.value}>{fact.display}</code>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-
-          <div className="checklist-panel">
-            <div className="mini-title">Reviewer checklist</div>
-            <ol>
-              {dossier.reviewChecklist.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ol>
-          </div>
-
-          <div className="dossier-json">
-            <div className="json-head">
-              <div>
-                <span>Portable JSON</span>
-                <strong>Copy-ready audit package</strong>
+            </Tabs.Panel>
+            <Tabs.Panel id="checklist">
+              <div className="checklist-panel">
+                <div className="mini-title">Reviewer checklist</div>
+                <ol>
+                  {dossier.reviewChecklist.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ol>
               </div>
-              <CopyCheck aria-hidden="true" size={18} />
-            </div>
-            <pre><code>{dossierJson}</code></pre>
-          </div>
+            </Tabs.Panel>
+            <Tabs.Panel id="json">
+              <div className="dossier-json">
+                <div className="json-head">
+                  <div>
+                    <span>Portable JSON</span>
+                    <strong>Copy-ready audit package</strong>
+                  </div>
+                  <CopyCheck aria-hidden="true" size={18} />
+                </div>
+                <pre><code>{dossierJson}</code></pre>
+              </div>
+            </Tabs.Panel>
+          </Tabs>
         </aside>
       </div>
     </ShellCard>

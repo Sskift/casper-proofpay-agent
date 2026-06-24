@@ -1,5 +1,5 @@
 export { submitDemoAttestation } from "./demo-adapter";
-export { createCasperDeployPlan } from "./deploy-plan";
+export { createCasperDeployPlan, createCasperVerificationSummary } from "./deploy-plan";
 export { createAttestationPayload } from "./payload";
 export type {
   CasperDeployPlan,
@@ -7,6 +7,8 @@ export type {
   CasperAttestationPayload,
   CasperReadinessItem,
   CasperReadinessStatus,
+  CasperVerificationState,
+  CasperVerificationSummary,
   CreateAttestationPayloadInput,
   CreateCasperDeployPlanInput,
   DemoCasperTransaction

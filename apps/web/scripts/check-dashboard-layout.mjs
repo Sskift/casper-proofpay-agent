@@ -24,9 +24,13 @@ const requiredPageContracts = [
   ["dashboardSections", "The dashboard nav should be generated from explicit section metadata, not a flat anchor list."],
   ["evidence-workbench", "Evidence should render as a review workbench instead of a plain table stack."],
   ["proof-workbench", "Casper proof should render as an operational proof workbench."],
+  ["proof-flow", "Casper proof should show a visual transaction path instead of only text rows."],
+  ["proof-tabs", "Casper proof should move transaction and command details behind secondary tabs."],
   ["readiness-grid", "Submission readiness should use visual gate cards instead of another table."],
   ['id="dossier"', "The dashboard needs a Dossier section for judge-facing audit review."],
-  ["Audit dossier", "The Dossier section heading should be visible to reviewers."]
+  ["Audit dossier", "The Dossier section heading should be visible to reviewers."],
+  ["dossier-tabs", "Dossier details should be grouped into secondary tabs instead of a long side stack."],
+  ["dossier-meter", "Dossier should include a compact trace meter for audit status distribution."]
 ];
 
 for (const [needle, message] of requiredPageContracts) {
@@ -41,9 +45,13 @@ const requiredCssContracts = [
   [".evidence-drilldown .tabs__tab", "Evidence drilldown tabs need control styling rather than bare stacked text."],
   [".evidence-workbench", "Evidence workbench layout styles are missing."],
   [".proof-workbench", "Casper proof workbench layout styles are missing."],
+  [".proof-flow", "Casper proof flow styles are missing."],
+  [".proof-tabs", "Casper proof tabs styles are missing."],
   [".readiness-grid", "Readiness gate card layout styles are missing."],
   [".dossier-grid", "Audit dossier layout styles are missing."],
-  [".trace-grid", "Audit trace grid styles are missing."]
+  [".trace-grid", "Audit trace grid styles are missing."],
+  [".dossier-tabs", "Dossier tab layout styles are missing."],
+  [".dossier-meter", "Dossier trace meter styles are missing."]
 ];
 
 for (const [needle, message] of requiredCssContracts) {
