@@ -79,11 +79,19 @@ ProofPay combines:
 
 `https://github.com/Sskift/casper-proofpay-agent`
 
-## Demo Video Outline
+## Demo Video
+
+Public URL for the DoraHacks form:
+
+`https://github.com/Sskift/casper-proofpay-agent/blob/main/docs/demo/proofpay-agent-demo.mp4`
+
+Repository path:
+
+`docs/demo/proofpay-agent-demo.mp4`
 
 Record with `docs/demo-script.md`.
 
-Recommended flow:
+The prepared video follows this flow:
 
 1. Open the dashboard and show the four operator sections.
 2. Select `Clean release` and explain the approve decision.
@@ -99,9 +107,7 @@ ProofPay Agent makes AI payment decisions auditable. It verifies real-world deli
 
 ## Final Submission Fields To Fill Manually
 
-- Public demo video URL
 - Team member profile details
 - Live demo URL, if a hosted deployment is added
 - Project socials, if created before final submission
 - DoraHacks organizer disclaimer confirmation
-

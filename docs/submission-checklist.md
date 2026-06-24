@@ -5,7 +5,7 @@ Use this checklist before manually submitting ProofPay Agent through the Casper 
 ## Required Fields And Assets
 
 - Repository link: `https://github.com/Sskift/casper-proofpay-agent`
-- Demo video: record using `docs/demo-script.md`, upload publicly, then paste the final URL into DoraHacks.
+- Demo video: `https://github.com/Sskift/casper-proofpay-agent/blob/main/docs/demo/proofpay-agent-demo.mp4`
 - Project name: `ProofPay Agent`
 - Tag suggestions: `Agentic AI`, `DeFi`, `Real-World Assets`, `Casper Network`, `Web3`, `Rust`
 - Track: `Casper Innovation Track`
@@ -54,7 +54,7 @@ ProofPay Agent lets autonomous agents release real-world payments only when evid
 - Dashboard sidebar clearly shows the active Cockpit, Charts, Evidence, or Casper section.
 - Dashboard Evidence room shows reviewer summary, documents, claims, and timeline without table stacking.
 - Dashboard Casper proof workbench shows Testnet transaction, named key, stored URef, deploy command, readiness gates, public key, and Casper session args.
-- Demo video URL is public.
+- Demo video URL is public and tracked in `docs/demo/proofpay-agent-demo.mp4`.
 - Casper Testnet transaction hash and stored attestation are documented in `docs/casper-testnet.md`.
 - DoraHacks form copy is ready in `docs/buidl-submission-brief.md`.
 - README links to contract, testnet docs, and demo script.

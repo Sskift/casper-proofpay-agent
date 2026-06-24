@@ -109,9 +109,16 @@ Prepared in this repository:
 - [docs/buidl-submission-brief.md](docs/buidl-submission-brief.md)
 - [docs/submission-checklist.md](docs/submission-checklist.md)
 - [docs/demo-script.md](docs/demo-script.md)
+- [docs/demo/proofpay-agent-demo.mp4](docs/demo/proofpay-agent-demo.mp4)
 - [docs/casper-testnet.md](docs/casper-testnet.md)
 - [docs/casper-cli-runbook.md](docs/casper-cli-runbook.md)
 - [docs/hackathon-constraints.md](docs/hackathon-constraints.md)
+
+Public demo video URL for the DoraHacks BUIDL form:
+
+```text
+https://github.com/Sskift/casper-proofpay-agent/blob/main/docs/demo/proofpay-agent-demo.mp4
+```
 
 Before the real DoraHacks submission, run:
 
@@ -119,7 +126,7 @@ Before the real DoraHacks submission, run:
 npm run submission:check
 ```
 
-Manual submission still requires the user to open DoraHacks, accept the organizer disclaimer, paste the final public demo video URL, and submit the BUIDL form.
+Manual submission still requires opening DoraHacks, accepting the organizer disclaimer, reviewing the generated BUIDL draft, and confirming the final submit action.
 
 ## Scripts
 

@@ -50,6 +50,7 @@ const requiredFiles = [
   "docs/submission-checklist.md",
   "docs/buidl-submission-brief.md",
   "docs/demo-script.md",
+  "docs/demo/proofpay-agent-demo.mp4",
   "docs/casper-testnet.md",
   "docs/casper-cli-runbook.md",
   "contracts/proofpay-attestation/README.md"
@@ -72,7 +73,7 @@ const requiredContentChecks = [
   },
   {
     file: "docs/buidl-submission-brief.md",
-    text: "ProofPay Agent"
+    text: "https://github.com/Sskift/casper-proofpay-agent/blob/main/docs/demo/proofpay-agent-demo.mp4"
   },
   {
     file: "docs/casper-testnet.md",
@@ -100,4 +101,3 @@ if (ignoredStatus.length > 0) {
 }
 
 console.log("Submission clean check passed.");
-
