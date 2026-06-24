@@ -110,7 +110,7 @@ The CSPR.live faucet requires a connected Casper wallet and Google reCAPTCHA. Th
 
 ## Print A Deploy Command
 
-The dashboard proof panel emits the values required by the contract. The same payload can be exported from the repo:
+The dashboard Casper proof workbench emits the values required by the contract. The same payload can be exported from the repo:
 
 ```bash
 npm run attestation:export -- clean

@@ -89,7 +89,7 @@ ProofPay Agent implementation priority:
 1. Odra or Casper Rust smart contract for ProofPay attestations.
 2. Casper Testnet deployment and transaction hash documentation.
 3. Agent assessment payload stored or referenced by the on-chain attestation.
-4. UI proof panel that exposes network, Testnet transaction hash, named key, stored URef, evidence hash, decision hash, and documentation links.
+4. UI Casper proof workbench that exposes network, Testnet transaction hash, named key, stored URef, evidence hash, decision hash, deploy commands, and documentation links.
 5. x402/MCP/CSPR.cloud integration notes, with lightweight implementation only if it does not delay the testnet smart contract path.
 
 ## Definition Of Submission-Ready
@@ -99,6 +99,8 @@ ProofPay Agent is submission-ready only when:
 - `npm run test`, `npm run typecheck`, and `npm run build` pass.
 - The app runs locally and demonstrates approve, hold, and reject flows.
 - The repository has README, demo script, submission checklist, and Casper testnet instructions.
+- The repository has copy-ready DoraHacks BUIDL form text in `docs/buidl-submission-brief.md`.
 - The smart contract package exists and is documented.
 - A Casper Testnet transaction hash is recorded in the repository.
+- `npm run submission:check` passes after the final commit.
 - The BUIDL submission draft has repository link, live/demo link if available, demo video link, and concise project copy.

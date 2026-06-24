@@ -17,6 +17,7 @@ Show the dashboard cockpit and the buildathon hard gates:
 
 Point out the HeroUI operator layout:
 
+- Scroll-tracked left navigation with Cockpit, Charts, Evidence, and Casper sections.
 - Scenario switcher.
 - Release, risk, confidence, evidence, and Casper anchor metrics.
 - Action queue for human reviewers.
@@ -31,10 +32,10 @@ Explain:
 - Invoice, bill of lading, delivery note, temperature log, and vendor registry align.
 - The agent recommends `approve`.
 - The evidence bundle hash and decision hash are generated.
-- The proof panel shows the local demo transaction, the successful Casper Testnet transaction hash, block, named key, and stored URef.
+- The Casper proof workbench shows the local demo transaction, the successful Casper Testnet transaction hash, block, named key, stored URef, public key, deploy command, and readiness gates.
 - The recorded Testnet transaction proves the exact clean-scenario attestation was written on-chain.
 - The charts show risk progression, cold-chain telemetry, escrow cashflow, and evidence coverage.
-- The evidence room tabs show document status, extracted claims, and the attestation timeline.
+- The Evidence room shows the reviewer summary on the left and document, claim, and timeline tabs on the right.
 
 ## Scene 3: Hold For Finance
 

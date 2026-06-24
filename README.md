@@ -33,12 +33,13 @@ ProofPay simulates a buyer/supplier RWA escrow workflow:
 The web app has been refactored into a dense operator dashboard inspired by the local `money-run` cockpit:
 
 - HeroUI cards, chips, tables, tabs, and link controls.
+- Scroll-tracked sidebar navigation for the four judge sections.
 - Recharts for cold-chain telemetry, escrow cashflow, and evidence coverage.
 - Lightweight Charts for the agent risk tape.
 - Scenario switcher for `approve`, `hold`, and `reject` judge flows.
-- Evidence room with document, claim, and timeline tabs.
+- Evidence room with reviewer summary, document cards, claim cards, and timeline tabs.
 - Action queue that turns agent findings into reviewer next steps.
-- Casper attestation panel with transaction hash, named key, stored URef, deploy command, and readiness table.
+- Casper proof workbench with transaction hash, named key, stored URef, deploy command, and readiness gate cards.
 
 ## Repository Layout
 
@@ -105,13 +106,20 @@ DoraHacks itself still appears to be a manual BUIDL website submission flow, not
 
 Prepared in this repository:
 
+- [docs/buidl-submission-brief.md](docs/buidl-submission-brief.md)
 - [docs/submission-checklist.md](docs/submission-checklist.md)
 - [docs/demo-script.md](docs/demo-script.md)
 - [docs/casper-testnet.md](docs/casper-testnet.md)
 - [docs/casper-cli-runbook.md](docs/casper-cli-runbook.md)
 - [docs/hackathon-constraints.md](docs/hackathon-constraints.md)
 
-Manual submission still requires the user to open DoraHacks, accept the organizer disclaimer, and submit the BUIDL form.
+Before the real DoraHacks submission, run:
+
+```bash
+npm run submission:check
+```
+
+Manual submission still requires the user to open DoraHacks, accept the organizer disclaimer, paste the final public demo video URL, and submit the BUIDL form.
 
 ## Scripts
 
@@ -120,6 +128,7 @@ npm run test       # package unit tests
 npm run typecheck  # TypeScript checks
 npm run build      # Next.js production build
 npm run dev        # local dashboard
+npm run submission:check       # final repository cleanliness and submission asset check
 npm run attestation:export     # print a scenario's Casper attestation payload
 npm run casper:check           # verify Casper CLI, Testnet RPC, and local account status
 npm run contract:build         # build Casper Wasm

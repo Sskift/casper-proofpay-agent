@@ -10,6 +10,7 @@ Use this checklist before manually submitting ProofPay Agent through the Casper 
 - Tag suggestions: `Agentic AI`, `DeFi`, `Real-World Assets`, `Casper Network`, `Web3`, `Rust`
 - Track: `Casper Innovation Track`
 - Public project summary: use the copy below.
+- Copy-ready BUIDL fields: `docs/buidl-submission-brief.md`.
 - Casper Testnet transaction hash: `94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604`
 - Live demo link: optional; local demo runs from this repository.
 - Team members: fill manually in DoraHacks.
@@ -47,12 +48,18 @@ ProofPay Agent lets autonomous agents release real-world payments only when evid
 - `npm run test` passes.
 - `npm run typecheck` passes.
 - `npm run build` passes.
+- `npm run submission:check` passes after the final commit.
 - `npm run casper:check` shows a funded Testnet account.
 - `npm run contract:deploy:testnet` returns a real Casper transaction hash.
-- Dashboard proof panel shows readiness, faucet public key, post-funding commands, and Casper session args.
+- Dashboard sidebar clearly shows the active Cockpit, Charts, Evidence, or Casper section.
+- Dashboard Evidence room shows reviewer summary, documents, claims, and timeline without table stacking.
+- Dashboard Casper proof workbench shows Testnet transaction, named key, stored URef, deploy command, readiness gates, public key, and Casper session args.
 - Demo video URL is public.
 - Casper Testnet transaction hash and stored attestation are documented in `docs/casper-testnet.md`.
+- DoraHacks form copy is ready in `docs/buidl-submission-brief.md`.
 - README links to contract, testnet docs, and demo script.
+- Ignored generated artifacts are not uploaded manually: `node_modules/`, `.next/`, `target/`, `*.tsbuildinfo`.
+- Non-ignored temporary files are removed or committed intentionally.
 - The user explicitly confirms action-time submission on DoraHacks.
 
 ## Current On-chain Evidence
