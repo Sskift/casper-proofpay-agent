@@ -198,7 +198,7 @@ function CockpitSection({
 }) {
   const deployment = deployPlan.deployment;
   return (
-    <section className="section cockpit-grid">
+    <section id="cockpit" className="section cockpit-grid">
       <Card className="card cockpit-main" variant="default">
         <Card.Header className="card-header">
           <div>
