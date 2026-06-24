@@ -95,7 +95,7 @@ describe("ProofPay Casper adapter", () => {
     expect(summary.checkedAt).toBe(plan.deployment?.submittedAt);
   });
 
-  it("summarizes hold and reject scenarios as pending deployment", () => {
+  it("summarizes hold and reject scenarios as recorded Testnet deployments", () => {
     const milestone = seededDeals[0].milestones[0];
 
     for (const scenario of ["amountMismatch", "duplicateInvoice"] as const) {
@@ -107,10 +107,10 @@ describe("ProofPay Casper adapter", () => {
 
       const summary = createCasperVerificationSummary(plan);
 
-      expect(summary.state).toBe("pending");
-      expect(summary.label).toBe("Ready for Testnet deploy");
-      expect(summary.primaryHash).toBe(payload.decisionHash);
-      expect(summary.detail).toContain("matching Testnet attestation");
+      expect(summary.state).toBe("recorded");
+      expect(summary.label).toBe("Verified on Casper Testnet");
+      expect(summary.primaryHash).toBe(plan.deployment?.transactionHash);
+      expect(plan.readiness.find((item) => item.id === "testnet-deploy")?.status).toBe("ready");
     }
   });
 });

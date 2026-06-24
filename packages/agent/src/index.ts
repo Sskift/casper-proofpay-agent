@@ -1,6 +1,6 @@
 export { assessEvidence } from "./assess";
 export { createAuditDossier } from "./audit-dossier";
-export { createOperationsDashboard } from "./dashboard";
+export { createOperationsDashboard, createProductDepthModel } from "./dashboard";
 export { createEvidenceHash, normalizeEvidenceBundle } from "./hash";
 export { seededDeals, seededEvidenceBundles } from "./seed-data";
 export type { CreateAuditDossierInput } from "./audit-dossier";
@@ -8,9 +8,15 @@ export type {
   ActionQueueItem,
   CockpitMetric,
   EvidenceMatrixRow,
+  EcosystemHook,
+  EvaluationRow,
+  IntakeDocument,
+  IntakeModel,
   OperationsDashboardModel,
   OperationsTone,
-  TimelineEvent
+  ProductDepthModel,
+  TimelineEvent,
+  WorkflowRole
 } from "./dashboard";
 export type {
   AgentAssessment,

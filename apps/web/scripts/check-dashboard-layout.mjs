@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
@@ -27,6 +28,11 @@ const requiredPageContracts = [
   ["proof-flow", "Casper proof should show a visual transaction path instead of only text rows."],
   ["proof-tabs", "Casper proof should move transaction and command details behind secondary tabs."],
   ["readiness-grid", "Submission readiness should use visual gate cards instead of another table."],
+  ['id="journey"', "The dashboard needs a Journey section for intake, roles, evaluation, and ecosystem hooks."],
+  ["intake-grid", "Evidence intake should use concise ingest cards."],
+  ["role-flow", "Role workflow should be visible as a product flow."],
+  ["evaluation-matrix", "Agent evaluation should show scenario coverage."],
+  ["ecosystem-hooks", "Casper ecosystem hooks should be visible without a long text wall."],
   ['id="dossier"', "The dashboard needs a Dossier section for judge-facing audit review."],
   ["Audit dossier", "The Dossier section heading should be visible to reviewers."],
   ["dossier-tabs", "Dossier details should be grouped into secondary tabs instead of a long side stack."],
@@ -48,6 +54,11 @@ const requiredCssContracts = [
   [".proof-flow", "Casper proof flow styles are missing."],
   [".proof-tabs", "Casper proof tabs styles are missing."],
   [".readiness-grid", "Readiness gate card layout styles are missing."],
+  [".journey-grid", "Journey workbench layout styles are missing."],
+  [".intake-grid", "Evidence intake card styles are missing."],
+  [".role-flow", "Role workflow styles are missing."],
+  [".evaluation-matrix", "Evaluation matrix styles are missing."],
+  [".ecosystem-hooks", "Ecosystem hook card styles are missing."],
   [".dossier-grid", "Audit dossier layout styles are missing."],
   [".trace-grid", "Audit trace grid styles are missing."],
   [".dossier-tabs", "Dossier tab layout styles are missing."],
@@ -56,6 +67,35 @@ const requiredCssContracts = [
 
 for (const [needle, message] of requiredCssContracts) {
   if (!css.includes(needle)) {
+    throw new Error(message);
+  }
+}
+
+const requiredRouteFiles = [
+  "src/app/api/proofpay-data.ts",
+  "src/app/api/attestation/[scenario]/route.ts",
+  "src/app/api/mcp/route.ts",
+  "src/app/api/x402/release-decision/route.ts"
+];
+
+for (const routeFile of requiredRouteFiles) {
+  if (!existsSync(resolve(root, routeFile))) {
+    throw new Error(`Missing ecosystem API route file: ${routeFile}`);
+  }
+}
+
+const mcpRoute = readFileSync(resolve(root, "src/app/api/mcp/route.ts"), "utf8");
+const x402Route = readFileSync(resolve(root, "src/app/api/x402/release-decision/route.ts"), "utf8");
+const dataRoute = readFileSync(resolve(root, "src/app/api/proofpay-data.ts"), "utf8");
+
+for (const [source, needle, message] of [
+  [mcpRoute, "assess_milestone_evidence", "MCP route should expose the assessment tool name."],
+  [mcpRoute, "get_casper_attestation", "MCP route should expose the Casper attestation lookup tool name."],
+  [x402Route, "x-proofpay-demo-paid", "x402 route should require the explicit demo payment header."],
+  [x402Route, "paymentRequired", "x402 route should honestly report payment-required metadata."],
+  [dataRoute, "createCasperVerificationSummary", "API data helper should include Casper verification summaries."]
+]) {
+  if (!source.includes(needle)) {
     throw new Error(message);
   }
 }

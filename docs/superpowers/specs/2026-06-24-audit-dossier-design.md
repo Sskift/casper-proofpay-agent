@@ -63,7 +63,7 @@ Each step is marked:
 - `passed`: evidence supports automatic release.
 - `warning`: evidence needs human review.
 - `failed`: evidence blocks release.
-- `pending`: Casper proof is not recorded for the selected non-clean scenario.
+- `pending`: Casper proof is not recorded for the selected scenario. This applied to non-clean scenarios when this design was written; later on 2026-06-24 all seeded scenarios received recorded Testnet transactions.
 
 This keeps clean, hold, and reject scenarios understandable without adding fake model output.
 
@@ -89,7 +89,7 @@ The Dossier section receives `deal`, `milestone`, `bundle`, `assessment`, `paylo
 
 Agent package tests cover:
 
-- Clean scenario dossier includes an approve decision, release amount, Casper Testnet transaction hash, named key, stored URef, and all passed core checks.
+- Clean scenario dossier includes an approve decision, release amount, Casper Testnet transaction hash, named key, stored URef, and all passed core checks. Later deployment records also cover the hold and reject seeded scenarios.
 - Amount mismatch dossier includes a failed invoice amount check and manual finance follow-up.
 - Duplicate invoice dossier includes a failed duplicate check and reject decision.
 - Dossier JSON remains deterministic for the same input.

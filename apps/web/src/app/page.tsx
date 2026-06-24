@@ -5,11 +5,14 @@ import {
   createAuditDossier,
   createEvidenceHash,
   createOperationsDashboard,
+  createProductDepthModel,
   seededDeals,
   seededEvidenceBundles,
   type AgentAssessment,
   type AuditDossier,
-  type OperationsDashboardModel
+  type OperationsDashboardModel,
+  type ProductDepthModel,
+  type WorkflowRole
 } from "@proofpay/agent";
 import {
   createAttestationPayload,
@@ -54,7 +57,7 @@ import {
 } from "@/components/DashboardCharts";
 
 type ScenarioKey = keyof typeof seededEvidenceBundles;
-type SectionId = "cockpit" | "charts" | "evidence" | "casper" | "dossier";
+type SectionId = "cockpit" | "journey" | "charts" | "evidence" | "casper" | "dossier";
 type ChipColor = "success" | "warning" | "danger" | "default" | "accent";
 
 const scenarioCopy: Record<ScenarioKey, { label: string; short: string; operator: string }> = {
@@ -83,27 +86,33 @@ const dashboardSections: Array<{ id: SectionId; label: string; eyebrow: string; 
     detail: "Release decision"
   },
   {
+    id: "journey",
+    label: "Journey",
+    eyebrow: "02",
+    detail: "Intake and roles"
+  },
+  {
     id: "charts",
     label: "Charts",
-    eyebrow: "02",
+    eyebrow: "03",
     detail: "Risk and cash"
   },
   {
     id: "evidence",
     label: "Evidence",
-    eyebrow: "03",
+    eyebrow: "04",
     detail: "Claims and documents"
   },
   {
     id: "casper",
     label: "Casper",
-    eyebrow: "04",
+    eyebrow: "05",
     detail: "Testnet proof"
   },
   {
     id: "dossier",
     label: "Dossier",
-    eyebrow: "05",
+    eyebrow: "06",
     detail: "Audit package"
   }
 ];
@@ -112,8 +121,8 @@ const dashboardSectionIds = dashboardSections.map((section) => section.id);
 
 function chipColor(value: string): ChipColor {
   const normalized = value.toLowerCase();
-  if (["approve", "ready", "matched", "positive", "complete", "success", "passed"].includes(normalized)) return "success";
-  if (["hold", "watch", "warning", "manual", "active", "pending"].includes(normalized)) return "warning";
+  if (["approve", "ready", "matched", "positive", "complete", "success", "passed", "recorded", "live", "submitted"].includes(normalized)) return "success";
+  if (["hold", "watch", "warning", "manual", "active", "pending", "standby", "demo"].includes(normalized)) return "warning";
   if (["reject", "blocked", "failed", "negative"].includes(normalized)) return "danger";
   return "default";
 }
@@ -409,16 +418,155 @@ function ChartsSection({ model }: { model: OperationsDashboardModel }) {
     <ShellCard
       id="charts"
       eyebrow="Signal room"
-      step="02"
+      step="03"
       title="Risk, cash, and evidence charts"
       sub="Charts mirror money-run's dense operating style, but tuned for RWA escrow evidence."
-      action={<Chip color="accent" variant="soft">Recharts + Lightweight Charts</Chip>}
+      action={<SectionBadge>Recharts + Lightweight Charts</SectionBadge>}
     >
       <div className="viz-grid">
         <RiskTapeChart model={model} />
         <TemperatureChart model={model} />
         <CashflowChart model={model} />
         <EvidenceCoverageChart model={model} />
+      </div>
+    </ShellCard>
+  );
+}
+
+function iconForRole(role: WorkflowRole["role"]) {
+  if (role === "Supplier") return <FileText aria-hidden="true" size={18} />;
+  if (role === "ProofPay Agent") return <Bot aria-hidden="true" size={18} />;
+  if (role === "Buyer") return <Banknote aria-hidden="true" size={18} />;
+  if (role === "Arbiter") return <ShieldCheck aria-hidden="true" size={18} />;
+  return <RadioTower aria-hidden="true" size={18} />;
+}
+
+function JourneySection({ productDepth }: { productDepth: ProductDepthModel }) {
+  return (
+    <ShellCard
+      id="journey"
+      eyebrow="Product workflow"
+      step="02"
+      title="Evidence-to-payment journey"
+      sub="A compact product layer for intake, participant actions, scenario evaluation, and Casper ecosystem hooks."
+      action={<SectionBadge>operator workbench</SectionBadge>}
+    >
+      <div className="journey-grid">
+        <div className="journey-tabs">
+          <Tabs defaultSelectedKey="intake" variant="primary">
+            <Tabs.List aria-label="Product journey detail tabs">
+              <Tabs.Tab id="intake">
+                <ClipboardCheck aria-hidden="true" size={15} />
+                Intake
+              </Tabs.Tab>
+              <Tabs.Tab id="roles">
+                <Activity aria-hidden="true" size={15} />
+                Roles
+              </Tabs.Tab>
+              <Tabs.Tab id="evaluation">
+                <CheckCircle2 aria-hidden="true" size={15} />
+                Evaluation
+              </Tabs.Tab>
+              <Tabs.Tab id="ecosystem">
+                <GitBranch aria-hidden="true" size={15} />
+                Ecosystem
+              </Tabs.Tab>
+            </Tabs.List>
+
+            <Tabs.Panel id="intake">
+              <div className="intake-head">
+                <div>
+                  <span>Evidence pack</span>
+                  <strong>{productDepth.intake.bundleId}</strong>
+                  <p>{productDepth.intake.documents.length} documents · sealed {shortHash(productDepth.intake.evidenceHash)}</p>
+                </div>
+                <SectionBadge tone="success">hash sealed</SectionBadge>
+              </div>
+              <div className="intake-grid">
+                {productDepth.intake.documents.map((document) => (
+                  <article className={`intake-card intake-card--${document.status}`} key={document.id}>
+                    <div className="intake-card__head">
+                      <FileText aria-hidden="true" size={17} />
+                      <div>
+                        <span>{document.source}</span>
+                        <strong>{document.title}</strong>
+                      </div>
+                      <Chip color={chipColor(document.status)} variant="soft">{document.confidence}%</Chip>
+                    </div>
+                    <p>{document.extractedClaim}</p>
+                    <code title={document.fingerprint}>{shortHash(document.fingerprint, 12, 8)}</code>
+                  </article>
+                ))}
+              </div>
+            </Tabs.Panel>
+
+            <Tabs.Panel id="roles">
+              <div className="role-flow" aria-label="ProofPay role workflow">
+                {productDepth.workflow.map((role, index) => (
+                  <article className={`role-card role-card--${role.status}`} key={role.role}>
+                    <div className="role-card__icon">{iconForRole(role.role)}</div>
+                    <div>
+                      <span>{role.role}</span>
+                      <strong>{role.action}</strong>
+                      <p>{role.detail}</p>
+                      <em>{role.owner}</em>
+                    </div>
+                    <Chip color={chipColor(role.status)} variant="soft">{role.status}</Chip>
+                    {index < productDepth.workflow.length - 1 ? <i aria-hidden="true" /> : null}
+                  </article>
+                ))}
+              </div>
+            </Tabs.Panel>
+
+            <Tabs.Panel id="evaluation">
+              <div className="evaluation-summary">
+                <div>
+                  <span>Policy eval</span>
+                  <strong>{productDepth.evaluation.passRate}% pass rate</strong>
+                  <p>Seeded approve, hold, and reject scenarios match expected policy outcomes.</p>
+                </div>
+                <SectionBadge tone="success">3 scenarios</SectionBadge>
+              </div>
+              <div className="evaluation-matrix" role="table" aria-label="Agent evaluation matrix">
+                <div className="evaluation-row evaluation-row--head" role="row">
+                  <span role="columnheader">Scenario</span>
+                  <span role="columnheader">Expected</span>
+                  <span role="columnheader">Actual</span>
+                  <span role="columnheader">Risk</span>
+                  <span role="columnheader">Gate</span>
+                </div>
+                {productDepth.evaluation.rows.map((row) => (
+                  <div className="evaluation-row" key={row.scenario} role="row">
+                    <strong role="cell">{scenarioCopy[row.scenario].label}</strong>
+                    <span role="cell">{row.expectedDecision}</span>
+                    <Chip color={chipColor(row.actualDecision)} variant="soft">{row.actualDecision}</Chip>
+                    <code role="cell">{row.riskScore}/100 · {row.confidence}%</code>
+                    <span role="cell">{row.passed ? "passed" : row.policyGate}</span>
+                  </div>
+                ))}
+              </div>
+            </Tabs.Panel>
+
+            <Tabs.Panel id="ecosystem">
+              <div className="ecosystem-hooks">
+                {productDepth.ecosystemHooks.map((hook) => (
+                  <article className="ecosystem-card" key={hook.id}>
+                    <div className="ecosystem-card__head">
+                      <GitBranch aria-hidden="true" size={17} />
+                      <div>
+                        <span>{hook.id.replaceAll("-", " ")}</span>
+                        <strong>{hook.label}</strong>
+                      </div>
+                      <Chip color={chipColor(hook.status)} variant="soft">{hook.status}</Chip>
+                    </div>
+                    <p>{hook.detail}</p>
+                    <code>{hook.endpoint}</code>
+                  </article>
+                ))}
+              </div>
+            </Tabs.Panel>
+          </Tabs>
+        </div>
       </div>
     </ShellCard>
   );
@@ -441,7 +589,7 @@ function EvidenceSection({
     <ShellCard
       id="evidence"
       eyebrow="Evidence review"
-      step="03"
+      step="04"
       title="Evidence room"
       sub="A reviewer-first workspace for documents, normalized claims, and exception handling."
       action={<Bot aria-hidden="true" size={20} />}
@@ -627,9 +775,9 @@ function CasperSection({
     <ShellCard
       id="casper"
       eyebrow="On-chain proof"
-      step="04"
+      step="05"
       title="Casper attestation"
-      sub={deployment ? "Clean scenario is anchored on Casper Testnet." : "This scenario is deploy-ready and waiting for a matching Testnet attestation."}
+      sub={deployment ? "Selected scenario is anchored on Casper Testnet." : "This scenario is deploy-ready and waiting for a matching Testnet attestation."}
       action={<SectionBadge tone={deployment ? "success" : "warning"}>{deployment ? "on-chain" : "deploy-ready"}</SectionBadge>}
     >
       <div className="proof-workbench">
@@ -775,7 +923,7 @@ function DossierSection({ dossier }: { dossier: AuditDossier }) {
     <ShellCard
       id="dossier"
       eyebrow="Judge package"
-      step="05"
+      step="06"
       title="Audit dossier"
       sub="One portable package for the decision trace, hashes, Casper proof facts, and reproduction checklist."
       action={<SectionBadge>audit console</SectionBadge>}
@@ -954,6 +1102,19 @@ export default function Home() {
       }),
     [assessment, bundle, deal, evidenceHash, milestone]
   );
+  const productDepth = useMemo(
+    () =>
+      createProductDepthModel({
+        deal,
+        milestone,
+        bundle,
+        assessment,
+        evidenceHash,
+        allBundles: seededEvidenceBundles,
+        casperRecorded: Boolean(deployPlan.deployment)
+      }),
+    [assessment, bundle, deal, deployPlan.deployment, evidenceHash, milestone]
+  );
   const activeSection = useScrollSpy(dashboardSectionIds);
 
   useEffect(() => {
@@ -1057,6 +1218,7 @@ export default function Home() {
             payload={payload}
             transaction={transaction}
           />
+          <JourneySection productDepth={productDepth} />
           <ChartsSection model={model} />
           <EvidenceSection assessment={assessment} model={model} />
           <CasperSection deployPlan={deployPlan} payload={payload} />

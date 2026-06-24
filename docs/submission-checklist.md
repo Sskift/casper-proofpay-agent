@@ -11,7 +11,7 @@ Use this checklist before manually submitting ProofPay Agent through the Casper 
 - Track: `Casper Innovation Track`
 - Public project summary: use the copy below.
 - Copy-ready BUIDL fields: `docs/buidl-submission-brief.md`.
-- Casper Testnet transaction hash: `94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604`
+- Casper Testnet transaction hashes: `94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604`, `c92cdcd8f11f6453134745900ea2c91defa0f8b37f4c6782dd38b2aa7a720d84`, `08995093b6ef978b381c4cee7d8faeb960f31bb64083544c8cfa0c3c8952e885`
 - Live demo link: optional; local demo runs from this repository.
 - Team members: fill manually in DoraHacks.
 
@@ -51,7 +51,7 @@ ProofPay Agent lets autonomous agents release real-world payments only when evid
 - `npm run submission:check` passes after the final commit.
 - `npm run casper:check` shows a funded Testnet account.
 - `npm run contract:deploy:testnet` returns a real Casper transaction hash.
-- Dashboard sidebar clearly shows the active Cockpit, Charts, Evidence, or Casper section.
+- Dashboard sidebar clearly shows the active Cockpit, Journey, Charts, Evidence, Casper, or Dossier section.
 - Dashboard Evidence room shows reviewer summary, documents, claims, and timeline without table stacking.
 - Dashboard Casper proof workbench shows Testnet transaction, named key, stored URef, deploy command, readiness gates, public key, and Casper session args.
 - Demo video URL is public and tracked in `docs/demo/proofpay-agent-demo.mp4`.
@@ -64,27 +64,31 @@ ProofPay Agent lets autonomous agents release real-world payments only when evid
 
 ## Current On-chain Evidence
 
-The clean judge scenario has a successful Casper Testnet transaction:
+All three judge scenarios have successful Casper Testnet transactions:
 
 ```text
-transaction_hash: 94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604
-block_height: 8282603
+clean_tx: 94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604
+clean_block_height: 8282603
+hold_tx: c92cdcd8f11f6453134745900ea2c91defa0f8b37f4c6782dd38b2aa7a720d84
+hold_block_height: 8285869
+reject_tx: 08995093b6ef978b381c4cee7d8faeb960f31bb64083544c8cfa0c3c8952e885
+reject_block_height: 8285872
 public_key_hex: 01275bb5c5b24490df3996c0ce68a1b757b27567499c8f81b9df13e29835db054e
 account_hash: account-hash-537db3bdbf915dfcfdf3568411087c4535c1b6cc15aa3e207f52d27de1cebd3d
 named_key: proofpay_attestation_ms-delivery-acceptance
-stored_uref: uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007
+current_named_key_uref: uref-409325b098f841565f2667d96986d7f41ff08e606f33bf06f76a0564ac1eb76f-007
 execution_error: null
 ```
 
-The stored attestation payload is:
+The latest stored attestation payload is:
 
 ```json
 {
   "milestone_id": "ms-delivery-acceptance",
-  "evidence_hash": "0x96232bd7a6224ade903c20cb89c38cc91e036facebe837475ab41cf26a4556e1",
-  "decision": "approve",
-  "decision_hash": "0x9f691d379eef71639e776e80d1272a464f39848d1c39566d8dfb0c0beb68f74c",
-  "confidence": 94,
-  "risk_score": 12
+  "evidence_hash": "0x745f85d8760dde067cdf8b1e375139396e69bef7f40103209018acfea5c61ff9",
+  "decision": "reject",
+  "decision_hash": "0x95e24b90c3d51d52cd5babe1eaa3accb2d478c654f57ca7bb479b17cb515aa34",
+  "confidence": 91,
+  "risk_score": 88
 }
 ```

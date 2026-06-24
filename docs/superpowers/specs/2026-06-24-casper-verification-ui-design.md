@@ -6,7 +6,7 @@ Make the next ProofPay Agent iteration feel more like a verifiable Casper produc
 
 ## Scope
 
-This iteration does not re-record the demo video and does not pretend that undeployed scenarios are on-chain. The clean scenario keeps the recorded Casper Testnet deployment. Hold and reject scenarios remain deploy-ready until real Testnet transactions are recorded.
+This iteration does not re-record the demo video and does not pretend that undeployed scenarios are on-chain. At the time this design was written, only the clean scenario had a recorded Casper Testnet deployment. It was superseded later on 2026-06-24 when hold and reject scenarios were also deployed and recorded.
 
 ## Product Shape
 
@@ -40,7 +40,7 @@ The Casper package should expose a small verification summary derived from a dep
 
 Automated checks must cover:
 
-- Clean scenario reports a recorded Casper verification state.
-- Hold/reject scenarios report pending deploy state.
+- Recorded scenarios report a Casper verification state.
+- Undeployed scenarios, if any are added later, report pending deploy state.
 - The dashboard source contains the new proof flow and secondary Dossier tabs.
 - Existing tests, typecheck, build, and submission check still pass.

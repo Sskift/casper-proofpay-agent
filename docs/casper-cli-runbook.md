@@ -172,12 +172,14 @@ casper-client query-global-state \
   --key "[STORED_UREF]"
 ```
 
-The clean scenario has already been executed on Casper Testnet:
+All three judge scenarios have already been executed on Casper Testnet:
 
 ```text
-transaction_hash: 94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604
+clean_tx: 94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604
+hold_tx: c92cdcd8f11f6453134745900ea2c91defa0f8b37f4c6782dd38b2aa7a720d84
+reject_tx: 08995093b6ef978b381c4cee7d8faeb960f31bb64083544c8cfa0c3c8952e885
 named_key: proofpay_attestation_ms-delivery-acceptance
-stored_uref: uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007
+current_named_key_uref: uref-409325b098f841565f2667d96986d7f41ff08e606f33bf06f76a0564ac1eb76f-007
 ```
 
 ## Why This Matters

@@ -4,6 +4,7 @@ import {
   assessEvidence,
   createAuditDossier,
   createOperationsDashboard,
+  createProductDepthModel,
   createEvidenceHash,
   seededDeals,
   seededEvidenceBundles
@@ -170,5 +171,34 @@ describe("ProofPay evidence agent", () => {
     expect(dossier.riskScore).toBeGreaterThan(80);
     expect(dossier.trace.find((step) => step.id === "duplicate-invoice")?.status).toBe("failed");
     expect(dossier.reviewChecklist.join(" ")).toContain("fraud review");
+  });
+
+  it("builds a product depth model for intake, roles, and agent evaluation", () => {
+    const deal = seededDeals[0];
+    const milestone = deal.milestones[0];
+    const bundle = seededEvidenceBundles.clean;
+    const assessment = assessEvidence(bundle);
+    const evidenceHash = createEvidenceHash(bundle);
+
+    const model = createProductDepthModel({
+      deal,
+      milestone,
+      bundle,
+      assessment,
+      evidenceHash,
+      allBundles: seededEvidenceBundles
+    });
+
+    expect(model.intake.documents).toHaveLength(bundle.documents.length);
+    expect(model.intake.documents[0]).toMatchObject({
+      title: "Invoice INV-8842",
+      status: "matched",
+      confidence: 97
+    });
+    expect(model.workflow.map((role) => role.role)).toEqual(["Supplier", "ProofPay Agent", "Buyer", "Arbiter", "Casper"]);
+    expect(model.workflow.find((role) => role.role === "Casper")?.status).toBe("recorded");
+    expect(model.evaluation.rows.map((row) => row.scenario)).toEqual(["clean", "amountMismatch", "duplicateInvoice"]);
+    expect(model.evaluation.rows.every((row) => row.passed)).toBe(true);
+    expect(model.ecosystemHooks.map((hook) => hook.id)).toEqual(["attestation-api", "mcp-tool", "x402-gate"]);
   });
 });

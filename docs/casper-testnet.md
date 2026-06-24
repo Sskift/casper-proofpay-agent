@@ -8,7 +8,7 @@ This document tracks the path from local ProofPay attestation payloads to a real
 - Casper contract source is present in `contracts/proofpay-attestation`.
 - The contract builds to Casper-compatible Wasm with `npm run contract:build`.
 - The build path uses Rust plus Binaryen `wasm-opt` to remove Casper-incompatible bulk-memory instructions.
-- A real Casper Testnet transaction has executed successfully for the `clean` judge scenario.
+- Real Casper Testnet transactions have executed successfully for all three judge scenarios: `clean`, `amountMismatch`, and `duplicateInvoice`.
 - CLI deployment steps are captured in `docs/casper-cli-runbook.md`.
 - `casper-client 5.0.1` and `cargo-casper 3.0.0` are installed locally.
 - Current verified `casper-client` node address: `https://node.testnet.casper.network`.
@@ -27,8 +27,8 @@ Current account state:
 
 ```text
 named_key: proofpay_attestation_ms-delivery-acceptance
-named_key_uref: uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007
-balance_after_successful_deploy: 62068777606 motes
+named_key_uref_current: uref-409325b098f841565f2667d96986d7f41ff08e606f33bf06f76a0564ac1eb76f-007
+balance_after_three_successful_deploys: 46210258377 motes
 ```
 
 ## Funding Path
@@ -43,7 +43,19 @@ wallet_to_cli_transfer_hash: 4c08848ff32deb0734ed524f7e7efcc35b07fa1c8a743fd2e64
 wallet_to_cli_transfer_amount: 100 CSPR
 ```
 
-## Successful Casper Testnet Transaction
+## Successful Casper Testnet Transactions
+
+All three judge-mode scenarios now have real Casper Testnet transactions with `execution_error: null`.
+
+| Scenario | Decision | Transaction hash | Block | Stored URef |
+| --- | --- | --- | --- | --- |
+| `clean` | `approve` | `94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604` | `8282603` | `uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007` |
+| `amountMismatch` | `hold` | `c92cdcd8f11f6453134745900ea2c91defa0f8b37f4c6782dd38b2aa7a720d84` | `8285869` | `uref-798a146f6456d0318bb0e960465a7e251321fc1ff32c36d4354bd5860a9a6d7a-007` |
+| `duplicateInvoice` | `reject` | `08995093b6ef978b381c4cee7d8faeb960f31bb64083544c8cfa0c3c8952e885` | `8285872` | `uref-409325b098f841565f2667d96986d7f41ff08e606f33bf06f76a0564ac1eb76f-007` |
+
+Each deployment writes a scenario-specific attestation string. The simple prototype contract uses the same account named key, `proofpay_attestation_ms-delivery-acceptance`, so the account named key currently points to the latest `duplicateInvoice` URef. The historical URefs above remain queryable by their direct URef values.
+
+### Clean Release
 
 ```text
 transaction_hash: 94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604
@@ -78,6 +90,50 @@ The URef stores the attestation payload:
 }
 ```
 
+### Hold For Finance
+
+```text
+transaction_hash: c92cdcd8f11f6453134745900ea2c91defa0f8b37f4c6782dd38b2aa7a720d84
+block_hash: d822ed7bb4c750d032b808af0b60a5e1ab20d3458daf921a29af153e7bdb629a
+block_height: 8285869
+execution_error: null
+stored_uref: uref-798a146f6456d0318bb0e960465a7e251321fc1ff32c36d4354bd5860a9a6d7a-007
+submitted_at: 2026-06-24T13:10:25.565Z
+```
+
+```json
+{
+  "milestone_id": "ms-delivery-acceptance",
+  "evidence_hash": "0x33dfb2df8a81c21c1d2cbd296d7d076802d77bdc51c655067732397b6221e13d",
+  "decision": "hold",
+  "decision_hash": "0x6eee9d975141633447b306bea67554824fe39d2cb683edaa28cddf7ab8ffd96e",
+  "confidence": 72,
+  "risk_score": 45
+}
+```
+
+### Reject Duplicate
+
+```text
+transaction_hash: 08995093b6ef978b381c4cee7d8faeb960f31bb64083544c8cfa0c3c8952e885
+block_hash: 3416e78c68cc1d92d3e4dcf28c695f148f5867cde52c0f1d8c24b225bfc4bd96
+block_height: 8285872
+execution_error: null
+stored_uref: uref-409325b098f841565f2667d96986d7f41ff08e606f33bf06f76a0564ac1eb76f-007
+submitted_at: 2026-06-24T13:10:48.355Z
+```
+
+```json
+{
+  "milestone_id": "ms-delivery-acceptance",
+  "evidence_hash": "0x745f85d8760dde067cdf8b1e375139396e69bef7f40103209018acfea5c61ff9",
+  "decision": "reject",
+  "decision_hash": "0x95e24b90c3d51d52cd5babe1eaa3accb2d478c654f57ca7bb479b17cb515aa34",
+  "confidence": 91,
+  "risk_score": 88
+}
+```
+
 ## Verification Commands
 
 Build the contract and verify it has no bulk-memory operations:
@@ -93,7 +149,7 @@ Query the transaction:
 ```bash
 casper-client get-transaction \
   --node-address https://node.testnet.casper.network \
-  94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604
+  08995093b6ef978b381c4cee7d8faeb960f31bb64083544c8cfa0c3c8952e885
 ```
 
 Query the stored attestation:
@@ -101,14 +157,14 @@ Query the stored attestation:
 ```bash
 casper-client query-global-state \
   --node-address https://node.testnet.casper.network \
-  --key uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007
+  --key uref-409325b098f841565f2667d96986d7f41ff08e606f33bf06f76a0564ac1eb76f-007
 ```
 
 Expected stored value:
 
 ```text
 CLValue String:
-{"milestone_id":"ms-delivery-acceptance","evidence_hash":"0x96232bd7a6224ade903c20cb89c38cc91e036facebe837475ab41cf26a4556e1","decision":"approve","decision_hash":"0x9f691d379eef71639e776e80d1272a464f39848d1c39566d8dfb0c0beb68f74c","confidence":94,"risk_score":12}
+{"milestone_id":"ms-delivery-acceptance","evidence_hash":"0x745f85d8760dde067cdf8b1e375139396e69bef7f40103209018acfea5c61ff9","decision":"reject","decision_hash":"0x95e24b90c3d51d52cd5babe1eaa3accb2d478c654f57ca7bb479b17cb515aa34","confidence":91,"risk_score":88}
 ```
 
 ## Failed Attempt And Fix
@@ -144,7 +200,9 @@ wasm-opt proofpay_attestation.wasm \
 The Casper Testnet transaction-producing component requirement is satisfied by:
 
 ```text
-transaction_hash: 94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604
+clean_tx: 94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604
+hold_tx: c92cdcd8f11f6453134745900ea2c91defa0f8b37f4c6782dd38b2aa7a720d84
+reject_tx: 08995093b6ef978b381c4cee7d8faeb960f31bb64083544c8cfa0c3c8952e885
 named_key: proofpay_attestation_ms-delivery-acceptance
-stored_uref: uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007
+current_named_key_uref: uref-409325b098f841565f2667d96986d7f41ff08e606f33bf06f76a0564ac1eb76f-007
 ```

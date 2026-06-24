@@ -26,14 +26,15 @@ ProofPay simulates a buyer/supplier RWA escrow workflow:
 3. The agent extracts claims, checks consistency, scores risk, and chooses `approve`, `hold`, or `reject`.
 4. The app creates an evidence hash and decision hash.
 5. The Casper adapter creates an attestation payload for the on-chain contract.
-6. The dashboard shows the audit trail, local demo transaction hash, recorded Casper Testnet transaction, named key, stored URef, charts, evidence drilldowns, copy-ready deploy commands, and a portable Audit Dossier.
+6. The dashboard shows the audit trail, evidence intake, role workflow, evaluation matrix, local demo transaction hash, recorded Casper Testnet transactions, named key, stored URefs, charts, evidence drilldowns, copy-ready deploy commands, ecosystem API hooks, and a portable Audit Dossier.
 
 ## Dashboard Cockpit
 
 The web app has been refactored into a dense operator dashboard inspired by the local `money-run` cockpit:
 
 - HeroUI cards, chips, tables, tabs, and link controls.
-- Scroll-tracked sidebar navigation for the five judge sections.
+- Scroll-tracked sidebar navigation for the six judge sections.
+- Journey workbench with evidence intake cards, buyer/supplier/arbiter workflow, scenario evaluation, and MCP/x402/Casper API hooks.
 - Recharts for cold-chain telemetry, escrow cashflow, and evidence coverage.
 - Lightweight Charts for the agent risk tape.
 - Scenario switcher for `approve`, `hold`, and `reject` judge flows.
@@ -83,17 +84,33 @@ Current structure:
 - `odra-module-sketch.rs`: Odra-style module sketch for the intended framework migration.
 - `README.md`: build and deploy argument reference.
 
-The local dashboard shows deterministic demo transaction hashes for repeatable judge-mode flows. The `clean` scenario also includes a successful Casper Testnet transaction-producing component:
+The local dashboard shows deterministic demo transaction hashes for repeatable judge-mode flows. All three judge scenarios now include successful Casper Testnet transaction-producing components:
 
 ```text
-transaction_hash: 94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604
+clean_tx: 94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604
+hold_tx: c92cdcd8f11f6453134745900ea2c91defa0f8b37f4c6782dd38b2aa7a720d84
+reject_tx: 08995093b6ef978b381c4cee7d8faeb960f31bb64083544c8cfa0c3c8952e885
 named_key: proofpay_attestation_ms-delivery-acceptance
-stored_uref: uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007
+current_named_key_uref: uref-409325b098f841565f2667d96986d7f41ff08e606f33bf06f76a0564ac1eb76f-007
 ```
 
 Full Testnet evidence is documented in [docs/casper-testnet.md](docs/casper-testnet.md).
 
 The dashboard's Audit Dossier section shows the same proof chain in a portable review package: policy trace, normalized evidence observations, evidence hash, decision hash, local demo transaction, Casper Testnet transaction, named key, stored URef, and reproduction checklist.
+
+## Ecosystem API Hooks
+
+The Next.js app exposes lightweight local integration hooks:
+
+```text
+GET  /api/attestation/clean
+GET  /api/attestation/amountMismatch
+GET  /api/attestation/duplicateInvoice
+GET  /api/mcp
+POST /api/x402/release-decision
+```
+
+These endpoints are demo hooks, not production payment or MCP infrastructure. They show how ProofPay can hand agent decisions, Casper verification summaries, and audit dossiers to MCP-style clients or x402-gated agent commerce.
 
 ## Casper CLI Path
 

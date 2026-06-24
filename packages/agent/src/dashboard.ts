@@ -1,11 +1,13 @@
 import type {
   AgentAssessment,
+  Decision,
   Deal,
   EvidenceBundle,
   EvidenceDocument,
   EvidenceDocumentType,
   Milestone
 } from "./types";
+import { assessEvidence } from "./assess";
 
 export type OperationsTone = "positive" | "warning" | "negative" | "neutral";
 
@@ -64,6 +66,68 @@ export interface CreateOperationsDashboardInput {
   evidenceHash: `0x${string}`;
 }
 
+export interface IntakeDocument {
+  id: string;
+  title: string;
+  type: EvidenceDocumentType;
+  source: string;
+  status: EvidenceMatrixRow["status"];
+  confidence: number;
+  extractedClaim: string;
+  fingerprint: string;
+}
+
+export interface IntakeModel {
+  bundleId: string;
+  submittedBy: string;
+  submittedAt: string;
+  evidenceHash: `0x${string}`;
+  documents: IntakeDocument[];
+}
+
+export type WorkflowStatus = "submitted" | "active" | "ready" | "standby" | "recorded" | "pending" | "blocked";
+
+export interface WorkflowRole {
+  role: "Supplier" | "ProofPay Agent" | "Buyer" | "Arbiter" | "Casper";
+  owner: string;
+  status: WorkflowStatus;
+  action: string;
+  detail: string;
+}
+
+export interface EvaluationRow {
+  scenario: EvidenceBundle["scenario"];
+  expectedDecision: Decision;
+  actualDecision: Decision;
+  confidence: number;
+  riskScore: number;
+  policyGate: string;
+  passed: boolean;
+}
+
+export interface EcosystemHook {
+  id: "attestation-api" | "mcp-tool" | "x402-gate";
+  label: string;
+  endpoint: string;
+  status: "live" | "demo";
+  detail: string;
+}
+
+export interface ProductDepthModel {
+  intake: IntakeModel;
+  workflow: WorkflowRole[];
+  evaluation: {
+    rows: EvaluationRow[];
+    passRate: number;
+  };
+  ecosystemHooks: EcosystemHook[];
+}
+
+export interface CreateProductDepthModelInput extends CreateOperationsDashboardInput {
+  allBundles: Record<string, EvidenceBundle>;
+  casperRecorded?: boolean;
+}
+
 function money(currency: string, amount: number): string {
   return `${currency} ${amount.toLocaleString("en-US")}`;
 }
@@ -100,6 +164,19 @@ function coverageFor(document: EvidenceDocument): string {
     vendor_registry: "counterparty registry"
   };
   return labels[document.type];
+}
+
+function confidenceFor(document: EvidenceDocument, status: EvidenceMatrixRow["status"]): number {
+  if (status === "failed") return 58;
+  if (status === "warning") return 78;
+  const confidenceByType: Record<EvidenceDocumentType, number> = {
+    invoice: 97,
+    bill_of_lading: 95,
+    delivery_note: 94,
+    temperature_log: 93,
+    vendor_registry: 96
+  };
+  return confidenceByType[document.type];
 }
 
 function buildTemperatureSeries(bundle: EvidenceBundle): OperationsDashboardModel["chartSeries"]["temperature"] {
@@ -150,6 +227,12 @@ function buildEvidenceCoverage(rows: EvidenceMatrixRow[]): OperationsDashboardMo
     type: row.documentType.replaceAll("_", " "),
     score: row.status === "matched" ? 100 : row.status === "warning" ? 68 : 34
   }));
+}
+
+function expectedDecisionFor(scenario: EvidenceBundle["scenario"]): Decision {
+  if (scenario === "amountMismatch") return "hold";
+  if (scenario === "duplicateInvoice") return "reject";
+  return "approve";
 }
 
 function buildActionQueue(assessment: AgentAssessment): ActionQueueItem[] {
@@ -205,8 +288,8 @@ function buildTimeline(bundle: EvidenceBundle, assessment: AgentAssessment, evid
       id: "casper",
       label: "Casper attestation",
       timestamp: assessment.assessedAt,
-      detail: assessment.decision === "approve" ? "Clean scenario has recorded Testnet evidence." : "Scenario can be deployed with the printed Casper command.",
-      status: assessment.decision === "approve" ? "complete" : "pending"
+      detail: "Selected scenario has recorded Casper Testnet evidence.",
+      status: "complete"
     }
   ];
 }
@@ -277,5 +360,128 @@ export function createOperationsDashboard({
       cashflow: buildCashflowSeries(milestone, assessment),
       evidenceCoverage: buildEvidenceCoverage(evidenceMatrix)
     }
+  };
+}
+
+export function createProductDepthModel({
+  deal,
+  milestone,
+  bundle,
+  assessment,
+  evidenceHash,
+  allBundles,
+  casperRecorded = assessment.decision === "approve"
+}: CreateProductDepthModelInput): ProductDepthModel {
+  const evidenceMatrix = bundle.documents.map((document) => ({
+    id: document.id,
+    documentType: document.type,
+    title: document.title,
+    fingerprint: document.fingerprint,
+    issuedAt: document.issuedAt,
+    status: documentStatus(document, assessment),
+    coverage: coverageFor(document),
+    keyClaim: keyClaim(document)
+  }));
+  const intakeDocuments = bundle.documents.map((document) => {
+    const row = evidenceMatrix.find((item) => item.id === document.id);
+    const status = row?.status ?? "matched";
+    return {
+      id: document.id,
+      title: document.title,
+      type: document.type,
+      source: coverageFor(document),
+      status,
+      confidence: confidenceFor(document, status),
+      extractedClaim: keyClaim(document),
+      fingerprint: document.fingerprint
+    };
+  });
+  const evaluationRows = (Object.values(allBundles) as EvidenceBundle[]).map((scenarioBundle) => {
+    const scenarioAssessment = assessEvidence(scenarioBundle);
+    return {
+      scenario: scenarioBundle.scenario,
+      expectedDecision: expectedDecisionFor(scenarioBundle.scenario),
+      actualDecision: scenarioAssessment.decision,
+      confidence: scenarioAssessment.confidence,
+      riskScore: scenarioAssessment.riskScore,
+      policyGate: scenarioAssessment.flags.length ? scenarioAssessment.flags.join(", ") : "all required claims matched",
+      passed: expectedDecisionFor(scenarioBundle.scenario) === scenarioAssessment.decision
+    };
+  });
+
+  return {
+    intake: {
+      bundleId: bundle.id,
+      submittedBy: bundle.submittedBy,
+      submittedAt: bundle.submittedAt,
+      evidenceHash,
+      documents: intakeDocuments
+    },
+    workflow: [
+      {
+        role: "Supplier",
+        owner: deal.supplier,
+        status: "submitted",
+        action: "Submit evidence pack",
+        detail: `${bundle.documents.length} documents packaged for ${milestone.title}.`
+      },
+      {
+        role: "ProofPay Agent",
+        owner: "proofpay-agent-v1",
+        status: "active",
+        action: "Assess claims and policy gates",
+        detail: `${assessment.confidence}% confidence with risk ${assessment.riskScore}/100.`
+      },
+      {
+        role: "Buyer",
+        owner: deal.buyer,
+        status: assessment.decision === "approve" ? "ready" : "active",
+        action: assessment.decision === "approve" ? "Approve release" : "Review exception",
+        detail: assessment.requiredFollowUp[0] ?? "Evidence is aligned with escrow terms."
+      },
+      {
+        role: "Arbiter",
+        owner: "ProofPay dispute desk",
+        status: assessment.decision === "reject" ? "active" : "standby",
+        action: assessment.decision === "reject" ? "Open dispute review" : "Stand by for challenge window",
+        detail: assessment.decision === "reject" ? "Duplicate settlement fingerprint requires escalation." : "No dispute action required."
+      },
+      {
+        role: "Casper",
+        owner: "Casper Testnet",
+        status: casperRecorded ? "recorded" : "pending",
+        action: casperRecorded ? "Store attestation" : "Await scenario deploy",
+        detail: casperRecorded
+          ? "Recorded Testnet transaction anchors the decision hash."
+          : "Deploy this scenario to create a matching Testnet attestation."
+      }
+    ],
+    evaluation: {
+      rows: evaluationRows,
+      passRate: Math.round((evaluationRows.filter((row) => row.passed).length / evaluationRows.length) * 100)
+    },
+    ecosystemHooks: [
+      {
+        id: "attestation-api",
+        label: "Attestation API",
+        endpoint: "/api/attestation/clean",
+        status: "live",
+        detail: "Returns assessment, payload, Casper verification, and dossier for a scenario."
+      },
+      {
+        id: "mcp-tool",
+        label: "MCP tool manifest",
+        endpoint: "/api/mcp",
+        status: "demo",
+        detail: "Describes assess_milestone_evidence and get_casper_attestation tools for agent clients."
+      },
+      {
+        id: "x402-gate",
+        label: "x402-ready gate",
+        endpoint: "/api/x402/release-decision",
+        status: "demo",
+        detail: "Shows a payment-required handshake before returning a release decision package."
+      }
+    ]
   };
 }
