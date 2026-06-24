@@ -1,8 +1,8 @@
 # ProofPay Agent Demo Script
 
-Target length: 90 to 110 seconds.
+Target length: 105 to 115 seconds.
 
-The submitted demo video uses AI text-to-speech narration with burned-in captions. The video file lives at `docs/demo/proofpay-agent-demo.mp4` so the DoraHacks BUIDL link can keep pointing at the same GitHub path after updates.
+The submitted demo video is a 1080p dynamic browser walkthrough with Coze AI text-to-speech narration, visible cursor movement, section navigation, page scrolling, scenario switching, and compact centered captions. The video file lives at `docs/demo/proofpay-agent-demo.mp4` so the DoraHacks BUIDL link can keep pointing at the same GitHub path after updates.
 
 ## Scene 1: Cockpit
 
