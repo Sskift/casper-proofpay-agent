@@ -8,6 +8,7 @@
     "dev": "npm --workspace @proofpay/web run dev --",
     "build": "npm --workspace apps/web run build",
     "pages:build": "GITHUB_PAGES=true npm run build && node scripts/prepare-github-pages.mjs",
+    "pages:publish": "bash scripts/publish-github-pages.sh",
     "test": "npm --workspaces --if-present run test",
     "typecheck": "npm --workspaces --if-present run typecheck",
     "submission:check": "node scripts/check-submission-clean.mjs",
