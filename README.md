@@ -1,119 +1,179 @@
+<div align="center">
+
 # ProofPay Agent
 
-ProofPay Agent is an agentic RWA milestone escrow prototype for the Casper Agentic Buildathon. It reviews real-world delivery evidence, makes a bounded payment recommendation, hashes the evidence bundle, and prepares a Casper attestation payload for on-chain anchoring.
+### Agentic RWA Milestone Escrow on Casper
 
-The product is built for the Casper Innovation Track: Agentic AI, DeFi, and Real-World Assets.
+**AI verifies off-chain delivery evidence. Humans control payment release. Casper records the decision proof.**
 
-## Buildathon Constraints
+[![Demo Video](https://img.shields.io/badge/Demo%20Video-GitHub%20MP4-0F172A?style=for-the-badge)](https://github.com/Sskift/casper-proofpay-agent/blob/main/docs/demo/proofpay-agent-demo.mp4)
+[![DoraHacks BUIDL](https://img.shields.io/badge/DoraHacks-BUIDL%2045992-2563EB?style=for-the-badge)](https://dorahacks.io/buidl/45992)
+[![Casper Testnet](https://img.shields.io/badge/Casper-Testnet%20Recorded-10B981?style=for-the-badge)](docs/casper-testnet.md)
+[![Audit Dossier](https://img.shields.io/badge/Audit-Dossier%20Ready-7C3AED?style=for-the-badge)](#audit-dossier)
 
-The project constraints are captured in [docs/hackathon-constraints.md](docs/hackathon-constraints.md).
+[![Agentic AI](https://img.shields.io/badge/Track-Agentic%20AI-111827?style=flat-square)](#agent-workflow)
+[![DeFi](https://img.shields.io/badge/Track-DeFi-111827?style=flat-square)](#why-this-matters)
+[![RWA](https://img.shields.io/badge/Track-Real%20World%20Assets-111827?style=flat-square)](#why-this-matters)
+[![Status](https://img.shields.io/badge/Status-Submission%20Ready-059669?style=flat-square)](#status)
 
-Key gates:
+</div>
 
-- Final submission happens through DoraHacks `Submit BUIDL`.
-- Public GitHub/GitLab/Bitbucket repository is required.
-- Public demo video is required.
-- Casper Testnet deployment with a transaction-producing on-chain component is required.
-- Working smart contracts on Casper Testnet are part of judging.
-- CSPR.fans community voting can advance the top 3 projects directly to the final round.
+## One-Line Thesis
 
-## What It Does
+ProofPay Agent is a verifiable RWA payment decision chain: external delivery evidence enters the system, an agent produces an explainable `approve`, `hold`, or `reject` recommendation, and Casper Testnet anchors the evidence hash and decision hash for later audit.
 
-ProofPay simulates a buyer/supplier RWA escrow workflow:
+## Buildathon Snapshot
 
-1. A buyer funds a milestone for a temperature-controlled vaccine shipment.
-2. A supplier submits invoice, bill of lading, delivery note, temperature log, and registry evidence.
-3. The agent extracts claims, checks consistency, scores risk, and chooses `approve`, `hold`, or `reject`.
-4. The app creates an evidence hash and decision hash.
-5. The Casper adapter creates an attestation payload for the on-chain contract and verifies recorded Testnet fields against the current payload.
-6. The settlement runbook turns the decision into concrete supplier, buyer, arbiter, and Casper actions.
-7. The dashboard shows the audit trail, external evidence intake lab, role workflow, evaluation matrix, local demo transaction hash, recorded Casper Testnet transactions, named key, stored URefs, verifier checks, copy-ready deploy commands, ecosystem API hooks, and a portable Audit Dossier.
+| Field | ProofPay Agent |
+| --- | --- |
+| Buildathon | Casper Agentic Buildathon |
+| Track fit | Agentic AI, DeFi, Real-World Assets |
+| Product | AI-assisted milestone escrow for real-world supplier payments |
+| Primary users | Buyer operations, supplier finance, dispute arbiter, protocol reviewer |
+| Agent task | Review invoices, bill of lading, delivery note, temperature log, and supplier registry evidence |
+| Decision outputs | `approve`, `hold`, `reject`, confidence, risk score, reviewer actions |
+| Casper role | Public attestation anchor for evidence hash, decision hash, milestone id, and final decision |
+| Testnet proof | Three recorded Casper Testnet transactions for clean, hold, and reject judge flows |
+| Demo asset | [docs/demo/proofpay-agent-demo.mp4](docs/demo/proofpay-agent-demo.mp4) |
+| Boundary | Prototype does not custody real funds; it models milestone state plus on-chain attestation |
 
-## Core Advantage
+## Why This Matters
 
-ProofPay is not just a dashboard. It is a verifiable RWA payment decision chain:
+Real-world asset payments are slow because the evidence lives off-chain: documents, shipment logs, signatures, registry checks, and finance exceptions. A plain AI review can speed the work, but it can also become a black box. A plain smart contract can hold a state, but it cannot interpret a bill of lading or a cold-chain exception by itself.
 
-```text
-external evidence pack -> deterministic intake validation -> AI policy decision
--> evidence hash + decision hash -> Casper Testnet attestation verification
--> human release / hold / dispute runbook -> portable audit dossier
+ProofPay joins the two:
+
+- The agent turns messy delivery evidence into a bounded payment recommendation.
+- The operator keeps final release authority for real funds.
+- Casper records the exact evidence hash and decision hash so the review can be replayed.
+- Suppliers, buyers, and arbiters share one audit package instead of arguing over screenshots and email threads.
+
+This is more than a frontend dashboard: the repository includes deterministic evidence scoring, hash generation, local API hooks, Casper attestation payload generation, Testnet transaction evidence, contract materials, CLI runbooks, and a portable audit dossier.
+
+## Screenshots
+
+| Operations cockpit | Trust chain |
+| --- | --- |
+| ![ProofPay operations cockpit](docs/images/proofpay-cockpit.png) | ![ProofPay trust chain workbench](docs/images/proofpay-trust-chain.png) |
+
+| Casper proof | Audit dossier |
+| --- | --- |
+| ![Casper Testnet attestation panel](docs/images/proofpay-casper-proof.png) | ![Portable audit dossier panel](docs/images/proofpay-audit-dossier.png) |
+
+## Demo Map
+
+| Step | Dashboard area | What the judge should see |
+| --- | --- | --- |
+| 1 | Cockpit | The current milestone, readiness score, risk score, evidence coverage, and decision path are visible immediately. |
+| 2 | Journey | Evidence intake, participant roles, scenario evaluation, and MCP/x402/Casper hooks are separated into tabs. |
+| 3 | Trust | External evidence, agent decision, human release control, and Casper verification are shown as one proof chain. |
+| 4 | Charts | Risk, cold-chain telemetry, escrow cashflow, and evidence coverage are shown with reusable chart components. |
+| 5 | Evidence | Invoice, bill of lading, delivery note, temperature log, supplier registry, claims, timeline, and follow-up actions are reviewable. |
+| 6 | Casper | The selected scenario shows Testnet transaction hash, block, named key, stored URef, payload, and deploy command. |
+| 7 | Dossier | The portable review package combines evidence hash, decision hash, Casper proof facts, checklist, and JSON artifact. |
+
+## What Judges Should Notice
+
+| Signal | Why it matters |
+| --- | --- |
+| Real RWA workflow | The demo is built around a temperature-controlled vaccine shipment and supplier milestone payment. |
+| Bounded agent authority | The agent recommends payment actions, but human release control remains explicit. |
+| Three exception paths | Clean release, finance hold, and duplicate-invoice reject are all modeled. |
+| Casper evidence | Each judge scenario has a recorded Casper Testnet transaction, not only a local mock. |
+| Replayable proof | Evidence hash, decision hash, named key, stored URef, and transaction hash are packaged together. |
+| Integration surface | Local APIs demonstrate evidence intake, MCP-style access, x402-style release gating, and attestation retrieval. |
+| Submission discipline | Hackathon rules, CLI runbook, demo script, Testnet notes, and final checklist are committed in the repo. |
+
+## System Thesis
+
+```mermaid
+flowchart LR
+  A[External evidence pack] --> B[Intake validation]
+  B --> C[Agent policy review]
+  C --> D{Decision}
+  D -->|approve| E[Human release checklist]
+  D -->|hold| F[Finance exception queue]
+  D -->|reject| G[Dispute and fraud block]
+  E --> H[Evidence hash + decision hash]
+  F --> H
+  G --> H
+  H --> I[Casper Testnet attestation]
+  I --> J[Portable audit dossier]
 ```
 
-The practical value is that AI can speed up payment review without becoming an unverifiable black box. Buyers keep release control, suppliers get a faster path to payment, arbiters can replay the reasoning trace, and Casper provides the public trust anchor for the payment decision.
+## Agent Workflow
 
-## Dashboard Cockpit
+```mermaid
+sequenceDiagram
+  participant Supplier
+  participant ProofPay
+  participant Agent
+  participant Buyer
+  participant Casper
+  participant Arbiter
 
-The web app has been refactored into a dense operator dashboard inspired by the local `money-run` cockpit:
-
-- HeroUI cards, chips, tables, tabs, and link controls.
-- Scroll-tracked sidebar navigation for the seven judge sections.
-- Journey workbench with evidence intake cards, buyer/supplier/arbiter workflow, scenario evaluation, and MCP/x402/Casper API hooks.
-- Trust-chain workbench with editable external evidence JSON intake, settlement runbook actions, and Casper payload-to-Testnet verifier checks.
-- Recharts charts for risk, cold-chain telemetry, escrow cashflow, and evidence coverage.
-- Scenario switcher for `approve`, `hold`, and `reject` judge flows.
-- Evidence room with reviewer summary, document cards, claim cards, and timeline tabs.
-- Action queue that turns agent findings into reviewer next steps.
-- Casper proof workbench with transaction hash, named key, stored URef, deploy command, and readiness gate cards.
-- Audit Dossier workbench that packages the decision trace, evidence hash, decision hash, Casper proof facts, CLI command, and reviewer checklist into a copy-ready JSON artifact.
-
-## Repository Layout
-
-```text
-apps/web                      Next.js dashboard
-packages/agent                Evidence model, seeded RWA data, scoring policy, hashes
-packages/casper               Attestation payloads and local demo transaction adapter
-contracts/proofpay-attestation Casper/Odra contract materials
-docs                          Submission, demo, and testnet documentation
+  Supplier->>ProofPay: Submit invoice, BOL, delivery note, temperature log, registry proof
+  ProofPay->>Agent: Normalize evidence bundle and run policy checks
+  Agent-->>ProofPay: Decision, confidence, risk score, reasons
+  ProofPay->>ProofPay: Create evidence hash and decision hash
+  ProofPay->>Casper: Anchor attestation payload on Testnet
+  Casper-->>ProofPay: Transaction hash, block, named key, stored URef
+  ProofPay->>Buyer: Present release, hold, or reject runbook
+  ProofPay->>Arbiter: Export replayable audit dossier
 ```
 
-## Quick Start
+## Casper Attestation Evidence
 
-```bash
-npm install
-npm run test
-npm run build
-npm run dev -- --hostname 127.0.0.1 --port 3000
-```
+All three judge scenarios have recorded Casper Testnet transaction-producing components:
 
-Open:
+| Scenario | Agent decision | Casper Testnet transaction |
+| --- | --- | --- |
+| Clean release | `approve` | `94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604` |
+| Hold for finance | `hold` | `c92cdcd8f11f6453134745900ea2c91defa0f8b37f4c6782dd38b2aa7a720d84` |
+| Reject duplicate | `reject` | `08995093b6ef978b381c4cee7d8faeb960f31bb64083544c8cfa0c3c8952e885` |
 
-```text
-http://127.0.0.1:3000
-```
-
-## Judge Mode Scenarios
-
-- Clean release: all evidence aligns and the agent recommends release.
-- Hold for finance: shipment evidence is credible, but invoice amount exceeds the milestone.
-- Reject duplicate: invoice fingerprint matches a previously settled attestation.
-
-## Casper Contract Path
-
-The contract package is in [contracts/proofpay-attestation](contracts/proofpay-attestation).
-
-Current structure:
-
-- `src/main.rs`: raw Casper Rust fallback with `#![no_std]`, `#![no_main]`, and `call()`.
-- `odra-module-sketch.rs`: Odra-style module sketch for the intended framework migration.
-- `README.md`: build and deploy argument reference.
-
-The local dashboard shows deterministic demo transaction hashes for repeatable judge-mode flows. All three judge scenarios now include successful Casper Testnet transaction-producing components:
+Current named key facts:
 
 ```text
-clean_tx: 94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604
-hold_tx: c92cdcd8f11f6453134745900ea2c91defa0f8b37f4c6782dd38b2aa7a720d84
-reject_tx: 08995093b6ef978b381c4cee7d8faeb960f31bb64083544c8cfa0c3c8952e885
 named_key: proofpay_attestation_ms-delivery-acceptance
 current_named_key_uref: uref-409325b098f841565f2667d96986d7f41ff08e606f33bf06f76a0564ac1eb76f-007
 ```
 
-Full Testnet evidence is documented in [docs/casper-testnet.md](docs/casper-testnet.md).
+Full proof notes are in [docs/casper-testnet.md](docs/casper-testnet.md). Casper CLI commands and deployment shapes are in [docs/casper-cli-runbook.md](docs/casper-cli-runbook.md).
 
-The dashboard's Audit Dossier section shows the same proof chain in a portable review package: policy trace, normalized evidence observations, evidence hash, decision hash, local demo transaction, Casper Testnet transaction, named key, stored URef, and reproduction checklist.
+## Audit Dossier
 
-## Ecosystem API Hooks
+The audit dossier is the artifact a buyer, supplier, or arbiter can keep after the agent decision. It is designed to survive outside the dashboard and still explain what happened.
 
-The Next.js app exposes lightweight local integration hooks:
+It packages:
+
+- Dossier id, deal id, milestone id, policy version, decision, confidence, and risk score.
+- Normalized evidence observations from invoice, bill of lading, delivery note, temperature log, and supplier registry.
+- Agent trace steps with passed, warning, failed, or pending status.
+- Evidence hash, decision hash, local demo transaction hash, Casper Testnet transaction hash, named key, and stored URef.
+- Reviewer checklist for release, hold, reject, and dispute follow-up.
+- Copy-ready JSON for a future MCP client, compliance archive, or payment operations desk.
+
+## Current Implementation
+
+```text
+apps/web                       Next.js dashboard and API routes
+packages/agent                 Evidence model, seeded RWA data, scoring policy, hashes
+packages/casper                Attestation payloads and local demo transaction adapter
+contracts/proofpay-attestation Casper/Odra contract materials
+docs                           Submission, demo, Testnet, and runbook documentation
+```
+
+Core dashboard capabilities:
+
+- Scroll-tracked operator sidebar for the seven judge sections.
+- Scenario switcher for `approve`, `hold`, and `reject` payment flows.
+- Evidence room for documents, claims, timeline, reasons, and follow-up actions.
+- Recharts-based visuals for risk, cold-chain telemetry, cashflow, evidence coverage, Casper checks, and audit trace distribution.
+- Casper proof workbench with transaction hash, named key, stored URef, deploy command, and readiness gates.
+- Audit dossier workbench with decision trace, hashes, Testnet proof facts, reproduction checklist, and copy-ready JSON.
+
+Local integration hooks:
 
 ```text
 GET  /api/attestation/clean
@@ -124,23 +184,38 @@ GET  /api/mcp
 POST /api/x402/release-decision
 ```
 
-These endpoints are demo hooks, not production payment or MCP infrastructure. They show how ProofPay can accept an external evidence bundle, return an agent decision, create a Casper attestation payload, verify recorded Testnet proof fields, and hand settlement actions or audit dossiers to MCP-style clients or x402-gated agent commerce.
+These endpoints are demo hooks, not production payment infrastructure. They show how ProofPay can accept an external evidence bundle, return an agent decision, create a Casper attestation payload, verify recorded Testnet proof fields, and hand settlement actions or audit dossiers to MCP-style clients or x402-gated agent commerce.
 
-The real-world product path is captured in [docs/real-world-use.md](docs/real-world-use.md).
+## Local Development
 
-## Casper CLI Path
+```bash
+npm install
+npm run test
+npm run typecheck
+npm run build
+npm run dev -- --hostname 127.0.0.1 --port 3000
+```
 
-Casper does have CLI tooling for the hard part of this project:
+Open:
 
-- `casper-client` sends deploys/transactions, checks deploy status, queries global state, and can verify contracts.
-- `cargo-casper` scaffolds Casper Wasm contract projects and tests.
-- `odra-cli` is the optional path if the raw contract is migrated into a full Odra module with deploy scripts.
+```text
+http://127.0.0.1:3000
+```
 
-DoraHacks itself still appears to be a manual BUIDL website submission flow, not a CLI flow. The operational CLI notes are captured in [docs/casper-cli-runbook.md](docs/casper-cli-runbook.md).
+Useful scripts:
 
-## DoraHacks Submission Assets
+```bash
+npm run submission:check        # repository cleanliness and submission asset check
+npm run attestation:export      # print a scenario's Casper attestation payload
+npm run casper:check            # verify Casper CLI, Testnet RPC, and account status
+npm run contract:build          # build Casper Wasm
+npm run contract:deploy:print   # print Casper Testnet deploy command shapes
+npm run contract:deploy:testnet # send or reproduce a Casper Testnet transaction
+```
 
-Prepared in this repository:
+## DoraHacks Assets
+
+Prepared submission materials:
 
 - [docs/buidl-submission-brief.md](docs/buidl-submission-brief.md)
 - [docs/submission-checklist.md](docs/submission-checklist.md)
@@ -157,29 +232,33 @@ Public demo video URL for the DoraHacks BUIDL form:
 https://github.com/Sskift/casper-proofpay-agent/blob/main/docs/demo/proofpay-agent-demo.mp4
 ```
 
-Before the real DoraHacks submission, run:
+Final submission still happens through DoraHacks `Submit BUIDL`; there does not appear to be a DoraHacks CLI submission path. The repository-level rules are captured in [docs/hackathon-constraints.md](docs/hackathon-constraints.md).
 
-```bash
-npm run submission:check
-```
+## Status
 
-Manual submission still requires opening DoraHacks, accepting the organizer disclaimer, reviewing the generated BUIDL draft, and confirming the final submit action.
+- [x] Public GitHub repository
+- [x] Public demo video
+- [x] Casper Testnet transaction evidence for clean, hold, and reject scenarios
+- [x] Evidence scoring and deterministic hash generation
+- [x] Casper attestation payload and verifier panel
+- [x] Operator dashboard with scenario switcher and charted proof sections
+- [x] Audit dossier with replayable proof facts
+- [x] Local MCP-style, x402-style, evidence intake, and attestation APIs
+- [x] DoraHacks BUIDL materials
+- [ ] Hosted public read-only deployment
+- [ ] Production custody, wallet signing, OCR, and live payment settlement
 
-## Scripts
+## Roadmap
 
-```bash
-npm run test       # package unit tests
-npm run typecheck  # TypeScript checks
-npm run build      # Next.js production build
-npm run dev        # local dashboard
-npm run submission:check       # final repository cleanliness and submission asset check
-npm run attestation:export     # print a scenario's Casper attestation payload
-npm run casper:check           # verify Casper CLI, Testnet RPC, and local account status
-npm run contract:build         # build Casper Wasm
-npm run contract:deploy:print  # print Casper Testnet deploy command shapes
-npm run contract:deploy:testnet # send or reproduce a Casper Testnet transaction
-```
+- Hosted public read-only demo for judges who do not run the repo locally.
+- Direct Casper state query in the dashboard instead of recorded proof facts.
+- Wallet-native buyer signing and supplier payout handoff.
+- OCR and document ingestion pipeline for real invoices and logistics documents.
+- External MCP server for agent-to-agent proof retrieval.
+- Shareable dossier export page for buyers, suppliers, and arbiters.
 
 ## Prototype Boundary
 
 This hackathon prototype does not custody real funds. Escrow is represented as milestone state plus a Casper attestation record. Seeded evidence is synthetic for repeatable judge-mode demos, while `POST /api/evidence/intake` and the dashboard intake lab demonstrate how an external normalized evidence bundle would enter the same assessment and verification path.
+
+The product goal is simple: make AI-assisted RWA payment review faster without making it unverifiable.
