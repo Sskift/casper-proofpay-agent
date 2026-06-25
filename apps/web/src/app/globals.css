@@ -784,8 +784,7 @@ h1 {
   background: #fff7fa;
 }
 
-.cockpit-tabs,
-.chart-tabs {
+.cockpit-tabs {
   min-width: 0;
   margin-top: 10px;
   padding: 10px;
@@ -899,6 +898,10 @@ h1 {
   gap: 10px;
 }
 
+.chart-gallery {
+  margin-top: 10px;
+}
+
 .viz-card {
   min-width: 0;
   padding: 12px;
@@ -989,6 +992,89 @@ h1 {
 .chart-tooltip code {
   color: #1d2939;
   font-size: 0.72rem;
+}
+
+.cockpit-visuals,
+.trust-mini-charts {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.cockpit-visuals {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.trust-mini-charts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 10px;
+}
+
+.mini-chart-card,
+.mini-bar-panel {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.mini-chart-card {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-height: 108px;
+  padding: 10px;
+}
+
+.mini-gauge {
+  position: relative;
+  width: 78px;
+  height: 78px;
+}
+
+.mini-gauge strong {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #1d2939;
+  font-family: var(--font-num);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.mini-chart-card span,
+.mini-bar-head {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.mini-chart-card p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
+.mini-bar-panel {
+  display: grid;
+  gap: 6px;
+  min-height: 158px;
+  padding: 10px;
+}
+
+.mini-bar-chart {
+  width: 100%;
+  height: 112px;
+}
+
+.dossier-visual {
+  margin-bottom: 10px;
 }
 
 .table-wrap {
@@ -1262,7 +1348,6 @@ h1 {
 
 .evidence-drilldown .tabs__list,
 .cockpit-tabs .tabs__list,
-.chart-tabs .tabs__list,
 .evidence-review-tabs .tabs__list {
   display: inline-flex;
   flex-wrap: wrap;
@@ -1276,7 +1361,6 @@ h1 {
 
 .evidence-drilldown .tabs__tab,
 .cockpit-tabs .tabs__tab,
-.chart-tabs .tabs__tab,
 .evidence-review-tabs .tabs__tab {
   display: inline-flex;
   align-items: center;
@@ -1295,7 +1379,6 @@ h1 {
 
 .evidence-drilldown .tabs__tab[data-selected="true"],
 .cockpit-tabs .tabs__tab[data-selected="true"],
-.chart-tabs .tabs__tab[data-selected="true"],
 .evidence-review-tabs .tabs__tab[data-selected="true"] {
   background: #ffffff;
   color: var(--primary);
@@ -1304,13 +1387,8 @@ h1 {
 
 .evidence-drilldown .tabs__panel,
 .cockpit-tabs .tabs__panel,
-.chart-tabs .tabs__panel,
 .evidence-review-tabs .tabs__panel {
   outline: none;
-}
-
-.chart-tabs .tabs__panel {
-  margin-top: 10px;
 }
 
 .document-grid {
@@ -2582,6 +2660,7 @@ h1 {
   .side-nav,
   .deal-strip,
   .cockpit-kpis,
+  .cockpit-visuals,
   .status-strip,
   .decision-spine,
   .hash-grid,
@@ -2594,6 +2673,7 @@ h1 {
   .role-flow,
   .ecosystem-hooks,
   .trust-chain,
+  .trust-mini-charts,
   .realuse-grid,
   .coverage-strip,
   .readiness-grid,

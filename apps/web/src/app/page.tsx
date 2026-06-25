@@ -60,6 +60,8 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   CashflowChart,
   EvidenceCoverageChart,
+  MiniBarChart,
+  MiniRadialGauge,
   RiskTapeChart,
   TemperatureChart
 } from "@/components/DashboardCharts";
@@ -132,6 +134,14 @@ const dashboardSections: Array<{ id: SectionId; label: string; eyebrow: string; 
 ];
 
 const dashboardSectionIds = dashboardSections.map((section) => section.id);
+
+const chartColors = {
+  blue: "#1664ff",
+  green: "#12b76a",
+  amber: "#b7791f",
+  red: "#f31260",
+  gray: "#98a2b3"
+};
 
 function chipColor(value: string): ChipColor {
   const normalized = value.toLowerCase();
@@ -351,6 +361,8 @@ function CockpitSection({
   const deployment = deployPlan.deployment;
   const matchedDocuments = model.evidenceMatrix.filter((row) => row.status === "matched").length;
   const exceptionDocuments = model.evidenceMatrix.length - matchedDocuments;
+  const evidencePercent = Math.round((matchedDocuments / model.evidenceMatrix.length) * 100);
+  const riskHealth = Math.max(0, 100 - assessment.riskScore);
   const decisionState = assessment.decision === "approve" ? "ready" : assessment.decision === "hold" ? "watch" : "blocked";
   const chainState = deployment ? "recorded" : "watch";
   const primaryAction = model.actionQueue[0];
@@ -428,6 +440,27 @@ function CockpitSection({
               {model.cockpitMetrics.map((metric) => (
                 <MetricCard key={metric.id} metric={metric} />
               ))}
+            </div>
+
+            <div className="cockpit-visuals" aria-label="Decision gauges">
+              <MiniRadialGauge
+                color={assessment.confidence >= 90 ? chartColors.green : chartColors.amber}
+                label="Confidence"
+                sub="agent certainty"
+                value={assessment.confidence}
+              />
+              <MiniRadialGauge
+                color={riskHealth >= 70 ? chartColors.green : riskHealth >= 35 ? chartColors.amber : chartColors.red}
+                label="Risk health"
+                sub={`${assessment.riskScore}/100 risk`}
+                value={riskHealth}
+              />
+              <MiniRadialGauge
+                color={evidencePercent === 100 ? chartColors.green : chartColors.amber}
+                label="Evidence"
+                sub={`${matchedDocuments}/${model.evidenceMatrix.length} cleared`}
+                value={evidencePercent}
+              />
             </div>
 
             <div className="status-strip">
@@ -594,7 +627,7 @@ function ChartsSection({ model }: { model: OperationsDashboardModel }) {
       step="04"
       title="Risk, cash, and evidence charts"
       sub="Charts mirror money-run's dense operating style, but tuned for RWA escrow evidence."
-      action={<SectionBadge>focused chart tabs</SectionBadge>}
+      action={<SectionBadge>4 live charts</SectionBadge>}
     >
       <div className="chart-summary-strip" aria-label="Chart summary">
         {chartSummary.map((item) => (
@@ -606,39 +639,11 @@ function ChartsSection({ model }: { model: OperationsDashboardModel }) {
         ))}
       </div>
 
-      <div className="chart-tabs">
-        <Tabs defaultSelectedKey="risk" variant="primary">
-          <Tabs.List aria-label="Chart drilldown tabs">
-            <Tabs.Tab id="risk">
-              <Activity aria-hidden="true" size={15} />
-              Risk
-            </Tabs.Tab>
-            <Tabs.Tab id="cashflow">
-              <Banknote aria-hidden="true" size={15} />
-              Cashflow
-            </Tabs.Tab>
-            <Tabs.Tab id="temperature">
-              <Thermometer aria-hidden="true" size={15} />
-              Cold-chain
-            </Tabs.Tab>
-            <Tabs.Tab id="coverage">
-              <ClipboardCheck aria-hidden="true" size={15} />
-              Coverage
-            </Tabs.Tab>
-          </Tabs.List>
-          <Tabs.Panel id="risk">
-            <RiskTapeChart model={model} />
-          </Tabs.Panel>
-          <Tabs.Panel id="cashflow">
-            <CashflowChart model={model} />
-          </Tabs.Panel>
-          <Tabs.Panel id="temperature">
-            <TemperatureChart model={model} />
-          </Tabs.Panel>
-          <Tabs.Panel id="coverage">
-            <EvidenceCoverageChart model={model} />
-          </Tabs.Panel>
-        </Tabs>
+      <div className="viz-grid chart-gallery" aria-label="Chart gallery">
+        <RiskTapeChart model={model} />
+        <CashflowChart model={model} />
+        <TemperatureChart model={model} />
+        <EvidenceCoverageChart model={model} />
       </div>
     </ShellCard>
   );
@@ -862,6 +867,40 @@ function TrustChainSection({
     }
   ];
   const previewCoverage = preview.report?.coverage ?? [];
+  const intakeStatusData = [
+    {
+      name: "complete",
+      value: intakeReport.coverage.filter((item) => item.status === "complete").length,
+      color: chartColors.green
+    },
+    {
+      name: "weak",
+      value: intakeReport.coverage.filter((item) => item.status === "weak").length,
+      color: chartColors.amber
+    },
+    {
+      name: "missing",
+      value: intakeReport.coverage.filter((item) => item.status === "missing").length,
+      color: chartColors.red
+    }
+  ];
+  const verifierStatusData = [
+    {
+      name: "passed",
+      value: attestationVerification.checks.filter((item) => item.status === "passed").length,
+      color: chartColors.green
+    },
+    {
+      name: "pending",
+      value: attestationVerification.checks.filter((item) => item.status === "pending").length,
+      color: chartColors.amber
+    },
+    {
+      name: "failed",
+      value: attestationVerification.checks.filter((item) => item.status === "failed").length,
+      color: chartColors.red
+    }
+  ];
 
   return (
     <ShellCard
@@ -884,6 +923,11 @@ function TrustChainSection({
             <Chip color={chipColor(node.status)} variant="soft">{statusLabel(node.status)}</Chip>
           </article>
         ))}
+      </div>
+
+      <div className="trust-mini-charts" aria-label="Trust chain visual summary">
+        <MiniBarChart data={intakeStatusData} label="Evidence coverage" maxValue={intakeReport.coverage.length} />
+        <MiniBarChart data={verifierStatusData} label="Casper checks" maxValue={attestationVerification.checks.length} />
       </div>
 
       <div className="realuse-grid">
@@ -1355,6 +1399,18 @@ function DossierSection({ dossier }: { dossier: AuditDossier }) {
     status,
     count: dossier.trace.filter((step) => step.status === status).length
   }));
+  const traceChartData = traceCounts.map((item) => ({
+    name: item.status,
+    value: item.count,
+    color:
+      item.status === "passed"
+        ? chartColors.green
+        : item.status === "failed"
+          ? chartColors.red
+          : item.status === "warning"
+            ? chartColors.amber
+            : chartColors.gray
+  }));
   const passedTraceCount = traceCounts.find((item) => item.status === "passed")?.count ?? 0;
   const onChainState = dossier.verification.casperTransactionHash ? "recorded" : "pending";
   const verificationFacts = [
@@ -1418,6 +1474,10 @@ function DossierSection({ dossier }: { dossier: AuditDossier }) {
               <strong>{passedTraceCount}/{dossier.trace.length}</strong>
               <p>{onChainState === "recorded" ? "Casper proof recorded" : "Scenario deploy pending"}</p>
             </div>
+          </div>
+
+          <div className="dossier-visual">
+            <MiniBarChart data={traceChartData} label="Audit trace distribution" maxValue={dossier.trace.length} />
           </div>
 
           <div className="dossier-meter" aria-label="Audit trace status distribution">

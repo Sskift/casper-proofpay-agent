@@ -9,6 +9,9 @@ import {
   Legend,
   Line,
   LineChart,
+  PolarAngleAxis,
+  RadialBar,
+  RadialBarChart,
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
@@ -31,6 +34,12 @@ const axisStyle = {
   fill: palette.gray,
   fontSize: 11,
   fontWeight: 700
+};
+
+export type MiniChartDatum = {
+  name: string;
+  value: number;
+  color?: string;
 };
 
 function ChartFrame({ title, sub, children }: { title: string; sub?: string; children: React.ReactNode }) {
@@ -82,6 +91,80 @@ function CustomTooltip({ active, label, payload }: ChartTooltipProps) {
 function formatUsd(value: number) {
   if (value >= 1000) return `$${Math.round(value / 1000)}k`;
   return `$${value}`;
+}
+
+export function MiniRadialGauge({
+  color = palette.blue,
+  label,
+  sub,
+  value
+}: {
+  color?: string;
+  label: string;
+  sub?: string;
+  value: number;
+}) {
+  const boundedValue = Math.max(0, Math.min(100, value));
+
+  return (
+    <div className="mini-chart-card">
+      <div className="mini-gauge">
+        <ResponsiveContainer height="100%" width="100%">
+          <RadialBarChart
+            barSize={10}
+            cx="50%"
+            cy="50%"
+            data={[{ name: label, value: boundedValue, fill: color }]}
+            endAngle={-270}
+            innerRadius="72%"
+            outerRadius="96%"
+            startAngle={90}
+          >
+            <PolarAngleAxis domain={[0, 100]} tick={false} type="number" />
+            <RadialBar background={{ fill: "#edf1f7" }} cornerRadius={10} dataKey="value" />
+          </RadialBarChart>
+        </ResponsiveContainer>
+        <strong>{Math.round(boundedValue)}%</strong>
+      </div>
+      <div>
+        <span>{label}</span>
+        {sub ? <p>{sub}</p> : null}
+      </div>
+    </div>
+  );
+}
+
+export function MiniBarChart({
+  data,
+  label,
+  maxValue
+}: {
+  data: MiniChartDatum[];
+  label: string;
+  maxValue?: number;
+}) {
+  const domainMax = maxValue ?? Math.max(...data.map((item) => item.value), 1);
+
+  return (
+    <div className="mini-bar-panel">
+      <div className="mini-bar-head">{label}</div>
+      <div className="mini-bar-chart">
+        <ResponsiveContainer height="100%" width="100%">
+          <BarChart data={data} margin={{ top: 4, right: 6, bottom: 2, left: 0 }}>
+            <CartesianGrid stroke={palette.grid} strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="name" tick={axisStyle} tickLine={false} />
+            <YAxis allowDecimals={false} domain={[0, domainMax]} hide />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(22, 100, 255, 0.06)" }} />
+            <Bar animationDuration={520} dataKey="value" name="count" radius={[6, 6, 0, 0]}>
+              {data.map((item) => (
+                <Cell fill={item.color ?? palette.blue} key={item.name} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
 }
 
 export function RiskTapeChart({ model }: { model: OperationsDashboardModel }) {

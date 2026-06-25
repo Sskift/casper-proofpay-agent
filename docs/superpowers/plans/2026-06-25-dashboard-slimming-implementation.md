@@ -15,8 +15,8 @@
 **Files:**
 - Modify: `apps/web/scripts/check-dashboard-layout.mjs`
 
-- [ ] Add required page contracts for `decision-spine`, `cockpit-tabs`, `chart-summary-strip`, `chart-tabs`, `evidence-summary-meter`, and `evidence-review-tabs`.
-- [ ] Add required CSS contracts for `.decision-spine`, `.cockpit-tabs`, `.chart-summary-strip`, `.chart-tabs`, `.evidence-summary-meter`, and `.evidence-review-tabs`.
+- [ ] Add required page contracts for `decision-spine`, `cockpit-tabs`, `chart-summary-strip`, `chart-gallery`, `evidence-summary-meter`, and `evidence-review-tabs`.
+- [ ] Add required CSS contracts for `.decision-spine`, `.cockpit-tabs`, `.chart-summary-strip`, `.chart-gallery`, `.evidence-summary-meter`, and `.evidence-review-tabs`.
 - [ ] Run `npm --workspace apps/web run test` and verify it fails because the new slimming structures are not implemented yet.
 
 ### Task 2: Cockpit Slimming
@@ -37,7 +37,7 @@
 - Modify: `apps/web/src/app/globals.css`
 
 - [ ] Add a chart summary strip with current risk, cold-chain band, cashflow state, and evidence coverage.
-- [ ] Move charts into `chart-tabs` so one chart renders per selected tab.
+- [ ] Render charts in a visible `chart-gallery` so all four chart components are visible without extra tab clicks.
 - [ ] Render charts with Recharts `ResponsiveContainer`, `LineChart`, `BarChart`, `Tooltip`, `Legend`, and `CartesianGrid` components so tab panels do not produce blank responsive containers.
 - [ ] Keep all four chart components available for reviewers.
 - [ ] Run `npm --workspace apps/web run test` and verify chart source contracts pass.
