@@ -6,12 +6,18 @@ import {
   createEvidenceHash,
   createOperationsDashboard,
   createProductDepthModel,
+  createSettlementRunbook,
+  inspectEvidenceIntake,
+  parseEvidenceBundle,
   seededDeals,
   seededEvidenceBundles,
   type AgentAssessment,
   type AuditDossier,
+  type EvidenceBundle,
+  type EvidenceIntakeReport,
   type OperationsDashboardModel,
   type ProductDepthModel,
+  type SettlementRunbook,
   type WorkflowRole
 } from "@proofpay/agent";
 import {
@@ -19,6 +25,8 @@ import {
   createCasperDeployPlan,
   createCasperVerificationSummary,
   submitDemoAttestation,
+  verifyCasperAttestation,
+  type AttestationVerificationReport,
   type CasperAttestationPayload,
   type CasperDeployPlan,
   type DemoCasperTransaction
@@ -57,7 +65,7 @@ import {
 } from "@/components/DashboardCharts";
 
 type ScenarioKey = keyof typeof seededEvidenceBundles;
-type SectionId = "cockpit" | "journey" | "charts" | "evidence" | "casper" | "dossier";
+type SectionId = "cockpit" | "journey" | "trust" | "charts" | "evidence" | "casper" | "dossier";
 type ChipColor = "success" | "warning" | "danger" | "default" | "accent";
 
 const scenarioCopy: Record<ScenarioKey, { label: string; short: string; operator: string }> = {
@@ -92,27 +100,33 @@ const dashboardSections: Array<{ id: SectionId; label: string; eyebrow: string; 
     detail: "Intake and roles"
   },
   {
+    id: "trust",
+    label: "Trust",
+    eyebrow: "03",
+    detail: "Real-use chain"
+  },
+  {
     id: "charts",
     label: "Charts",
-    eyebrow: "03",
+    eyebrow: "04",
     detail: "Risk and cash"
   },
   {
     id: "evidence",
     label: "Evidence",
-    eyebrow: "04",
+    eyebrow: "05",
     detail: "Claims and documents"
   },
   {
     id: "casper",
     label: "Casper",
-    eyebrow: "05",
+    eyebrow: "06",
     detail: "Testnet proof"
   },
   {
     id: "dossier",
     label: "Dossier",
-    eyebrow: "06",
+    eyebrow: "07",
     detail: "Audit package"
   }
 ];
@@ -121,9 +135,9 @@ const dashboardSectionIds = dashboardSections.map((section) => section.id);
 
 function chipColor(value: string): ChipColor {
   const normalized = value.toLowerCase();
-  if (["approve", "ready", "matched", "positive", "complete", "success", "passed", "recorded", "live", "submitted"].includes(normalized)) return "success";
-  if (["hold", "watch", "warning", "manual", "active", "pending", "standby", "demo"].includes(normalized)) return "warning";
-  if (["reject", "blocked", "failed", "negative"].includes(normalized)) return "danger";
+  if (["approve", "ready", "matched", "positive", "complete", "success", "passed", "recorded", "live", "submitted", "verified", "available", "auto_release_ready"].includes(normalized)) return "success";
+  if (["hold", "watch", "warning", "manual", "active", "pending", "standby", "demo", "required", "needs_review", "human_review_required"].includes(normalized)) return "warning";
+  if (["reject", "blocked", "failed", "negative", "mismatch", "release_blocked"].includes(normalized)) return "danger";
   return "default";
 }
 
@@ -136,6 +150,10 @@ function decisionLabel(decision: AgentAssessment["decision"]) {
 function shortHash(value: string, left = 10, right = 8) {
   if (value.length <= left + right + 3) return value;
   return `${value.slice(0, left)}...${value.slice(-right)}`;
+}
+
+function statusLabel(value: string) {
+  return value.replaceAll("_", " ");
 }
 
 function useScrollSpy(sectionIds: SectionId[], offset = 118) {
@@ -573,7 +591,7 @@ function ChartsSection({ model }: { model: OperationsDashboardModel }) {
     <ShellCard
       id="charts"
       eyebrow="Signal room"
-      step="03"
+      step="04"
       title="Risk, cash, and evidence charts"
       sub="Charts mirror money-run's dense operating style, but tuned for RWA escrow evidence."
       action={<SectionBadge>focused chart tabs</SectionBadge>}
@@ -765,6 +783,200 @@ function JourneySection({ productDepth }: { productDepth: ProductDepthModel }) {
   );
 }
 
+function TrustChainSection({
+  bundle,
+  intakeReport,
+  runbook,
+  attestationVerification
+}: {
+  bundle: EvidenceBundle;
+  intakeReport: EvidenceIntakeReport;
+  runbook: SettlementRunbook;
+  attestationVerification: AttestationVerificationReport;
+}) {
+  const [draft, setDraft] = useState(() => JSON.stringify(bundle, null, 2));
+
+  useEffect(() => {
+    setDraft(JSON.stringify(bundle, null, 2));
+  }, [bundle]);
+
+  const preview = useMemo(() => {
+    try {
+      const parsed = parseEvidenceBundle(JSON.parse(draft));
+
+      if (!parsed.ok) {
+        return {
+          ok: false as const,
+          report: parsed.report,
+          error: null
+        };
+      }
+
+      const assessment = assessEvidence(parsed.bundle);
+      const evidenceHash = createEvidenceHash(parsed.bundle);
+
+      return {
+        ok: true as const,
+        report: parsed.report,
+        decision: assessment.decision,
+        riskScore: assessment.riskScore,
+        evidenceHash
+      };
+    } catch {
+      return {
+        ok: false as const,
+        report: null,
+        error: "JSON parse failed"
+      };
+    }
+  }, [draft]);
+
+  const trustNodes = [
+    {
+      id: "intake",
+      label: "Evidence intake",
+      value: `${intakeReport.documentsReceived} docs`,
+      status: intakeReport.status,
+      detail: intakeReport.summary
+    },
+    {
+      id: "decision",
+      label: "AI policy decision",
+      value: runbook.operatorDecision,
+      status: runbook.mode,
+      detail: runbook.headline
+    },
+    {
+      id: "control",
+      label: "Human release control",
+      value: runbook.readiness.find((item) => item.id === "approval")?.status ?? "manual",
+      status: runbook.readiness.find((item) => item.id === "approval")?.status ?? "manual",
+      detail: "Real funds still require buyer or dispute-desk action."
+    },
+    {
+      id: "verify",
+      label: "Casper verifier",
+      value: attestationVerification.label,
+      status: attestationVerification.status,
+      detail: attestationVerification.summary
+    }
+  ];
+  const previewCoverage = preview.report?.coverage ?? [];
+
+  return (
+    <ShellCard
+      id="trust"
+      eyebrow="Real-use chain"
+      step="03"
+      title="From evidence to verifiable payment action"
+      sub="The product value is the trust chain: external evidence in, explainable AI decision, human release control, and Casper proof verification out."
+      action={<SectionBadge tone={attestationVerification.status === "verified" ? "success" : "warning"}>{statusLabel(attestationVerification.status)}</SectionBadge>}
+    >
+      <div className="trust-chain" aria-label="ProofPay trust chain">
+        {trustNodes.map((node, index) => (
+          <article className={`trust-node trust-node--${node.status}`} key={node.id}>
+            <div className="trust-node__marker">{index + 1}</div>
+            <div>
+              <span>{node.label}</span>
+              <strong>{node.value}</strong>
+              <p>{node.detail}</p>
+            </div>
+            <Chip color={chipColor(node.status)} variant="soft">{statusLabel(node.status)}</Chip>
+          </article>
+        ))}
+      </div>
+
+      <div className="realuse-grid">
+        <div className="intake-lab">
+          <div className="realuse-head">
+            <div>
+              <span>External intake lab</span>
+              <strong>Paste an evidence bundle JSON</strong>
+            </div>
+            <Chip color={preview.ok ? "success" : "warning"} variant="soft">{preview.ok ? "assessable" : "needs fix"}</Chip>
+          </div>
+          <textarea
+            aria-label="External evidence bundle JSON"
+            onChange={(event) => setDraft(event.target.value)}
+            spellCheck={false}
+            value={draft}
+          />
+          <div className="intake-preview">
+            {preview.error ? (
+              <div className="preview-status preview-status--failed">
+                <TriangleAlert aria-hidden="true" size={16} />
+                <span>{preview.error}</span>
+              </div>
+            ) : preview.ok ? (
+              <div className="preview-status preview-status--passed">
+                <CheckCircle2 aria-hidden="true" size={16} />
+                <span>{preview.decision} · risk {preview.riskScore}/100 · {shortHash(preview.evidenceHash)}</span>
+              </div>
+            ) : (
+              <div className="preview-status preview-status--warning">
+                <TriangleAlert aria-hidden="true" size={16} />
+                <span>{preview.report?.summary}</span>
+              </div>
+            )}
+            <div className="coverage-strip">
+              {previewCoverage.map((item) => (
+                <div className={`coverage-pill coverage-pill--${item.status}`} key={item.type}>
+                  <span>{item.type.replaceAll("_", " ")}</span>
+                  <strong>{statusLabel(item.status)}</strong>
+                </div>
+              ))}
+            </div>
+            <code>POST /api/evidence/intake</code>
+          </div>
+        </div>
+
+        <div className="runbook-panel">
+          <div className="realuse-head">
+            <div>
+              <span>Settlement runbook</span>
+              <strong>{runbook.releaseAmount}</strong>
+            </div>
+            <Chip color={chipColor(runbook.mode)} variant="soft">{statusLabel(runbook.mode)}</Chip>
+          </div>
+          <div className="runbook-actions">
+            {runbook.actions.map((action) => (
+              <article className={`runbook-action runbook-action--${action.status}`} key={action.id}>
+                <div>
+                  <span>{action.actor}</span>
+                  <strong>{action.label}</strong>
+                  <p>{action.detail}</p>
+                </div>
+                <Chip color={chipColor(action.status)} variant="soft">{statusLabel(action.status)}</Chip>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div className="verifier-panel">
+          <div className="realuse-head">
+            <div>
+              <span>Casper verifier</span>
+              <strong>{attestationVerification.label}</strong>
+            </div>
+            <Chip color={chipColor(attestationVerification.status)} variant="soft">{statusLabel(attestationVerification.status)}</Chip>
+          </div>
+          <div className="verifier-checks">
+            {attestationVerification.checks.map((check) => (
+              <div className={`verifier-check verifier-check--${check.status}`} key={check.id}>
+                <div>
+                  <span>{check.label}</span>
+                  <code title={`Expected: ${check.expected} · Observed: ${check.observed}`}>{check.observed}</code>
+                </div>
+                <Chip color={chipColor(check.status)} variant="soft">{statusLabel(check.status)}</Chip>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </ShellCard>
+  );
+}
+
 function EvidenceSection({
   assessment,
   model
@@ -808,7 +1020,7 @@ function EvidenceSection({
     <ShellCard
       id="evidence"
       eyebrow="Evidence review"
-      step="04"
+      step="05"
       title="Evidence room"
       sub="A reviewer-first workspace for documents, normalized claims, and exception handling."
       action={<Bot aria-hidden="true" size={20} />}
@@ -1035,7 +1247,7 @@ function CasperSection({
     <ShellCard
       id="casper"
       eyebrow="On-chain proof"
-      step="05"
+      step="06"
       title="Casper attestation"
       sub={deployment ? "Selected scenario is anchored on Casper Testnet." : "This scenario is deploy-ready and waiting for a matching Testnet attestation."}
       action={<SectionBadge tone={deployment ? "success" : "warning"}>{deployment ? "on-chain" : "deploy-ready"}</SectionBadge>}
@@ -1183,7 +1395,7 @@ function DossierSection({ dossier }: { dossier: AuditDossier }) {
     <ShellCard
       id="dossier"
       eyebrow="Judge package"
-      step="06"
+      step="07"
       title="Audit dossier"
       sub="One portable package for the decision trace, hashes, Casper proof facts, and reproduction checklist."
       action={<SectionBadge>audit console</SectionBadge>}
@@ -1330,6 +1542,15 @@ export default function Home() {
       }),
     [payload, scenario]
   );
+  const intakeReport = useMemo(() => inspectEvidenceIntake(bundle), [bundle]);
+  const attestationVerification = useMemo(
+    () =>
+      verifyCasperAttestation({
+        payload,
+        deployment: deployPlan.deployment
+      }),
+    [deployPlan.deployment, payload]
+  );
   const dossier = useMemo(
     () =>
       createAuditDossier({
@@ -1350,6 +1571,17 @@ export default function Home() {
         cliCommand: deployPlan.cliCommand
       }),
     [assessment, bundle, deal, deployPlan, evidenceHash, milestone, payload.decisionHash, transaction]
+  );
+  const settlementRunbook = useMemo(
+    () =>
+      createSettlementRunbook({
+        deal,
+        milestone,
+        bundle,
+        assessment,
+        dossier
+      }),
+    [assessment, bundle, deal, dossier, milestone]
   );
   const model = useMemo(
     () =>
@@ -1479,6 +1711,12 @@ export default function Home() {
             transaction={transaction}
           />
           <JourneySection productDepth={productDepth} />
+          <TrustChainSection
+            attestationVerification={attestationVerification}
+            bundle={bundle}
+            intakeReport={intakeReport}
+            runbook={settlementRunbook}
+          />
           <ChartsSection model={model} />
           <EvidenceSection assessment={assessment} model={model} />
           <CasperSection deployPlan={deployPlan} payload={payload} />

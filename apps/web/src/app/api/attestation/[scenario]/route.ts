@@ -24,9 +24,11 @@ export async function GET(_request: Request, context: RouteContext) {
   return NextResponse.json({
     schemaVersion: "proofpay.api.attestation.v1",
     scenario: proofPackage.scenario,
+    intakeReport: proofPackage.intakeReport,
     assessment: proofPackage.assessment,
     payload: proofPackage.payload,
     verification: proofPackage.verification,
+    attestationVerification: proofPackage.attestationVerification,
     deployPlan: {
       network: proofPackage.deployPlan.network,
       chainName: proofPackage.deployPlan.chainName,
@@ -34,6 +36,7 @@ export async function GET(_request: Request, context: RouteContext) {
       deployment: proofPackage.deployPlan.deployment,
       postFundingCommands: proofPackage.deployPlan.postFundingCommands
     },
+    settlementRunbook: proofPackage.settlementRunbook,
     dossier: proofPackage.dossier
   });
 }

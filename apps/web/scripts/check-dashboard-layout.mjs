@@ -35,6 +35,11 @@ const requiredPageContracts = [
   ["role-flow", "Role workflow should be visible as a product flow."],
   ["evaluation-matrix", "Agent evaluation should show scenario coverage."],
   ["ecosystem-hooks", "Casper ecosystem hooks should be visible without a long text wall."],
+  ['id="trust"', "The dashboard needs a Trust section that explains the real evidence-to-payment chain."],
+  ["TrustChainSection", "The real-use trust chain should be rendered as a dedicated workbench."],
+  ["parseEvidenceBundle", "The dashboard should let reviewers validate an external evidence package."],
+  ["settlementRunbook", "The dashboard should expose settlement actions, not only frontend metrics."],
+  ["attestationVerification", "The dashboard should verify Casper proof fields against the current payload."],
   ["decision-spine", "Cockpit should show a compact decision spine instead of only expanded action rows."],
   ["cockpit-tabs", "Cockpit action, hash, and actor details should live in secondary tabs."],
   ["chart-summary-strip", "Charts should include a compact summary strip before drilldown charts."],
@@ -67,6 +72,10 @@ const requiredCssContracts = [
   [".role-flow", "Role workflow styles are missing."],
   [".evaluation-matrix", "Evaluation matrix styles are missing."],
   [".ecosystem-hooks", "Ecosystem hook card styles are missing."],
+  [".trust-chain", "Trust chain layout styles are missing."],
+  [".intake-lab", "External evidence intake lab styles are missing."],
+  [".runbook-actions", "Settlement runbook action styles are missing."],
+  [".verifier-checks", "Casper verifier check styles are missing."],
   [".decision-spine", "Cockpit decision spine styles are missing."],
   [".cockpit-tabs", "Cockpit tabs styles are missing."],
   [".chart-summary-strip", "Chart summary strip styles are missing."],
@@ -107,6 +116,7 @@ if (chartsComponent.includes("function linePath")) {
 const requiredRouteFiles = [
   "src/app/api/proofpay-data.ts",
   "src/app/api/attestation/[scenario]/route.ts",
+  "src/app/api/evidence/intake/route.ts",
   "src/app/api/mcp/route.ts",
   "src/app/api/x402/release-decision/route.ts"
 ];
@@ -120,13 +130,19 @@ for (const routeFile of requiredRouteFiles) {
 const mcpRoute = readFileSync(resolve(root, "src/app/api/mcp/route.ts"), "utf8");
 const x402Route = readFileSync(resolve(root, "src/app/api/x402/release-decision/route.ts"), "utf8");
 const dataRoute = readFileSync(resolve(root, "src/app/api/proofpay-data.ts"), "utf8");
+const intakeRoute = readFileSync(resolve(root, "src/app/api/evidence/intake/route.ts"), "utf8");
 
 for (const [source, needle, message] of [
   [mcpRoute, "assess_milestone_evidence", "MCP route should expose the assessment tool name."],
   [mcpRoute, "get_casper_attestation", "MCP route should expose the Casper attestation lookup tool name."],
+  [mcpRoute, "submit_external_evidence_pack", "MCP route should expose the external evidence intake tool name."],
   [x402Route, "x-proofpay-demo-paid", "x402 route should require the explicit demo payment header."],
   [x402Route, "paymentRequired", "x402 route should honestly report payment-required metadata."],
-  [dataRoute, "createCasperVerificationSummary", "API data helper should include Casper verification summaries."]
+  [dataRoute, "createCasperVerificationSummary", "API data helper should include Casper verification summaries."],
+  [dataRoute, "verifyCasperAttestation", "API data helper should include payload-to-Testnet attestation verification."],
+  [dataRoute, "createSettlementRunbook", "API data helper should include a real settlement runbook."],
+  [intakeRoute, "parseEvidenceBundle", "Evidence intake route should validate external evidence bundles."],
+  [intakeRoute, "buildExternalProofPayPackage", "Evidence intake route should return a full ProofPay package for external bundles."]
 ]) {
   if (!source.includes(needle)) {
     throw new Error(message);

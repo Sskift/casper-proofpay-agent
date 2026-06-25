@@ -5,7 +5,8 @@ import {
   createAttestationPayload,
   createCasperDeployPlan,
   createCasperVerificationSummary,
-  submitDemoAttestation
+  submitDemoAttestation,
+  verifyCasperAttestation
 } from "./index";
 
 describe("ProofPay Casper adapter", () => {
@@ -112,5 +113,40 @@ describe("ProofPay Casper adapter", () => {
       expect(summary.primaryHash).toBe(plan.deployment?.transactionHash);
       expect(plan.readiness.find((item) => item.id === "testnet-deploy")?.status).toBe("ready");
     }
+  });
+
+  it("verifies a recorded Casper deployment against the current payload", () => {
+    const milestone = seededDeals[0].milestones[0];
+    const assessment = assessEvidence(seededEvidenceBundles.clean);
+    const evidenceHash = createEvidenceHash(seededEvidenceBundles.clean);
+    const payload = createAttestationPayload({ milestone, evidenceHash, assessment });
+    const plan = createCasperDeployPlan({ payload, scenario: "clean" });
+
+    const report = verifyCasperAttestation({ payload, deployment: plan.deployment });
+
+    expect(report.status).toBe("verified");
+    expect(report.checks.every((check) => check.status === "passed")).toBe(true);
+    expect(report.summary).toContain("recorded Testnet transaction matches");
+  });
+
+  it("flags Casper proof mismatches", () => {
+    const milestone = seededDeals[0].milestones[0];
+    const assessment = assessEvidence(seededEvidenceBundles.clean);
+    const evidenceHash = createEvidenceHash(seededEvidenceBundles.clean);
+    const payload = createAttestationPayload({ milestone, evidenceHash, assessment });
+    const plan = createCasperDeployPlan({ payload, scenario: "clean" });
+
+    const report = verifyCasperAttestation({
+      payload,
+      deployment: plan.deployment
+        ? {
+            ...plan.deployment,
+            decisionHash: "0x0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        : null
+    });
+
+    expect(report.status).toBe("mismatch");
+    expect(report.checks.find((check) => check.id === "decision-hash")?.status).toBe("failed");
   });
 });

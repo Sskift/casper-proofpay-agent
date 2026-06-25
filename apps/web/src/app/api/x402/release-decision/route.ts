@@ -37,6 +37,12 @@ export async function POST(request: Request) {
     riskScore: proofPackage.assessment.riskScore,
     payload: proofPackage.payload,
     verification: proofPackage.verification,
+    attestationVerification: proofPackage.attestationVerification,
+    settlementRunbook: {
+      mode: proofPackage.settlementRunbook.mode,
+      operatorDecision: proofPackage.settlementRunbook.operatorDecision,
+      actions: proofPackage.settlementRunbook.actions
+    },
     dossierId: proofPackage.dossier.id
   });
 }

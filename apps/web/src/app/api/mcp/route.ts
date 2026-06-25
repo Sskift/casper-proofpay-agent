@@ -35,6 +35,22 @@ export function GET() {
           required: ["scenario"]
         },
         endpoint: "/api/attestation/{scenario}"
+      },
+      {
+        name: "submit_external_evidence_pack",
+        description: "Validate a real-world evidence bundle JSON package, run the ProofPay assessment, and return a settlement runbook.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            dealId: { type: "string" },
+            milestoneId: { type: "string" },
+            expected: { type: "object" },
+            documents: { type: "array" }
+          },
+          required: ["id", "dealId", "milestoneId", "expected", "documents"]
+        },
+        endpoint: "POST /api/evidence/intake"
       }
     ],
     honestyNote:

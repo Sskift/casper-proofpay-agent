@@ -3,9 +3,12 @@ import { describe, expect, it } from "vitest";
 import {
   assessEvidence,
   createAuditDossier,
+  createSettlementRunbook,
   createOperationsDashboard,
   createProductDepthModel,
   createEvidenceHash,
+  inspectEvidenceIntake,
+  parseEvidenceBundle,
   seededDeals,
   seededEvidenceBundles
 } from "./index";
@@ -200,5 +203,61 @@ describe("ProofPay evidence agent", () => {
     expect(model.evaluation.rows.map((row) => row.scenario)).toEqual(["clean", "amountMismatch", "duplicateInvoice"]);
     expect(model.evaluation.rows.every((row) => row.passed)).toBe(true);
     expect(model.ecosystemHooks.map((hook) => hook.id)).toEqual(["attestation-api", "mcp-tool", "x402-gate"]);
+  });
+
+  it("validates external evidence bundles before assessment", () => {
+    const report = inspectEvidenceIntake(seededEvidenceBundles.clean);
+
+    expect(report.status).toBe("ready");
+    expect(report.canAssess).toBe(true);
+    expect(report.coverage.every((item) => item.status === "complete")).toBe(true);
+
+    const parsed = parseEvidenceBundle({
+      ...seededEvidenceBundles.clean,
+      documents: seededEvidenceBundles.clean.documents.filter((document) => document.type !== "delivery_note")
+    });
+
+    expect(parsed.ok).toBe(false);
+    expect(parsed.report.status).toBe("blocked");
+    expect(parsed.report.issues.map((issue) => issue.field)).toContain("documents.delivery_note");
+  });
+
+  it("keeps semantically identical parsed evidence hashes stable", () => {
+    const parsed = parseEvidenceBundle(JSON.parse(JSON.stringify(seededEvidenceBundles.clean)));
+
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(createEvidenceHash(parsed.bundle)).toBe(createEvidenceHash(seededEvidenceBundles.clean));
+    }
+  });
+
+  it("turns an agent decision into a real settlement runbook", () => {
+    const deal = seededDeals[0];
+    const milestone = deal.milestones[0];
+    const bundle = seededEvidenceBundles.clean;
+    const assessment = assessEvidence(bundle);
+    const evidenceHash = createEvidenceHash(bundle);
+    const dossier = createAuditDossier({
+      deal,
+      milestone,
+      bundle,
+      assessment,
+      evidenceHash,
+      decisionHash: "0xdecision",
+      casper: {
+        network: "Casper Testnet",
+        transactionHash: "94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604",
+        namedKey: "proofpay_attestation_ms-delivery-acceptance",
+        storedURef: "uref-proof-007"
+      },
+      cliCommand: "casper-client put-transaction session ..."
+    });
+
+    const runbook = createSettlementRunbook({ deal, milestone, bundle, assessment, dossier });
+
+    expect(runbook.mode).toBe("auto_release_ready");
+    expect(runbook.actions.map((action) => action.actor)).toEqual(["supplier", "agent", "buyer", "arbiter", "casper"]);
+    expect(runbook.actions.find((action) => action.actor === "buyer")?.label).toBe("Sign milestone release");
+    expect(runbook.readiness.find((item) => item.id === "approval")?.status).toBe("manual");
   });
 });

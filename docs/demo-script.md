@@ -24,7 +24,17 @@ Show:
 - Cold-chain telemetry.
 - Escrow cashflow and evidence coverage charts.
 
-## Scene 3: Evidence
+## Scene 3: Trust Chain
+
+ProofPay is more than a dashboard. It accepts an external evidence pack, validates whether the package is assessable, turns the AI decision into settlement actions, and verifies that the Casper Testnet attestation matches the current payload.
+
+Show:
+
+- External evidence intake lab.
+- Settlement runbook actions for supplier, buyer, arbiter, and Casper.
+- Casper verifier checks for evidence hash, decision hash, transaction hash, and stored URef.
+
+## Scene 4: Evidence
 
 The Evidence room keeps the decision explainable. Reviewers can inspect the source documents, extracted claims, and event timeline instead of trusting a black box.
 
@@ -33,7 +43,7 @@ Show:
 - Clean release decision and confidence.
 - Document status, claim extraction, and timeline tabs.
 
-## Scene 4: Casper
+## Scene 5: Casper
 
 The Casper panel exposes the real Testnet transaction, block height, named key, stored URef, public key, and the deploy command used for the attestation.
 
@@ -43,7 +53,7 @@ Mention:
 - Stored URef `uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007`.
 - Contract and deploy details are documented in `docs/casper-testnet.md`.
 
-## Scene 5: Audit Dossier
+## Scene 6: Audit Dossier
 
 New in this iteration is the Audit Dossier. Every policy check becomes a trace card with expected value, observed value, status, impact, and evidence source.
 
@@ -53,7 +63,7 @@ Show:
 - Verification chain with evidence hash, decision hash, local demo transaction, Casper Testnet transaction, and stored URef.
 - Copy-ready JSON audit package.
 
-## Scene 6: Hold Path
+## Scene 7: Hold Path
 
 When the invoice amount is too high, ProofPay changes the decision to human review. The dossier marks invoice amount as failed and asks buyer finance to resolve the mismatch.
 
@@ -63,7 +73,7 @@ Show:
 - Failed invoice amount trace.
 - Human review decision.
 
-## Scene 7: Reject Path
+## Scene 8: Reject Path
 
 When the invoice fingerprint is duplicated, ProofPay blocks release and escalates the payment to fraud review. The failed trace stays visible in the same dossier format.
 
@@ -75,4 +85,4 @@ Show:
 
 ## Closing
 
-ProofPay combines agentic evidence review, decentralized escrow operations, and Casper attestations. AI does the evidence work, while Casper makes the final payment decision auditable.
+ProofPay combines agentic evidence review, decentralized escrow operations, and Casper attestations. AI does the evidence work, humans control the payment action, and Casper makes the final decision auditable.

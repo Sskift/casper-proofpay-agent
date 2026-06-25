@@ -12,7 +12,7 @@ Agentic RWA milestone escrow on Casper: AI verifies off-chain delivery evidence,
 
 ## Short Description
 
-ProofPay Agent is an autonomous milestone escrow prototype for real-world assets. It reviews invoices, delivery documents, registry data, and cold-chain telemetry; recommends release, hold, or reject; hashes the evidence bundle; and anchors the clean-scenario decision on Casper Testnet with a transaction-producing smart contract component.
+ProofPay Agent is an autonomous milestone escrow prototype for real-world assets. It reviews invoices, delivery documents, registry data, and cold-chain telemetry; recommends release, hold, or reject; hashes the evidence bundle; verifies Casper attestation facts; and anchors all three judge scenarios on Casper Testnet with a transaction-producing smart contract component.
 
 ## Long Description
 
@@ -24,15 +24,19 @@ The agent normalizes five evidence sources: invoice, bill of lading, signed deli
 - `hold`: delivery evidence is credible, but finance must review an amount mismatch.
 - `reject`: duplicate invoice evidence blocks release.
 
-Every assessment produces an evidence hash and decision hash. The clean release scenario is anchored on Casper Testnet through the `proofpay-attestation` contract path. The dashboard shows the Testnet transaction hash, block height, named key, stored URef, public key, deploy command, session arguments, submission readiness gates, and a portable Audit Dossier.
+Every assessment produces an evidence hash and decision hash. All three judge scenarios are anchored on Casper Testnet through the `proofpay-attestation` contract path. The dashboard shows the Testnet transaction hash, block height, named key, stored URef, public key, deploy command, session arguments, submission readiness gates, and a portable Audit Dossier.
 
-The user experience is designed for judges and operators: a scroll-tracked left navigation, clear Cockpit, Charts, Evidence, Casper, and Dossier sections, an Evidence review workbench, a Casper proof workbench with checklist-style submission gates, and an Audit Dossier that packages the reasoning trace, hashes, Testnet proof facts, CLI command, and reviewer checklist into a copy-ready JSON artifact.
+The user experience is designed for judges and operators: a scroll-tracked left navigation, clear Cockpit, Journey, Trust, Charts, Evidence, Casper, and Dossier sections, an external evidence intake lab, a settlement runbook, a Casper payload-to-Testnet verifier, an Evidence review workbench, a Casper proof workbench with checklist-style submission gates, and an Audit Dossier that packages the reasoning trace, hashes, Testnet proof facts, CLI command, and reviewer checklist into a copy-ready JSON artifact.
+
+The core advantage is the trust chain, not the UI alone: external evidence enters as a validated package, AI produces a bounded and explainable payment decision, Casper makes the decision auditable, and humans still control the final release, hold, or dispute action.
 
 ## Casper Integration
 
 ProofPay uses Casper as the trust anchor for agentic RWA payment decisions.
 
 - Casper Testnet transaction hash: `94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604`
+- Hold scenario transaction hash: `c92cdcd8f11f6453134745900ea2c91defa0f8b37f4c6782dd38b2aa7a720d84`
+- Reject scenario transaction hash: `08995093b6ef978b381c4cee7d8faeb960f31bb64083544c8cfa0c3c8952e885`
 - Block height: `8282603`
 - Named key: `proofpay_attestation_ms-delivery-acceptance`
 - Stored URef: `uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007`
@@ -62,7 +66,7 @@ ProofPay combines:
 - DeFi: milestone escrow release logic and payment decision auditability.
 - Real-World Assets: delivery, invoice, registry, and cold-chain proof for a physical shipment.
 - Casper Testnet: transaction-producing attestation component with documented on-chain state.
-- Auditability: judge-facing dossier with policy trace, normalized observations, evidence hash, decision hash, Casper proof facts, and reproduction checklist.
+- Auditability: judge-facing dossier with policy trace, normalized observations, evidence hash, decision hash, Casper proof facts, verifier checks, settlement actions, and reproduction checklist.
 
 ## Technical Stack
 
@@ -70,8 +74,7 @@ ProofPay combines:
 - React
 - TypeScript
 - HeroUI
-- Recharts
-- Lightweight Charts
+- Visx charts
 - Casper Rust contract materials
 - Casper CLI deployment scripts
 - Vitest package tests
@@ -94,14 +97,15 @@ Record with `docs/demo-script.md`.
 
 The prepared video follows this flow:
 
-1. Open the dashboard and show the four operator sections.
+1. Open the dashboard and show the seven operator sections.
 2. Select `Clean release` and explain the approve decision.
-3. Open the Evidence room and show document, claim, and timeline drilldowns.
-4. Open the Casper section and show the Testnet transaction hash, named key, stored URef, deploy command, and readiness gates.
-5. Open the Dossier section and show the trace cards, verification chain, copy-ready JSON package, and reviewer checklist.
-6. Switch to `Hold for finance` and explain amount mismatch handling.
-7. Switch to `Reject duplicate` and explain duplicate invoice blocking.
-8. Open the repository docs and point to `docs/casper-testnet.md`.
+3. Open the Trust section and show external evidence intake, settlement actions, and Casper verifier checks.
+4. Open the Evidence room and show document, claim, and timeline drilldowns.
+5. Open the Casper section and show the Testnet transaction hash, named key, stored URef, deploy command, and readiness gates.
+6. Open the Dossier section and show the trace cards, verification chain, copy-ready JSON package, and reviewer checklist.
+7. Switch to `Hold for finance` and explain amount mismatch handling.
+8. Switch to `Reject duplicate` and explain duplicate invoice blocking.
+9. Open the repository docs and point to `docs/casper-testnet.md` and `docs/real-world-use.md`.
 
 ## CSPR.fans Community Pitch
 

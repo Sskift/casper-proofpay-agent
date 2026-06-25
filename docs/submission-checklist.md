@@ -51,13 +51,15 @@ ProofPay Agent lets autonomous agents release real-world payments only when evid
 - `npm run submission:check` passes after the final commit.
 - `npm run casper:check` shows a funded Testnet account.
 - `npm run contract:deploy:testnet` returns a real Casper transaction hash.
-- Dashboard sidebar clearly shows the active Cockpit, Journey, Charts, Evidence, Casper, or Dossier section.
+- Dashboard sidebar clearly shows the active Cockpit, Journey, Trust, Charts, Evidence, Casper, or Dossier section.
+- Dashboard Trust section shows external evidence intake, settlement runbook actions, and Casper verifier checks.
 - Dashboard Evidence room shows reviewer summary, documents, claims, and timeline without table stacking.
 - Dashboard Casper proof workbench shows Testnet transaction, named key, stored URef, deploy command, readiness gates, public key, and Casper session args.
 - Demo video URL is public and tracked in `docs/demo/proofpay-agent-demo.mp4`.
 - Casper Testnet transaction hash and stored attestation are documented in `docs/casper-testnet.md`.
 - DoraHacks form copy is ready in `docs/buidl-submission-brief.md`.
 - README links to contract, testnet docs, and demo script.
+- README links to `docs/real-world-use.md` and documents `POST /api/evidence/intake`.
 - Ignored generated artifacts are not uploaded manually: `node_modules/`, `.next/`, `target/`, `*.tsbuildinfo`.
 - Non-ignored temporary files are removed or committed intentionally.
 - The user explicitly confirms action-time submission on DoraHacks.

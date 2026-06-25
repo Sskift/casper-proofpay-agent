@@ -25,18 +25,31 @@ ProofPay simulates a buyer/supplier RWA escrow workflow:
 2. A supplier submits invoice, bill of lading, delivery note, temperature log, and registry evidence.
 3. The agent extracts claims, checks consistency, scores risk, and chooses `approve`, `hold`, or `reject`.
 4. The app creates an evidence hash and decision hash.
-5. The Casper adapter creates an attestation payload for the on-chain contract.
-6. The dashboard shows the audit trail, evidence intake, role workflow, evaluation matrix, local demo transaction hash, recorded Casper Testnet transactions, named key, stored URefs, charts, evidence drilldowns, copy-ready deploy commands, ecosystem API hooks, and a portable Audit Dossier.
+5. The Casper adapter creates an attestation payload for the on-chain contract and verifies recorded Testnet fields against the current payload.
+6. The settlement runbook turns the decision into concrete supplier, buyer, arbiter, and Casper actions.
+7. The dashboard shows the audit trail, external evidence intake lab, role workflow, evaluation matrix, local demo transaction hash, recorded Casper Testnet transactions, named key, stored URefs, verifier checks, copy-ready deploy commands, ecosystem API hooks, and a portable Audit Dossier.
+
+## Core Advantage
+
+ProofPay is not just a dashboard. It is a verifiable RWA payment decision chain:
+
+```text
+external evidence pack -> deterministic intake validation -> AI policy decision
+-> evidence hash + decision hash -> Casper Testnet attestation verification
+-> human release / hold / dispute runbook -> portable audit dossier
+```
+
+The practical value is that AI can speed up payment review without becoming an unverifiable black box. Buyers keep release control, suppliers get a faster path to payment, arbiters can replay the reasoning trace, and Casper provides the public trust anchor for the payment decision.
 
 ## Dashboard Cockpit
 
 The web app has been refactored into a dense operator dashboard inspired by the local `money-run` cockpit:
 
 - HeroUI cards, chips, tables, tabs, and link controls.
-- Scroll-tracked sidebar navigation for the six judge sections.
+- Scroll-tracked sidebar navigation for the seven judge sections.
 - Journey workbench with evidence intake cards, buyer/supplier/arbiter workflow, scenario evaluation, and MCP/x402/Casper API hooks.
-- Recharts for cold-chain telemetry, escrow cashflow, and evidence coverage.
-- Lightweight Charts for the agent risk tape.
+- Trust-chain workbench with editable external evidence JSON intake, settlement runbook actions, and Casper payload-to-Testnet verifier checks.
+- Visx charts for risk, cold-chain telemetry, escrow cashflow, and evidence coverage.
 - Scenario switcher for `approve`, `hold`, and `reject` judge flows.
 - Evidence room with reviewer summary, document cards, claim cards, and timeline tabs.
 - Action queue that turns agent findings into reviewer next steps.
@@ -106,11 +119,14 @@ The Next.js app exposes lightweight local integration hooks:
 GET  /api/attestation/clean
 GET  /api/attestation/amountMismatch
 GET  /api/attestation/duplicateInvoice
+POST /api/evidence/intake
 GET  /api/mcp
 POST /api/x402/release-decision
 ```
 
-These endpoints are demo hooks, not production payment or MCP infrastructure. They show how ProofPay can hand agent decisions, Casper verification summaries, and audit dossiers to MCP-style clients or x402-gated agent commerce.
+These endpoints are demo hooks, not production payment or MCP infrastructure. They show how ProofPay can accept an external evidence bundle, return an agent decision, create a Casper attestation payload, verify recorded Testnet proof fields, and hand settlement actions or audit dossiers to MCP-style clients or x402-gated agent commerce.
+
+The real-world product path is captured in [docs/real-world-use.md](docs/real-world-use.md).
 
 ## Casper CLI Path
 
@@ -129,6 +145,7 @@ Prepared in this repository:
 - [docs/buidl-submission-brief.md](docs/buidl-submission-brief.md)
 - [docs/submission-checklist.md](docs/submission-checklist.md)
 - [docs/demo-script.md](docs/demo-script.md)
+- [docs/real-world-use.md](docs/real-world-use.md)
 - [docs/demo/proofpay-agent-demo.mp4](docs/demo/proofpay-agent-demo.mp4)
 - [docs/casper-testnet.md](docs/casper-testnet.md)
 - [docs/casper-cli-runbook.md](docs/casper-cli-runbook.md)
@@ -165,4 +182,4 @@ npm run contract:deploy:testnet # send or reproduce a Casper Testnet transaction
 
 ## Prototype Boundary
 
-This hackathon prototype does not custody real funds. Escrow is represented as milestone state plus a Casper attestation record. Evidence data is synthetic and designed for repeatable judge-mode demos.
+This hackathon prototype does not custody real funds. Escrow is represented as milestone state plus a Casper attestation record. Seeded evidence is synthetic for repeatable judge-mode demos, while `POST /api/evidence/intake` and the dashboard intake lab demonstrate how an external normalized evidence bundle would enter the same assessment and verification path.
