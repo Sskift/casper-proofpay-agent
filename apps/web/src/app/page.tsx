@@ -331,6 +331,62 @@ function CockpitSection({
   transaction: DemoCasperTransaction | null;
 }) {
   const deployment = deployPlan.deployment;
+  const matchedDocuments = model.evidenceMatrix.filter((row) => row.status === "matched").length;
+  const exceptionDocuments = model.evidenceMatrix.length - matchedDocuments;
+  const decisionState = assessment.decision === "approve" ? "ready" : assessment.decision === "hold" ? "watch" : "blocked";
+  const chainState = deployment ? "recorded" : "watch";
+  const primaryAction = model.actionQueue[0];
+  const decisionSteps = [
+    {
+      id: "policy",
+      icon: <ShieldCheck aria-hidden="true" size={17} />,
+      label: "Policy gate",
+      value: assessment.policyVersion,
+      status: decisionState
+    },
+    {
+      id: "evidence",
+      icon: <ClipboardCheck aria-hidden="true" size={17} />,
+      label: "Evidence",
+      value: `${matchedDocuments}/${model.evidenceMatrix.length} cleared`,
+      status: exceptionDocuments > 0 ? "watch" : "ready"
+    },
+    {
+      id: "decision",
+      icon: <Bot aria-hidden="true" size={17} />,
+      label: "Agent decision",
+      value: decisionLabel(assessment.decision),
+      status: decisionState
+    },
+    {
+      id: "chain",
+      icon: <RadioTower aria-hidden="true" size={17} />,
+      label: "Casper anchor",
+      value: deployment ? `block ${deployment.blockHeight}` : "scenario pending",
+      status: chainState
+    }
+  ];
+  const actorHandoff = [
+    {
+      label: "ProofPay Agent",
+      value: `${assessment.confidence}% confidence`,
+      detail: `risk ${assessment.riskScore}/100`,
+      status: decisionState
+    },
+    {
+      label: "Buyer",
+      value: assessment.decision === "approve" ? "sign release" : "review exception",
+      detail: primaryAction?.title ?? "review evidence package",
+      status: decisionState
+    },
+    {
+      label: "Casper",
+      value: deployment ? "attestation recorded" : "deploy when ready",
+      detail: deployment ? shortHash(deployment.transactionHash, 12, 8) : "no Testnet hash for this scenario",
+      status: chainState
+    }
+  ];
+
   return (
     <section id="cockpit" className="section section-frame cockpit-section">
       <SectionHeading
@@ -381,30 +437,90 @@ function CockpitSection({
           </Card.Content>
         </Card>
 
-        <Card className="card" variant="default">
+        <Card className="card cockpit-command" variant="default">
           <Card.Header className="card-header">
             <div>
-              <h3 className="card-title">Action queue</h3>
-              <p className="card-sub">Human-readable next steps for the buyer, supplier, and reviewer.</p>
+              <h3 className="card-title">Decision path</h3>
+              <p className="card-sub">Compact path first, operational details one click deeper.</p>
             </div>
             <Activity aria-hidden="true" size={20} />
           </Card.Header>
           <Card.Content>
-            <div className="action-list">
-              {model.actionQueue.map((item) => (
-                <div className={`action-item action-item--${item.status}`} key={item.id}>
-                  <span className="action-line" />
+            <div className="decision-spine" aria-label="Release decision path">
+              {decisionSteps.map((step) => (
+                <div className={`decision-node decision-node--${step.status}`} key={step.id}>
+                  <span className="decision-node__icon">{step.icon}</span>
                   <div>
-                    <div className="action-title">{item.title}</div>
-                    <div className="action-detail">{item.detail}</div>
+                    <span>{step.label}</span>
+                    <strong>{step.value}</strong>
                   </div>
-                  <Chip color={chipColor(item.status)} variant="soft">{item.status}</Chip>
+                  <i aria-hidden="true" />
                 </div>
               ))}
             </div>
-            <div className="hash-pair">
-              <span>Local demo tx</span>
-              <code>{transaction?.hash ?? "creating..."}</code>
+
+            <div className="cockpit-tabs">
+              <Tabs defaultSelectedKey="actions" variant="primary">
+                <Tabs.List aria-label="Cockpit operational detail tabs">
+                  <Tabs.Tab id="actions">
+                    <ListChecks aria-hidden="true" size={15} />
+                    Actions
+                  </Tabs.Tab>
+                  <Tabs.Tab id="hashes">
+                    <GitBranch aria-hidden="true" size={15} />
+                    Hashes
+                  </Tabs.Tab>
+                  <Tabs.Tab id="actors">
+                    <Activity aria-hidden="true" size={15} />
+                    Actors
+                  </Tabs.Tab>
+                </Tabs.List>
+                <Tabs.Panel id="actions">
+                  <div className="action-list action-list--compact">
+                    {model.actionQueue.map((item) => (
+                      <div className={`action-item action-item--${item.status}`} key={item.id}>
+                        <span className="action-line" />
+                        <div>
+                          <div className="action-title">{item.title}</div>
+                          <div className="action-detail">{item.detail}</div>
+                        </div>
+                        <Chip color={chipColor(item.status)} variant="soft">{item.status}</Chip>
+                      </div>
+                    ))}
+                  </div>
+                </Tabs.Panel>
+                <Tabs.Panel id="hashes">
+                  <div className="hash-grid">
+                    <div className="hash-pair">
+                      <span>Evidence hash</span>
+                      <code>{payload.evidenceHash}</code>
+                    </div>
+                    <div className="hash-pair">
+                      <span>Decision hash</span>
+                      <code>{payload.decisionHash}</code>
+                    </div>
+                    <div className="hash-pair">
+                      <span>Local demo tx</span>
+                      <code>{transaction?.hash ?? "creating..."}</code>
+                    </div>
+                    <div className="hash-pair">
+                      <span>Testnet tx</span>
+                      <code>{deployment?.transactionHash ?? "scenario pending"}</code>
+                    </div>
+                  </div>
+                </Tabs.Panel>
+                <Tabs.Panel id="actors">
+                  <div className="actor-handoff">
+                    {actorHandoff.map((actor) => (
+                      <div className={`actor-card actor-card--${actor.status}`} key={actor.label}>
+                        <span>{actor.label}</span>
+                        <strong>{actor.value}</strong>
+                        <p>{actor.detail}</p>
+                      </div>
+                    ))}
+                  </div>
+                </Tabs.Panel>
+              </Tabs>
             </div>
           </Card.Content>
         </Card>
@@ -414,6 +530,45 @@ function CockpitSection({
 }
 
 function ChartsSection({ model }: { model: OperationsDashboardModel }) {
+  const latestRisk = model.chartSeries.risk.at(-1)?.score ?? 0;
+  const temperatureSeries = model.chartSeries.temperature;
+  const minTemperature = Math.min(...temperatureSeries.map((point) => point.minC));
+  const maxTemperature = Math.max(...temperatureSeries.map((point) => point.maxC));
+  const latestCashflow = model.chartSeries.cashflow.at(-1);
+  const coverageAverage = Math.round(
+    model.chartSeries.evidenceCoverage.reduce((total, item) => total + item.score, 0) / model.chartSeries.evidenceCoverage.length
+  );
+  const chartSummary = [
+    {
+      id: "risk",
+      label: "Risk",
+      value: `${latestRisk}/100`,
+      detail: latestRisk < 30 ? "release-grade" : latestRisk < 75 ? "needs review" : "blocked",
+      tone: latestRisk < 30 ? "positive" : latestRisk < 75 ? "warning" : "negative"
+    },
+    {
+      id: "cash",
+      label: "Cashflow",
+      value: `$${Math.round(latestCashflow?.releaseReady ?? 0).toLocaleString("en-US")}`,
+      detail: `${Math.round(latestCashflow?.disputed ?? 0).toLocaleString("en-US")} disputed`,
+      tone: (latestCashflow?.disputed ?? 0) > 0 ? "warning" : "positive"
+    },
+    {
+      id: "temperature",
+      label: "Cold-chain",
+      value: `${minTemperature.toFixed(1)}C-${maxTemperature.toFixed(1)}C`,
+      detail: "inside contract band",
+      tone: "positive"
+    },
+    {
+      id: "coverage",
+      label: "Coverage",
+      value: `${coverageAverage}%`,
+      detail: `${model.chartSeries.evidenceCoverage.length} documents scored`,
+      tone: coverageAverage === 100 ? "positive" : "warning"
+    }
+  ];
+
   return (
     <ShellCard
       id="charts"
@@ -421,13 +576,51 @@ function ChartsSection({ model }: { model: OperationsDashboardModel }) {
       step="03"
       title="Risk, cash, and evidence charts"
       sub="Charts mirror money-run's dense operating style, but tuned for RWA escrow evidence."
-      action={<SectionBadge>Recharts + Lightweight Charts</SectionBadge>}
+      action={<SectionBadge>focused chart tabs</SectionBadge>}
     >
-      <div className="viz-grid">
-        <RiskTapeChart model={model} />
-        <TemperatureChart model={model} />
-        <CashflowChart model={model} />
-        <EvidenceCoverageChart model={model} />
+      <div className="chart-summary-strip" aria-label="Chart summary">
+        {chartSummary.map((item) => (
+          <div className={`chart-summary-card chart-summary-card--${item.tone}`} key={item.id}>
+            <span>{item.label}</span>
+            <strong>{item.value}</strong>
+            <p>{item.detail}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="chart-tabs">
+        <Tabs defaultSelectedKey="risk" variant="primary">
+          <Tabs.List aria-label="Chart drilldown tabs">
+            <Tabs.Tab id="risk">
+              <Activity aria-hidden="true" size={15} />
+              Risk
+            </Tabs.Tab>
+            <Tabs.Tab id="cashflow">
+              <Banknote aria-hidden="true" size={15} />
+              Cashflow
+            </Tabs.Tab>
+            <Tabs.Tab id="temperature">
+              <Thermometer aria-hidden="true" size={15} />
+              Cold-chain
+            </Tabs.Tab>
+            <Tabs.Tab id="coverage">
+              <ClipboardCheck aria-hidden="true" size={15} />
+              Coverage
+            </Tabs.Tab>
+          </Tabs.List>
+          <Tabs.Panel id="risk">
+            <RiskTapeChart model={model} />
+          </Tabs.Panel>
+          <Tabs.Panel id="cashflow">
+            <CashflowChart model={model} />
+          </Tabs.Panel>
+          <Tabs.Panel id="temperature">
+            <TemperatureChart model={model} />
+          </Tabs.Panel>
+          <Tabs.Panel id="coverage">
+            <EvidenceCoverageChart model={model} />
+          </Tabs.Panel>
+        </Tabs>
       </div>
     </ShellCard>
   );
@@ -580,10 +773,36 @@ function EvidenceSection({
   model: OperationsDashboardModel;
 }) {
   const matchedDocuments = model.evidenceMatrix.filter((row) => row.status === "matched");
-  const exceptionDocuments = model.evidenceMatrix.filter((row) => row.status !== "matched");
+  const warningDocuments = model.evidenceMatrix.filter((row) => row.status === "warning");
+  const failedDocuments = model.evidenceMatrix.filter((row) => row.status === "failed");
+  const exceptionDocuments = [...warningDocuments, ...failedDocuments];
   const followUpItems = assessment.requiredFollowUp.length
     ? assessment.requiredFollowUp
     : ["No manual follow-up required for this scenario."];
+  const evidenceMeter = [
+    {
+      id: "matched",
+      label: "Matched",
+      value: matchedDocuments.length,
+      total: model.evidenceMatrix.length,
+      tone: "positive"
+    },
+    {
+      id: "warning",
+      label: "Warning",
+      value: warningDocuments.length,
+      total: model.evidenceMatrix.length,
+      tone: "warning"
+    },
+    {
+      id: "failed",
+      label: "Failed",
+      value: failedDocuments.length,
+      total: model.evidenceMatrix.length,
+      tone: "negative"
+    }
+  ];
+  const flagItems = assessment.flags.length ? assessment.flags : ["No active risk flags"];
 
   return (
     <ShellCard
@@ -601,46 +820,62 @@ function EvidenceSection({
             <strong>{decisionLabel(assessment.decision)}</strong>
             <p>{assessment.confidence}% confidence · risk score {assessment.riskScore}/100</p>
           </div>
-          <div className="review-stat-grid">
+          <div className="evidence-summary-meter" aria-label="Evidence status summary">
+            {evidenceMeter.map((item) => (
+              <div className={`evidence-meter-item evidence-meter-item--${item.id}`} key={item.id}>
+                <div>
+                  <span>{item.label}</span>
+                  <strong>{item.value}/{item.total}</strong>
+                </div>
+                <div className="evidence-meter-bar" aria-hidden="true">
+                  <i style={{ width: `${Math.round((item.value / item.total) * 100)}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="review-compact-list">
             <div>
-              <span>Documents cleared</span>
-              <strong>{matchedDocuments.length}/{model.evidenceMatrix.length}</strong>
+              <span>Policy</span>
+              <strong>{assessment.policyVersion}</strong>
             </div>
             <div>
               <span>Exceptions</span>
               <strong>{exceptionDocuments.length}</strong>
             </div>
             <div>
-              <span>Policy</span>
-              <strong>{assessment.policyVersion}</strong>
+              <span>Follow-up</span>
+              <strong>{assessment.requiredFollowUp.length || "none"}</strong>
             </div>
             <div>
-              <span>Flags</span>
-              <strong>{assessment.flags.length || "none"}</strong>
+              <span>Reasons</span>
+              <strong>{assessment.reasons.length}</strong>
             </div>
-          </div>
-          <div className="followup-card">
-            <div className="mini-title">Operator follow-up</div>
-            {followUpItems.map((item) => (
-              <p key={item}>{item}</p>
-            ))}
-          </div>
-          <div className="reason-stack">
-            {assessment.reasons.map((reason) => (
-              <div className="reason-pill" key={reason}>
-                <CheckCircle2 aria-hidden="true" size={14} />
-                <span>{reason}</span>
-              </div>
-            ))}
           </div>
         </aside>
 
-        <div className="evidence-drilldown">
+        <div className="evidence-drilldown evidence-review-tabs">
           <Tabs defaultSelectedKey="documents" variant="primary">
             <Tabs.List aria-label="Evidence drilldown">
-              <Tabs.Tab id="documents">Documents</Tabs.Tab>
-              <Tabs.Tab id="claims">Claims</Tabs.Tab>
-              <Tabs.Tab id="timeline">Timeline</Tabs.Tab>
+              <Tabs.Tab id="documents">
+                <FileText aria-hidden="true" size={15} />
+                Documents
+              </Tabs.Tab>
+              <Tabs.Tab id="claims">
+                <ClipboardCheck aria-hidden="true" size={15} />
+                Claims
+              </Tabs.Tab>
+              <Tabs.Tab id="timeline">
+                <Activity aria-hidden="true" size={15} />
+                Timeline
+              </Tabs.Tab>
+              <Tabs.Tab id="reasons">
+                <CheckCircle2 aria-hidden="true" size={15} />
+                Reasons
+              </Tabs.Tab>
+              <Tabs.Tab id="followup">
+                <TriangleAlert aria-hidden="true" size={15} />
+                Follow-up
+              </Tabs.Tab>
             </Tabs.List>
             <Tabs.Panel id="documents">
               <div className="document-grid">
@@ -690,6 +925,31 @@ function EvidenceSection({
                     <Chip color={chipColor(event.status)} variant="soft">{event.status}</Chip>
                   </div>
                 ))}
+              </div>
+            </Tabs.Panel>
+            <Tabs.Panel id="reasons">
+              <div className="reason-stack reason-stack--drilldown">
+                {assessment.reasons.map((reason) => (
+                  <div className="reason-pill" key={reason}>
+                    <CheckCircle2 aria-hidden="true" size={14} />
+                    <span>{reason}</span>
+                  </div>
+                ))}
+              </div>
+            </Tabs.Panel>
+            <Tabs.Panel id="followup">
+              <div className="followup-list">
+                {followUpItems.map((item, index) => (
+                  <div className="followup-card" key={`${item}-${index}`}>
+                    <div className="mini-title">{assessment.requiredFollowUp.length ? `Follow-up ${index + 1}` : "Operator follow-up"}</div>
+                    <p>{item}</p>
+                  </div>
+                ))}
+                <div className="review-flag-row" aria-label="Risk flags">
+                  {flagItems.map((flag) => (
+                    <Chip color={assessment.flags.length ? "warning" : "success"} key={flag} variant="soft">{flag}</Chip>
+                  ))}
+                </div>
               </div>
             </Tabs.Panel>
           </Tabs>
