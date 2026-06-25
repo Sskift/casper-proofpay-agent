@@ -2,7 +2,7 @@
 
 Target length: 115 to 120 seconds.
 
-The submitted demo video is a 1080p dynamic browser walkthrough with AI text-to-speech narration, visible cursor movement, section navigation, page scrolling, chart hover states, tab switching, scenario switching, and compact lower-third captions. The video file lives at `docs/demo/proofpay-agent-demo.mp4` so the DoraHacks BUIDL link can keep pointing at the same GitHub path after updates.
+The submitted demo video is a 1080p dynamic browser walkthrough with Coze AI text-to-speech narration, visible cursor movement, section navigation, page scrolling, chart hover states, tab switching, scenario switching, and compact lower-third captions. The video file lives at `docs/demo/proofpay-agent-demo.mp4` so the DoraHacks BUIDL link can keep pointing at the same GitHub path after updates.
 
 The exact narration source for the current video lives at `docs/demo/proofpay-agent-demo-narration.txt`.
 
