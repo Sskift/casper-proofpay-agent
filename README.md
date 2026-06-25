@@ -7,6 +7,7 @@
 **AI verifies off-chain delivery evidence. Humans control payment release. Casper records the decision proof.**
 
 [![Demo Video](https://img.shields.io/badge/Demo%20Video-GitHub%20MP4-0F172A?style=for-the-badge)](https://github.com/Sskift/casper-proofpay-agent/blob/main/docs/demo/proofpay-agent-demo.mp4)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-0969DA?style=for-the-badge)](https://sskift.github.io/casper-proofpay-agent/)
 [![DoraHacks BUIDL](https://img.shields.io/badge/DoraHacks-BUIDL%2045992-2563EB?style=for-the-badge)](https://dorahacks.io/buidl/45992)
 [![Casper Testnet](https://img.shields.io/badge/Casper-Testnet%20Recorded-10B981?style=for-the-badge)](docs/casper-testnet.md)
 [![Audit Dossier](https://img.shields.io/badge/Audit-Dossier%20Ready-7C3AED?style=for-the-badge)](#audit-dossier)
@@ -34,6 +35,7 @@ ProofPay Agent is a verifiable RWA payment decision chain: external delivery evi
 | Decision outputs | `approve`, `hold`, `reject`, confidence, risk score, reviewer actions |
 | Casper role | Public attestation anchor for evidence hash, decision hash, milestone id, and final decision |
 | Testnet proof | Three recorded Casper Testnet transactions for clean, hold, and reject judge flows |
+| Live demo | [sskift.github.io/casper-proofpay-agent](https://sskift.github.io/casper-proofpay-agent/) |
 | Demo asset | [docs/demo/proofpay-agent-demo.mp4](docs/demo/proofpay-agent-demo.mp4) |
 | Boundary | Prototype does not custody real funds; it models milestone state plus on-chain attestation |
 

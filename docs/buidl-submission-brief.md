@@ -114,6 +114,6 @@ ProofPay Agent makes AI payment decisions auditable. It verifies real-world deli
 ## Final Submission Fields To Fill Manually
 
 - Team member profile details
-- Live demo URL, if a hosted deployment is added
+- Live demo URL: `https://sskift.github.io/casper-proofpay-agent/`
 - Project socials, if created before final submission
 - DoraHacks organizer disclaimer confirmation
