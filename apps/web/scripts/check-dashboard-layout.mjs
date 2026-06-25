@@ -94,23 +94,30 @@ for (const [needle, message] of requiredCssContracts) {
   }
 }
 
-if (!webPackage.dependencies?.["@visx/shape"] || !webPackage.dependencies?.["@visx/axis"]) {
-  throw new Error("Dashboard charts should use polished visx chart components instead of hand-drawn SVG primitives.");
+if (!webPackage.dependencies?.recharts) {
+  throw new Error("Dashboard charts should use Recharts components instead of hand-drawn SVG primitives.");
 }
 
 for (const [needle, message] of [
-  ["LinePath", "Risk and telemetry charts should use visx LinePath components."],
-  ["AxisBottom", "Charts should use chart-axis components instead of hand-positioned axis labels."],
-  ["GridRows", "Charts should use chart-grid components instead of hand-positioned grid lines."],
-  ["Bar", "Cashflow and evidence charts should use visx Bar components."]
+  ["ResponsiveContainer", "Charts should use responsive chart containers."],
+  ["LineChart", "Risk and telemetry charts should use Recharts LineChart components."],
+  ["BarChart", "Cashflow and evidence charts should use Recharts BarChart components."],
+  ["Tooltip", "Charts should include component-level tooltips."],
+  ["CartesianGrid", "Charts should use component grid rendering instead of manual grid lines."]
 ]) {
   if (!chartsComponent.includes(needle)) {
     throw new Error(message);
   }
 }
 
-if (chartsComponent.includes("function linePath")) {
-  throw new Error("Dashboard charts should not fall back to hand-rolled SVG drawing helpers.");
+for (const [needle, message] of [
+  ["@visx/", "Dashboard charts should not depend on low-level Visx primitives."],
+  ["<svg", "Dashboard charts should not hand-roll SVG containers."],
+  ["<line", "Dashboard charts should not hand-roll SVG threshold lines."]
+]) {
+  if (chartsComponent.includes(needle)) {
+    throw new Error(message);
+  }
 }
 
 const requiredRouteFiles = [

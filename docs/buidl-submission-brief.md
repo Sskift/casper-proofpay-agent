@@ -74,7 +74,7 @@ ProofPay combines:
 - React
 - TypeScript
 - HeroUI
-- Visx charts
+- Recharts
 - Casper Rust contract materials
 - Casper CLI deployment scripts
 - Vitest package tests

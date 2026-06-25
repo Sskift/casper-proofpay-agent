@@ -49,7 +49,7 @@ The web app has been refactored into a dense operator dashboard inspired by the 
 - Scroll-tracked sidebar navigation for the seven judge sections.
 - Journey workbench with evidence intake cards, buyer/supplier/arbiter workflow, scenario evaluation, and MCP/x402/Casper API hooks.
 - Trust-chain workbench with editable external evidence JSON intake, settlement runbook actions, and Casper payload-to-Testnet verifier checks.
-- Visx charts for risk, cold-chain telemetry, escrow cashflow, and evidence coverage.
+- Recharts charts for risk, cold-chain telemetry, escrow cashflow, and evidence coverage.
 - Scenario switcher for `approve`, `hold`, and `reject` judge flows.
 - Evidence room with reviewer summary, document cards, claim cards, and timeline tabs.
 - Action queue that turns agent findings into reviewer next steps.

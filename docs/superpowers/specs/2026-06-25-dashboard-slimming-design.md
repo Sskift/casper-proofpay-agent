@@ -16,12 +16,12 @@ This iteration slims three information-heavy areas:
 
 The primary screen should read as a command surface: a reviewer sees the decision, payout state, evidence health, and on-chain status first. Details remain one click away in tab panels, not pushed into always-visible text blocks.
 
-Cockpit will use a compact decision spine for the current decision path and HeroUI tabs for actions, hashes, and actor handoff. Evidence will use a summary meter for matched, warning, and failed documents, plus drilldown tabs for documents, claims, timeline, reasons, and follow-up. Charts will use a tabbed chart room so risk, cashflow, cold-chain telemetry, and coverage stay available without forcing a long scroll. Chart rendering should use visx chart primitives for axes, grids, lines, glyphs, and bars so the demo does not depend on brittle tab-panel resize timing.
+Cockpit will use a compact decision spine for the current decision path and HeroUI tabs for actions, hashes, and actor handoff. Evidence will use a summary meter for matched, warning, and failed documents, plus drilldown tabs for documents, claims, timeline, reasons, and follow-up. Charts will use a tabbed chart room so risk, cashflow, cold-chain telemetry, and coverage stay available without forcing a long scroll. Chart rendering was later migrated to Recharts components for smoother tooltip, legend, animation, and responsive behavior.
 
 ## Non-Goals
 
 - No new business logic or Casper deployments.
-- No new non-UI infrastructure dependencies. visx is allowed for polished dashboard charts.
+- No new non-UI infrastructure dependencies. Recharts is used for polished dashboard charts.
 - No new demo video in this iteration.
 - No hidden or fabricated proof data.
 

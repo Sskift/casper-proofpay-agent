@@ -6,7 +6,7 @@
 
 **Architecture:** Keep the existing `page.tsx` dashboard composition and CSS system. Add source-contract checks first, then reorganize existing data into summary strips, tabs, and compact visual rails without changing agent or Casper data models.
 
-**Tech Stack:** TypeScript, Next.js App Router, React, HeroUI tabs, visx chart components, lucide-react icons, existing CSS.
+**Tech Stack:** TypeScript, Next.js App Router, React, HeroUI tabs, Recharts chart components, lucide-react icons, existing CSS.
 
 ---
 
@@ -38,7 +38,7 @@
 
 - [ ] Add a chart summary strip with current risk, cold-chain band, cashflow state, and evidence coverage.
 - [ ] Move charts into `chart-tabs` so one chart renders per selected tab.
-- [ ] Render charts with visx `LinePath`, `Bar`, `AxisBottom`, `AxisLeft`, and `GridRows` components so tab panels do not produce blank responsive containers.
+- [ ] Render charts with Recharts `ResponsiveContainer`, `LineChart`, `BarChart`, `Tooltip`, `Legend`, and `CartesianGrid` components so tab panels do not produce blank responsive containers.
 - [ ] Keep all four chart components available for reviewers.
 - [ ] Run `npm --workspace apps/web run test` and verify chart source contracts pass.
 

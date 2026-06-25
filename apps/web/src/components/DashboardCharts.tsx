@@ -1,13 +1,20 @@
 "use client";
 
-import { AxisBottom, AxisLeft } from "@visx/axis";
-import { GlyphCircle } from "@visx/glyph";
-import { GridRows } from "@visx/grid";
-import { Group } from "@visx/group";
-import { scaleBand, scaleLinear, scalePoint } from "@visx/scale";
-import { Bar, LinePath } from "@visx/shape";
-
 import type { OperationsDashboardModel } from "@proofpay/agent";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from "recharts";
 
 const palette = {
   blue: "#1664ff",
@@ -15,31 +22,15 @@ const palette = {
   green: "#12b76a",
   amber: "#b7791f",
   red: "#f31260",
-  gray: "#667085"
+  gray: "#667085",
+  grid: "#edf1f7",
+  axis: "#98a2b3"
 };
 
-const chart = {
-  width: 760,
-  height: 304,
-  margin: {
-    top: 22,
-    right: 28,
-    bottom: 42,
-    left: 54
-  }
-};
-
-const innerWidth = chart.width - chart.margin.left - chart.margin.right;
-const innerHeight = chart.height - chart.margin.top - chart.margin.bottom;
-
-const axisStyles = {
-  tickLabelProps: () => ({
-    fill: palette.gray,
-    fontSize: 11,
-    fontWeight: 700
-  }),
-  stroke: "#d8dde6",
-  tickStroke: "#d8dde6"
+const axisStyle = {
+  fill: palette.gray,
+  fontSize: 11,
+  fontWeight: 700
 };
 
 function ChartFrame({ title, sub, children }: { title: string; sub?: string; children: React.ReactNode }) {
@@ -56,68 +47,71 @@ function ChartFrame({ title, sub, children }: { title: string; sub?: string; chi
   );
 }
 
-function Legend({ items }: { items: Array<{ label: string; color: string; dashed?: boolean }> }) {
+interface ChartTooltipPayload {
+  color?: string;
+  dataKey?: string | number;
+  name?: string | number;
+  value?: string | number;
+}
+
+interface ChartTooltipProps {
+  active?: boolean;
+  label?: string | number;
+  payload?: ChartTooltipPayload[];
+}
+
+function CustomTooltip({ active, label, payload }: ChartTooltipProps) {
+  if (!active || !payload?.length) return null;
+
   return (
-    <div className="viz-legend">
-      {items.map((item) => (
-        <span key={item.label}>
-          <i className={item.dashed ? "is-dashed" : undefined} style={{ backgroundColor: item.color }} />
-          {item.label}
-        </span>
-      ))}
+    <div className="chart-tooltip">
+      <strong>{label}</strong>
+      {payload
+        .filter((item) => item.value !== undefined)
+        .map((item) => (
+          <div key={`${item.dataKey}`}>
+            <span style={{ backgroundColor: item.color }} />
+            <em>{item.name}</em>
+            <code>{typeof item.value === "number" ? item.value.toLocaleString("en-US") : item.value}</code>
+          </div>
+        ))}
     </div>
   );
 }
 
-function yAxisTicks(max: number) {
-  if (max <= 10) return [0, 4, 8, Math.ceil(max)];
-  if (max <= 100) return [0, 30, 60, 100];
-  return [0, Math.round(max / 2), Math.round(max)];
+function formatUsd(value: number) {
+  if (value >= 1000) return `$${Math.round(value / 1000)}k`;
+  return `$${value}`;
 }
 
 export function RiskTapeChart({ model }: { model: OperationsDashboardModel }) {
   const data = model.chartSeries.risk;
-  const xScale = scalePoint<string>({
-    domain: data.map((point) => point.stage),
-    range: [0, innerWidth],
-    padding: 0.45
-  });
-  const yScale = scaleLinear<number>({
-    domain: [0, 100],
-    range: [innerHeight, 0],
-    nice: true
-  });
   const lineColor = model.cockpitMetrics.find((metric) => metric.id === "risk")?.tone === "negative" ? palette.red : palette.blue;
-  const thresholdY = yScale(30);
 
   return (
     <ChartFrame title="Risk tape" sub="submitted -> extracted -> assessed">
       <div className="viz-chart">
-        <svg className="viz-component-chart" role="img" viewBox={`0 0 ${chart.width} ${chart.height}`}>
-          <Group left={chart.margin.left} top={chart.margin.top}>
-            <GridRows scale={yScale} stroke="#edf1f7" tickValues={yAxisTicks(100)} width={innerWidth} />
-            <line className="viz-threshold" x1={0} x2={innerWidth} y1={thresholdY} y2={thresholdY} />
-            <LinePath
-              className="viz-line"
-              curve={undefined}
-              data={data}
+        <ResponsiveContainer height="100%" width="100%">
+          <LineChart data={data} margin={{ top: 16, right: 26, bottom: 12, left: 0 }}>
+            <CartesianGrid stroke={palette.grid} strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="stage" tick={axisStyle} tickLine={false} />
+            <YAxis domain={[0, 100]} tick={axisStyle} tickLine={false} width={42} />
+            <Tooltip content={<CustomTooltip />} cursor={{ stroke: palette.axis, strokeDasharray: "4 4" }} />
+            <ReferenceLine ifOverflow="extendDomain" label={{ value: "release threshold", fill: palette.gray, fontSize: 11, position: "insideTopRight" }} stroke={palette.axis} strokeDasharray="5 5" y={30} />
+            <Line
+              activeDot={{ r: 7 }}
+              animationDuration={620}
+              dataKey="score"
+              dot={{ r: 4, strokeWidth: 2 }}
+              name="risk score"
               stroke={lineColor}
+              strokeLinecap="round"
               strokeWidth={3}
-              x={(point) => xScale(point.stage) ?? 0}
-              y={(point) => yScale(point.score)}
+              type="monotone"
             />
-            {data.map((point) => (
-              <Group key={point.stage} left={xScale(point.stage) ?? 0} top={yScale(point.score)}>
-                <GlyphCircle className="viz-glyph" fill={lineColor} r={5} />
-                <text className="viz-point-label" dy={-12} textAnchor="middle">{point.score}</text>
-              </Group>
-            ))}
-            <AxisLeft scale={yScale} tickValues={yAxisTicks(100)} {...axisStyles} />
-            <AxisBottom scale={xScale} top={innerHeight} {...axisStyles} />
-          </Group>
-        </svg>
+          </LineChart>
+        </ResponsiveContainer>
       </div>
-      <Legend items={[{ label: "risk score", color: lineColor }, { label: "release threshold", color: "#98a2b3", dashed: true }]} />
     </ChartFrame>
   );
 }
@@ -126,122 +120,70 @@ export function TemperatureChart({ model }: { model: OperationsDashboardModel })
   const data = model.chartSeries.temperature;
   const minValue = Math.floor(Math.min(...data.flatMap((point) => [point.minC, point.lowerBound])) - 1);
   const maxValue = Math.ceil(Math.max(...data.flatMap((point) => [point.maxC, point.upperBound])) + 1);
-  const xScale = scalePoint<string>({
-    domain: data.map((point) => point.checkpoint),
-    range: [0, innerWidth],
-    padding: 0.35
-  });
-  const yScale = scaleLinear<number>({
-    domain: [minValue, maxValue],
-    range: [innerHeight, 0],
-    nice: true
-  });
 
   return (
     <ChartFrame title="Cold-chain telemetry" sub="sensor band vs contract envelope">
       <div className="viz-chart">
-        <svg className="viz-component-chart" role="img" viewBox={`0 0 ${chart.width} ${chart.height}`}>
-          <Group left={chart.margin.left} top={chart.margin.top}>
-            <GridRows scale={yScale} stroke="#edf1f7" tickValues={yAxisTicks(maxValue)} width={innerWidth} />
-            <LinePath className="viz-threshold-path" data={data} stroke="#98a2b3" x={(point) => xScale(point.checkpoint) ?? 0} y={(point) => yScale(point.lowerBound)} />
-            <LinePath className="viz-threshold-path" data={data} stroke="#98a2b3" x={(point) => xScale(point.checkpoint) ?? 0} y={(point) => yScale(point.upperBound)} />
-            <LinePath className="viz-line" data={data} stroke={palette.teal} strokeWidth={2.5} x={(point) => xScale(point.checkpoint) ?? 0} y={(point) => yScale(point.minC)} />
-            <LinePath className="viz-line" data={data} stroke={palette.blue} strokeWidth={2.5} x={(point) => xScale(point.checkpoint) ?? 0} y={(point) => yScale(point.maxC)} />
-            <AxisLeft scale={yScale} tickValues={yAxisTicks(maxValue)} {...axisStyles} />
-            <AxisBottom scale={xScale} top={innerHeight} {...axisStyles} tickValues={data.filter((_, index) => index % 2 === 0).map((point) => point.checkpoint)} />
-          </Group>
-        </svg>
+        <ResponsiveContainer height="100%" width="100%">
+          <LineChart data={data} margin={{ top: 16, right: 26, bottom: 12, left: 0 }}>
+            <CartesianGrid stroke={palette.grid} strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="checkpoint" interval={1} tick={axisStyle} tickLine={false} />
+            <YAxis domain={[minValue, maxValue]} tick={axisStyle} tickFormatter={(value) => `${value}C`} tickLine={false} width={42} />
+            <Tooltip content={<CustomTooltip />} cursor={{ stroke: palette.axis, strokeDasharray: "4 4" }} />
+            <Legend iconType="circle" verticalAlign="bottom" wrapperStyle={{ color: palette.gray, fontSize: 12, fontWeight: 700 }} />
+            <Line animationDuration={620} dataKey="lowerBound" dot={false} name="lower bound" stroke={palette.axis} strokeDasharray="5 5" strokeWidth={2} type="monotone" />
+            <Line animationDuration={620} dataKey="upperBound" dot={false} name="upper bound" stroke={palette.axis} strokeDasharray="5 5" strokeWidth={2} type="monotone" />
+            <Line activeDot={{ r: 6 }} animationDuration={620} dataKey="minC" dot={{ r: 3 }} name="min C" stroke={palette.teal} strokeWidth={2.6} type="monotone" />
+            <Line activeDot={{ r: 6 }} animationDuration={620} dataKey="maxC" dot={{ r: 3 }} name="max C" stroke={palette.blue} strokeWidth={2.6} type="monotone" />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
-      <Legend items={[{ label: "min C", color: palette.teal }, { label: "max C", color: palette.blue }, { label: "contract band", color: "#98a2b3", dashed: true }]} />
     </ChartFrame>
   );
 }
 
 export function CashflowChart({ model }: { model: OperationsDashboardModel }) {
   const data = model.chartSeries.cashflow;
-  const xScale = scaleBand<string>({
-    domain: data.map((point) => point.stage),
-    range: [0, innerWidth],
-    padding: 0.34
-  });
-  const maxTotal = Math.max(...data.map((point) => point.locked + point.releaseReady + point.disputed), 1);
-  const yScale = scaleLinear<number>({
-    domain: [0, maxTotal],
-    range: [innerHeight, 0],
-    nice: true
-  });
-  const segments = [
-    { key: "locked", label: "locked", color: "#98a2b3" },
-    { key: "releaseReady", label: "release ready", color: palette.green },
-    { key: "disputed", label: "disputed", color: palette.red }
-  ] as const;
 
   return (
     <ChartFrame title="Escrow cashflow" sub="locked, releasable, disputed">
       <div className="viz-chart viz-chart--bar">
-        <svg className="viz-component-chart" role="img" viewBox={`0 0 ${chart.width} ${chart.height}`}>
-          <Group left={chart.margin.left} top={chart.margin.top}>
-            <GridRows scale={yScale} stroke="#edf1f7" tickValues={yAxisTicks(maxTotal)} width={innerWidth} />
-            {data.map((point) => {
-              const x = xScale(point.stage) ?? 0;
-              let accumulated = 0;
-              return (
-                <Group key={point.stage}>
-                  {segments.map((segment) => {
-                    const value = point[segment.key];
-                    const y = yScale(accumulated + value);
-                    const height = yScale(accumulated) - y;
-                    accumulated += value;
-                    return <Bar className="viz-bar" fill={segment.color} height={Math.max(0, height)} key={segment.key} rx={5} width={xScale.bandwidth()} x={x} y={y} />;
-                  })}
-                </Group>
-              );
-            })}
-            <AxisLeft scale={yScale} tickValues={yAxisTicks(maxTotal)} {...axisStyles} />
-            <AxisBottom scale={xScale} top={innerHeight} {...axisStyles} />
-          </Group>
-        </svg>
+        <ResponsiveContainer height="100%" width="100%">
+          <BarChart data={data} margin={{ top: 16, right: 22, bottom: 12, left: 4 }}>
+            <CartesianGrid stroke={palette.grid} strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="stage" tick={axisStyle} tickLine={false} />
+            <YAxis tick={axisStyle} tickFormatter={formatUsd} tickLine={false} width={46} />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(22, 100, 255, 0.06)" }} />
+            <Legend iconType="circle" verticalAlign="bottom" wrapperStyle={{ color: palette.gray, fontSize: 12, fontWeight: 700 }} />
+            <Bar animationDuration={620} dataKey="locked" fill={palette.axis} name="locked" radius={[6, 6, 0, 0]} stackId="cash" />
+            <Bar animationDuration={620} dataKey="releaseReady" fill={palette.green} name="release ready" radius={[6, 6, 0, 0]} stackId="cash" />
+            <Bar animationDuration={620} dataKey="disputed" fill={palette.red} name="disputed" radius={[6, 6, 0, 0]} stackId="cash" />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
-      <Legend items={segments.map((segment) => ({ label: segment.label, color: segment.color }))} />
     </ChartFrame>
   );
 }
 
 export function EvidenceCoverageChart({ model }: { model: OperationsDashboardModel }) {
   const data = model.chartSeries.evidenceCoverage;
-  const yScale = scaleBand<string>({
-    domain: data.map((point) => point.type),
-    range: [0, innerHeight],
-    padding: 0.32
-  });
-  const xScale = scaleLinear<number>({
-    domain: [0, 100],
-    range: [0, innerWidth],
-    nice: true
-  });
 
   return (
     <ChartFrame title="Evidence coverage" sub="document-level verification score">
       <div className="viz-chart viz-chart--bar">
-        <svg className="viz-component-chart" role="img" viewBox={`0 0 ${chart.width} ${chart.height}`}>
-          <Group left={chart.margin.left + 72} top={chart.margin.top}>
-            <GridRows scale={yScale} stroke="#edf1f7" width={innerWidth - 72} />
-            {data.map((point) => {
-              const color = point.score === 100 ? palette.green : point.score > 60 ? palette.amber : palette.red;
-              return (
-                <Group key={point.type}>
-                  <Bar fill="#edf1f7" height={yScale.bandwidth()} rx={7} width={innerWidth - 72} x={0} y={yScale(point.type) ?? 0} />
-                  <Bar className="viz-bar" fill={color} height={yScale.bandwidth()} rx={7} width={xScale(point.score) - xScale(0)} x={0} y={yScale(point.type) ?? 0} />
-                  <text className="viz-point-label" x={Math.max(30, xScale(point.score) - 8)} y={(yScale(point.type) ?? 0) + yScale.bandwidth() / 2 + 4} textAnchor="end">
-                    {point.score}
-                  </text>
-                </Group>
-              );
-            })}
-            <AxisLeft scale={yScale} left={0} {...axisStyles} />
-            <AxisBottom scale={xScale} top={innerHeight} {...axisStyles} tickValues={[0, 50, 100]} />
-          </Group>
-        </svg>
+        <ResponsiveContainer height="100%" width="100%">
+          <BarChart data={data} layout="vertical" margin={{ top: 16, right: 28, bottom: 12, left: 70 }}>
+            <CartesianGrid stroke={palette.grid} strokeDasharray="3 3" horizontal={false} />
+            <XAxis domain={[0, 100]} tick={axisStyle} tickLine={false} type="number" />
+            <YAxis dataKey="type" tick={axisStyle} tickLine={false} type="category" width={112} />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(22, 100, 255, 0.06)" }} />
+            <Bar animationDuration={620} dataKey="score" name="coverage" radius={[0, 7, 7, 0]}>
+              {data.map((point) => (
+                <Cell fill={point.score === 100 ? palette.green : point.score > 60 ? palette.amber : palette.red} key={point.type} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
       </div>
     </ChartFrame>
   );
