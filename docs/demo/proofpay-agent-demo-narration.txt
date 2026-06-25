@@ -1,0 +1,17 @@
+ProofPay Agent is an agentic milestone escrow cockpit for real-world asset payments on Casper. It checks delivery evidence before a buyer releases funds.
+
+In the cockpit, reviewers see readiness, risk, confidence, evidence coverage, and the Casper anchor together. The left navigation tracks the active operating room instead of hiding where the reviewer is.
+
+The signal room turns the decision into charts. Risk, escrow cash flow, cold-chain telemetry, and evidence coverage are visible at once, so the reviewer can scan the proof instead of reading a wall of text.
+
+The Trust Chain is the product's real advantage. External evidence enters as a validated package. The agent creates a bounded payment recommendation. The settlement runbook tells supplier, buyer, arbiter, and Casper what happens next.
+
+The Evidence room keeps the AI explainable. Reviewers can move between documents, normalized claims, timeline events, reasons, and follow-up actions, then understand why the release is allowed or blocked.
+
+Casper is the trust anchor. The dashboard exposes the Testnet transaction, block height, named key, stored URef, public key, payload, and deploy command used to reproduce the attestation.
+
+The Audit Dossier packages the proof for judges and operators: policy trace, evidence hash, decision hash, local transaction, Casper transaction, verifier checks, and a copy-ready JSON record.
+
+Now the same system handles exceptions. If the invoice amount is too high, ProofPay moves to human finance review. If a duplicate invoice appears, it blocks release and escalates fraud review.
+
+The value is not just a dashboard. ProofPay links off-chain evidence, agentic review, human release control, and Casper attestation into one auditable payment workflow.

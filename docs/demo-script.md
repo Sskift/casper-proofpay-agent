@@ -1,8 +1,10 @@
 # ProofPay Agent Demo Script
 
-Target length: 105 to 115 seconds.
+Target length: 115 to 120 seconds.
 
-The submitted demo video is a 1080p dynamic browser walkthrough with Coze AI text-to-speech narration, visible cursor movement, section navigation, page scrolling, scenario switching, and compact centered captions. The video file lives at `docs/demo/proofpay-agent-demo.mp4` so the DoraHacks BUIDL link can keep pointing at the same GitHub path after updates.
+The submitted demo video is a 1080p dynamic browser walkthrough with AI text-to-speech narration, visible cursor movement, section navigation, page scrolling, chart hover states, tab switching, scenario switching, and compact lower-third captions. The video file lives at `docs/demo/proofpay-agent-demo.mp4` so the DoraHacks BUIDL link can keep pointing at the same GitHub path after updates.
+
+The exact narration source for the current video lives at `docs/demo/proofpay-agent-demo-narration.txt`.
 
 ## Scene 1: Cockpit
 
@@ -11,6 +13,7 @@ ProofPay Agent is an agentic milestone escrow cockpit for real-world asset payme
 Show:
 
 - Release readiness, risk, confidence, evidence coverage, and Casper anchor metrics.
+- Confidence, risk health, and evidence radial gauges.
 - Reviewer action queue.
 - Left navigation with the active Cockpit section.
 
@@ -23,6 +26,7 @@ Show:
 - Risk tape.
 - Cold-chain telemetry.
 - Escrow cashflow and evidence coverage charts.
+- All four charts visible as a chart gallery, not a hidden tab set.
 
 ## Scene 3: Trust Chain
 
@@ -31,6 +35,7 @@ ProofPay is more than a dashboard. It accepts an external evidence pack, validat
 Show:
 
 - External evidence intake lab.
+- Evidence coverage and Casper verifier mini charts.
 - Settlement runbook actions for supplier, buyer, arbiter, and Casper.
 - Casper verifier checks for evidence hash, decision hash, transaction hash, and stored URef.
 
@@ -60,6 +65,7 @@ New in this iteration is the Audit Dossier. Every policy check becomes a trace c
 Show:
 
 - Passed trace cards for invoice amount, settlement currency, shipment identity, delivery confirmation, temperature band, and counterparty registry.
+- Audit trace distribution chart.
 - Verification chain with evidence hash, decision hash, local demo transaction, Casper Testnet transaction, and stored URef.
 - Copy-ready JSON audit package.
 
