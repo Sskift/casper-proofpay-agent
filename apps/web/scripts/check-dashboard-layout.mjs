@@ -66,6 +66,8 @@ const requiredPageContracts = [
   ["Load hold for finance sample", "Evidence intake playground should include a hold sample loader."],
   ["Load reject duplicate sample", "Evidence intake playground should include a reject sample loader."],
   ["Assess evidence", "Evidence intake playground should have an explicit assessment action."],
+  ["Dynamic API route", "Evidence intake playground should prefer the live Next API route before falling back to static replay."],
+  ["API route status", "Dashboard should show whether dynamic API routes are reachable from this page."],
   ["mini dossier preview", "Evidence intake playground should show a compact dossier preview."],
   ["local API replay available in repository", "Static GitHub Pages mode should honestly explain local API replay."],
   ["playgroundResult", "Evidence intake playground should store explicit assessment output state."]
@@ -111,6 +113,7 @@ const requiredCssContracts = [
   [".judge-walkthrough", "Judge walkthrough styles are missing."],
   [".walkthrough-step.is-active", "Judge walkthrough active state styles are missing."],
   [".sample-loader-row", "Evidence intake sample loader styles are missing."],
+  [".api-route-status", "Evidence intake dynamic API route status styles are missing."],
   [".playground-result-grid", "Evidence intake result grid styles are missing."],
   [".copy-proof-button", "Casper proof copy button styles are missing."],
   [".proof-verification-grid", "Casper proof verification state styles are missing."],

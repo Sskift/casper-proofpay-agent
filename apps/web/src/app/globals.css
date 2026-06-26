@@ -1988,6 +1988,45 @@ h1 {
   margin-bottom: 10px;
 }
 
+.api-route-status {
+  display: grid;
+  gap: 3px;
+  margin-bottom: 8px;
+  padding: 8px 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+
+.api-route-status span {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.api-route-status strong {
+  color: #1d2939;
+  font-size: 0.8rem;
+}
+
+.api-route-status p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.api-route-status--live {
+  border-color: rgba(18, 183, 106, 0.32);
+  background: #f5fff9;
+}
+
+.api-route-status--static_fallback {
+  border-color: #f0d7a5;
+  background: #fffdf7;
+}
+
 .intake-lab textarea {
   display: block;
   width: 100%;

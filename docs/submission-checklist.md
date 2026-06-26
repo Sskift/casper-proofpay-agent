@@ -55,8 +55,9 @@ ProofPay Agent lets autonomous agents release real-world payments only when evid
 - Dashboard sidebar clearly shows the active Cockpit, Journey, Trust, Charts, Evidence, Casper, or Dossier section.
 - Dashboard Judge walkthrough scrolls to Cockpit, Trust, Evidence, Casper, and Dossier with a clear active state.
 - Dashboard Trust section shows external evidence intake, settlement runbook actions, and Casper verifier checks.
-- Dashboard evidence intake playground loads clean, hold, and reject samples; `Assess evidence` returns decision, risk score, confidence, evidence hash, decision hash, reasons, next actions, and mini dossier preview.
+- Dashboard evidence intake playground loads clean, hold, and reject samples; `Assess evidence` calls `POST /api/evidence/intake` on a dynamic Next server, falls back to client replay on static GitHub Pages, and returns decision, risk score, confidence, evidence hash, decision hash, reasons, next actions, and mini dossier preview.
 - Dashboard evidence intake playground shows a friendly error for invalid JSON.
+- Local API smoke tests pass for `GET /api/attestation/clean`, `POST /api/evidence/intake`, and invalid evidence returning `422`.
 - Dashboard Evidence room shows reviewer summary, documents, claims, and timeline without table stacking.
 - Dashboard Casper proof workbench shows Testnet transaction, CSPR.live link, copy buttons, block height, named key, stored URef, deploy command, verification states, readiness gates, public key, and Casper session args.
 - Dashboard Casper copy states cover tx hash, evidence hash, decision hash, stored URef, and replay command.

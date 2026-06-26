@@ -58,9 +58,9 @@ Current implementation status:
 
 - P0 Casper Proof Workbench: completed in the dashboard with CSPR.live links, copy buttons, scenario-specific Testnet facts, verification states, and docs links.
 - P0 Judge Walkthrough Mode: completed with Cockpit, Trust, Evidence, Casper, and Dossier scroll steps.
-- P1 Evidence Intake Playground: completed client-side for GitHub Pages with sample loaders, explicit assessment, invalid JSON handling, hashes, reasons, next actions, and mini dossier preview.
+- P1 Evidence Intake Playground: completed with API-first `POST /api/evidence/intake` assessment on a dynamic Next server, GitHub Pages client replay fallback, sample loaders, explicit assessment, invalid JSON handling, hashes, reasons, next actions, and mini dossier preview.
 - P1 CI and Repository Signals: completed with a dedicated Node 22 GitHub Actions workflow and README badge.
-- P1 Full-Stack Hosted Demo: deferred; GitHub Pages remains the stable public URL and local API replay is documented.
+- P1 Full-Stack Hosted Demo: still deferred as a public deployment decision; the dashboard is now API-first when hosted on a dynamic Next server, while GitHub Pages remains the stable public URL with client replay fallback.
 - P2 Demo Refresh: recommended after final UI review because the judge story changed materially.
 
 ### P0: Casper Proof Workbench
@@ -107,7 +107,7 @@ Expected user-facing improvements:
 - Provide a textarea or structured editor for normalized evidence JSON.
 - Include sample buttons for clean release, hold for finance, and reject duplicate.
 - Recompute decision, risk score, confidence, evidence hash, decision hash, and dossier preview on submit.
-- If hosted static mode cannot call API routes, run the same deterministic assessment client-side or clearly route reviewers to local reproduction.
+- If hosted static mode cannot call API routes, run the same deterministic assessment client-side and show the API route status clearly in the dashboard.
 
 Acceptance criteria:
 

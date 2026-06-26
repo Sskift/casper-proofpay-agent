@@ -59,21 +59,21 @@ This is more than a frontend dashboard: the repository includes deterministic ev
 - Casper attestation payload generation, deploy command generation, verifier checks, and recorded Testnet deployment facts in `packages/casper`.
 - Three successful Casper Testnet transactions for clean release, finance hold, and duplicate reject scenarios.
 - Next.js dashboard surfaces for cockpit review, Judge walkthrough, evidence intake playground, Casper proof workbench, and audit dossier.
-- Local API hooks for attestation lookup, external evidence intake, MCP-style access, and x402-style release gating.
+- Dynamic Next API hooks for attestation lookup, external evidence intake, MCP-style access, and x402-style release gating.
 
 ## What Is Simulated
 
 - ProofPay does not custody real funds in this prototype and does not claim production escrow settlement.
-- The GitHub Pages demo is a stable static dashboard; API routes run locally from the repository or on a future full-stack host.
+- The GitHub Pages demo is a stable static dashboard; API routes run on the local Next server or a future full-stack host, and the dashboard falls back to deterministic client replay on static hosting.
 - The agent is deterministic and bounded for auditability; production OCR, identity verification, wallet signing, and payment rail integration are future work.
 
 ## How To Verify
 
 1. Open the [live GitHub Pages demo](https://sskift.github.io/casper-proofpay-agent/) and use the Judge walkthrough: Cockpit, Trust, Evidence, Casper, Dossier.
 2. In Casper, switch clean / hold / reject scenarios, open `View on cspr.live`, and compare transaction hash, block height, named key, stored URef, evidence hash, and decision hash.
-3. In Trust, load each evidence intake sample, click `Assess evidence`, and confirm the recomputed decision, risk score, confidence, evidence hash, decision hash, reasons, actions, and mini dossier preview.
+3. In Trust, load each evidence intake sample, click `Assess evidence`, and confirm the recomputed decision, risk score, confidence, evidence hash, decision hash, reasons, actions, and mini dossier preview. On a Next server this calls `POST /api/evidence/intake`; on GitHub Pages it falls back to deterministic client replay.
 4. Locally run `npm install`, `npm test`, `npm run typecheck`, `npm run build`, `npm run pages:build`, and `npm run submission:check`.
-5. For API replay, run `npm run dev -- --hostname 127.0.0.1 --port 3000`, then call `GET /api/attestation/clean` or `POST /api/evidence/intake`.
+5. For live API replay, run `npm run dev -- --hostname 127.0.0.1 --port 3000`, then call `GET /api/attestation/clean` or `POST /api/evidence/intake`.
 
 ## Why This Is Not A Generic x402 Gateway
 
@@ -200,7 +200,7 @@ Core dashboard capabilities:
 - Scenario switcher for `approve`, `hold`, and `reject` payment flows.
 - Evidence room for documents, claims, timeline, reasons, and follow-up actions.
 - Recharts-based visuals for risk, cold-chain telemetry, cashflow, evidence coverage, Casper checks, and audit trace distribution.
-- Evidence intake playground with JSON sample loaders, deterministic assessment, hashes, reasons, next actions, and mini dossier preview.
+- Evidence intake playground with JSON sample loaders, API-first assessment through `POST /api/evidence/intake`, static fallback replay, hashes, reasons, next actions, and mini dossier preview.
 - Casper proof workbench with CSPR.live links, copy buttons, transaction hash, block height, named key, stored URef, deploy command, explicit verification states, and readiness gates.
 - Audit dossier workbench with decision trace, hashes, Testnet proof facts, reproduction checklist, and copy-ready JSON.
 
@@ -276,7 +276,7 @@ Final submission still happens through DoraHacks `Submit BUIDL`; there does not 
 - [x] Casper attestation payload and verifier panel
 - [x] Operator dashboard with scenario switcher and charted proof sections
 - [x] Audit dossier with replayable proof facts
-- [x] Local MCP-style, x402-style, evidence intake, and attestation APIs
+- [x] Dynamic MCP-style, x402-style, evidence intake, and attestation APIs for local or full-stack Next hosting
 - [x] DoraHacks BUIDL materials
 - [x] Hosted public read-only deployment on GitHub Pages
 - [x] Demo recording workflow and next-iteration agent brief
@@ -293,6 +293,6 @@ Final submission still happens through DoraHacks `Submit BUIDL`; there does not 
 
 ## Prototype Boundary
 
-This hackathon prototype does not custody real funds. Escrow is represented as milestone state plus a Casper attestation record. Seeded evidence is synthetic for repeatable judge-mode demos, while `POST /api/evidence/intake` and the dashboard intake lab demonstrate how an external normalized evidence bundle would enter the same assessment and verification path.
+This hackathon prototype does not custody real funds. Escrow is represented as milestone state plus a Casper attestation record. Seeded evidence is synthetic for repeatable judge-mode demos, while `POST /api/evidence/intake` and the dashboard intake lab demonstrate how an external normalized evidence bundle enters the same assessment and verification path on a dynamic Next server.
 
 The product goal is simple: make AI-assisted RWA payment review faster without making it unverifiable.

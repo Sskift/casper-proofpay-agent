@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "test": "node scripts/check-dashboard-layout.mjs",
+    "test": "node scripts/check-dashboard-layout.mjs && vitest run",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -25,6 +25,7 @@
     "@types/node": "^25.0.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
   }
 }

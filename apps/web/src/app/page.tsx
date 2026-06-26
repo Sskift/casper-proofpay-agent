@@ -220,6 +220,36 @@ type PlaygroundResult =
       payload: CasperAttestationPayload;
       dossier: AuditDossier;
       runbook: SettlementRunbook;
+      source: "api" | "client";
+      message: string;
+    };
+
+type ApiRouteStatus =
+  | {
+      status: "checking";
+      message: string;
+    }
+  | {
+      status: "live";
+      message: string;
+    }
+  | {
+      status: "static_fallback";
+      message: string;
+    };
+
+type EvidenceIntakeApiResponse =
+  | {
+      accepted: true;
+      report: EvidenceIntakeReport;
+      assessment: AgentAssessment;
+      payload: CasperAttestationPayload;
+      dossier: AuditDossier;
+      settlementRunbook: SettlementRunbook;
+    }
+  | {
+      accepted: false;
+      report: EvidenceIntakeReport;
     };
 
 function createPlaygroundContext(bundle: EvidenceBundle): { deal: Deal; milestone: Milestone } {
@@ -283,7 +313,9 @@ function assessPlaygroundBundle(bundle: EvidenceBundle, report: EvidenceIntakeRe
     evidenceHash,
     payload,
     dossier,
-    runbook
+    runbook,
+    source: "client",
+    message: "Static/client replay used; dynamic API route was unavailable."
   };
 }
 
@@ -959,6 +991,10 @@ function TrustChainSection({
     status: "idle",
     message: "Load or edit an evidence package, then assess evidence."
   });
+  const [apiRouteStatus, setApiRouteStatus] = useState<ApiRouteStatus>({
+    status: "checking",
+    message: "Checking dynamic API route availability."
+  });
 
   useEffect(() => {
     setDraft(JSON.stringify(bundle, null, 2));
@@ -968,6 +1004,50 @@ function TrustChainSection({
     });
   }, [bundle]);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    setApiRouteStatus({
+      status: "checking",
+      message: "Checking Dynamic API route /api/attestation."
+    });
+
+    fetch(`/api/attestation/${bundle.scenario}`, {
+      headers: {
+        accept: "application/json"
+      }
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`attestation route returned ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (!data?.payload?.decisionHash) {
+          throw new Error("attestation route did not return a payload");
+        }
+
+        if (!cancelled) {
+          setApiRouteStatus({
+            status: "live",
+            message: "Dynamic API route live: /api/attestation and /api/evidence/intake are reachable on this Next server."
+          });
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setApiRouteStatus({
+            status: "static_fallback",
+            message: "Static host detected: using client-side replay; local API replay available in repository."
+          });
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [bundle.scenario]);
+
   const loadSample = (key: ScenarioKey) => {
     setDraft(JSON.stringify(seededEvidenceBundles[key], null, 2));
     setPlaygroundResult({
@@ -976,23 +1056,72 @@ function TrustChainSection({
     });
   };
 
-  const assessDraft = () => {
+  const assessDraft = async () => {
+    let parsedInput: unknown;
+
     try {
-      const parsed = parseEvidenceBundle(JSON.parse(draft));
-
-      if (!parsed.ok) {
-        setPlaygroundResult({
-          status: "invalid_bundle",
-          report: parsed.report
-        });
-        return;
-      }
-
-      setPlaygroundResult(assessPlaygroundBundle(parsed.bundle, parsed.report));
+      parsedInput = JSON.parse(draft);
     } catch {
       setPlaygroundResult({
         status: "invalid_json",
         message: "Invalid JSON: check commas, quotes, and object braces before assessment."
+      });
+      return;
+    }
+
+    const parsed = parseEvidenceBundle(parsedInput);
+
+    if (!parsed.ok) {
+      setPlaygroundResult({
+        status: "invalid_bundle",
+        report: parsed.report
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/evidence/intake", {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "content-type": "application/json"
+        },
+        body: JSON.stringify(parsed.bundle)
+      });
+      const data = await response.json() as EvidenceIntakeApiResponse;
+
+      if (!response.ok || !data.accepted) {
+        setPlaygroundResult({
+          status: "invalid_bundle",
+          report: data.report
+        });
+        return;
+      }
+
+      setPlaygroundResult({
+        status: "assessed",
+        bundle: parsed.bundle,
+        report: data.report,
+        assessment: data.assessment,
+        evidenceHash: data.payload.evidenceHash,
+        payload: data.payload,
+        dossier: data.dossier,
+        runbook: data.settlementRunbook,
+        source: "api",
+        message: "Dynamic API route POST /api/evidence/intake returned this assessment."
+      });
+      setApiRouteStatus({
+        status: "live",
+        message: "Dynamic API route live: /api/evidence/intake returned the latest assessment."
+      });
+    } catch {
+      setPlaygroundResult({
+        ...assessPlaygroundBundle(parsed.bundle, parsed.report),
+        message: "Dynamic API route unavailable; static/client replay produced this assessment."
+      });
+      setApiRouteStatus({
+        status: "static_fallback",
+        message: "Dynamic intake API unavailable: using client-side replay; local API replay available in repository."
       });
     }
   };
@@ -1105,6 +1234,11 @@ function TrustChainSection({
               {playgroundResult.status === "assessed" ? "assessed" : playgroundResult.status === "idle" ? "ready" : "needs fix"}
             </Chip>
           </div>
+          <div className={`api-route-status api-route-status--${apiRouteStatus.status}`}>
+            <span>API route status</span>
+            <strong>{apiRouteStatus.status === "live" ? "Dynamic API route" : apiRouteStatus.status === "checking" ? "Checking API route" : "Static replay fallback"}</strong>
+            <p>{apiRouteStatus.message}</p>
+          </div>
           <div className="sample-loader-row" aria-label="Evidence intake sample loaders">
             <button onClick={() => loadSample("clean")} type="button">Load clean release sample</button>
             <button onClick={() => loadSample("amountMismatch")} type="button">Load hold for finance sample</button>
@@ -1121,7 +1255,7 @@ function TrustChainSection({
               <ClipboardCheck aria-hidden="true" size={15} />
               Assess evidence
             </button>
-            <span>Client-side deterministic assessment; local API replay available in repository.</span>
+            <span>Dynamic API route first; static/client replay fallback for GitHub Pages.</span>
           </div>
           <div className="intake-preview">
             {playgroundResult.status === "invalid_json" ? (
@@ -1132,7 +1266,7 @@ function TrustChainSection({
             ) : playgroundResult.status === "assessed" ? (
               <div className="preview-status preview-status--passed">
                 <CheckCircle2 aria-hidden="true" size={16} />
-                <span>{playgroundResult.assessment.decision} · risk {playgroundResult.assessment.riskScore}/100 · confidence {playgroundResult.assessment.confidence}%</span>
+                <span>{playgroundResult.assessment.decision} · risk {playgroundResult.assessment.riskScore}/100 · confidence {playgroundResult.assessment.confidence}% · {playgroundResult.source === "api" ? "via API route" : "client replay"}</span>
               </div>
             ) : playgroundResult.status === "invalid_bundle" ? (
               <div className="preview-status preview-status--failed">
@@ -1207,7 +1341,7 @@ function TrustChainSection({
                 ))}
               </div>
             ) : null}
-            <code>POST /api/evidence/intake · local API replay available in repository</code>
+            <code>POST /api/evidence/intake · Dynamic API route on Next server · local API replay available in repository</code>
           </div>
         </div>
 
