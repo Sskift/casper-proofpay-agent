@@ -32,6 +32,8 @@ The core advantage is the trust chain, not the UI alone: external evidence enter
 
 Prototype boundary: ProofPay does not custody real funds or claim production automatic settlement. It creates the missing RWA evidence decision layer before release: evidence normalization, bounded AI review, human release control, and Casper attestations that make the decision replayable.
 
+Full-stack demo note: when deployed on a dynamic Next host such as Vercel, judges can call `GET /api/health`, `GET /api/attestation/clean`, and `POST /api/evidence/intake` from the public deployment URL. GitHub Pages remains the static fallback dashboard.
+
 ## Casper Integration
 
 ProofPay uses Casper as the trust anchor for agentic RWA payment decisions.
@@ -113,6 +115,7 @@ The prepared video follows this flow:
 8. Switch to `Hold for finance` and explain amount mismatch handling.
 9. Switch to `Reject duplicate` and explain duplicate invoice blocking.
 10. Open the repository docs and point to `docs/casper-testnet.md` and `docs/real-world-use.md`.
+11. If the Vercel deployment is live, open `/api/health` and show the public API route returning Testnet proof metadata.
 
 ## CSPR.fans Community Pitch
 

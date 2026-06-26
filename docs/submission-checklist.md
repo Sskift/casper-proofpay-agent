@@ -13,6 +13,7 @@ Use this checklist before manually submitting ProofPay Agent through the Casper 
 - Copy-ready BUIDL fields: `docs/buidl-submission-brief.md`.
 - Casper Testnet transaction hashes: `94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604`, `c92cdcd8f11f6453134745900ea2c91defa0f8b37f4c6782dd38b2aa7a720d84`, `08995093b6ef978b381c4cee7d8faeb960f31bb64083544c8cfa0c3c8952e885`
 - Live demo link: `https://sskift.github.io/casper-proofpay-agent/`
+- Optional full-stack demo link: fill with the Vercel URL after `npm run fullstack:smoke -- https://YOUR-DEPLOYED-URL` passes.
 - Team members: fill manually in DoraHacks.
 
 ## Public Summary
@@ -49,6 +50,7 @@ ProofPay Agent lets autonomous agents release real-world payments only when evid
 - `npm run typecheck` passes.
 - `npm run build` passes.
 - `npm run pages:build` passes for the GitHub Pages static dashboard artifact.
+- `npm run fullstack:smoke -- http://127.0.0.1:3000` passes while the local Next server is running.
 - `npm run submission:check` passes after the final commit.
 - `npm run casper:check` shows a funded Testnet account.
 - `npm run contract:deploy:testnet` returns a real Casper transaction hash.
@@ -58,6 +60,7 @@ ProofPay Agent lets autonomous agents release real-world payments only when evid
 - Dashboard evidence intake playground loads clean, hold, and reject samples; `Assess evidence` calls `POST /api/evidence/intake` on a dynamic Next server, falls back to client replay on static GitHub Pages, and returns decision, risk score, confidence, evidence hash, decision hash, reasons, next actions, and mini dossier preview.
 - Dashboard evidence intake playground shows a friendly error for invalid JSON.
 - Local API smoke tests pass for `GET /api/attestation/clean`, `POST /api/evidence/intake`, and invalid evidence returning `422`.
+- Full-stack hosting runbook is ready in `docs/fullstack-hosting.md`.
 - Dashboard Evidence room shows reviewer summary, documents, claims, and timeline without table stacking.
 - Dashboard Casper proof workbench shows Testnet transaction, CSPR.live link, copy buttons, block height, named key, stored URef, deploy command, verification states, readiness gates, public key, and Casper session args.
 - Dashboard Casper copy states cover tx hash, evidence hash, decision hash, stored URef, and replay command.

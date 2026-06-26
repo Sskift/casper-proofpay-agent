@@ -74,6 +74,7 @@ This is more than a frontend dashboard: the repository includes deterministic ev
 3. In Trust, load each evidence intake sample, click `Assess evidence`, and confirm the recomputed decision, risk score, confidence, evidence hash, decision hash, reasons, actions, and mini dossier preview. On a Next server this calls `POST /api/evidence/intake`; on GitHub Pages it falls back to deterministic client replay.
 4. Locally run `npm install`, `npm test`, `npm run typecheck`, `npm run build`, `npm run pages:build`, and `npm run submission:check`.
 5. For live API replay, run `npm run dev -- --hostname 127.0.0.1 --port 3000`, then call `GET /api/attestation/clean` or `POST /api/evidence/intake`.
+6. For a public full-stack host, follow [docs/fullstack-hosting.md](docs/fullstack-hosting.md), then run `npm run fullstack:smoke -- https://YOUR-DEPLOYED-URL`.
 
 ## Why This Is Not A Generic x402 Gateway
 
@@ -210,6 +211,7 @@ Local integration hooks:
 GET  /api/attestation/clean
 GET  /api/attestation/amountMismatch
 GET  /api/attestation/duplicateInvoice
+GET  /api/health
 POST /api/evidence/intake
 GET  /api/mcp
 POST /api/x402/release-decision
@@ -252,6 +254,7 @@ Prepared submission materials:
 - [docs/submission-checklist.md](docs/submission-checklist.md)
 - [docs/demo-script.md](docs/demo-script.md)
 - [docs/demo-recording-workflow.md](docs/demo-recording-workflow.md)
+- [docs/fullstack-hosting.md](docs/fullstack-hosting.md)
 - [docs/next-iteration-agent-brief.md](docs/next-iteration-agent-brief.md)
 - [docs/real-world-use.md](docs/real-world-use.md)
 - [docs/demo/proofpay-agent-demo.mp4](docs/demo/proofpay-agent-demo.mp4)
@@ -284,7 +287,7 @@ Final submission still happens through DoraHacks `Submit BUIDL`; there does not 
 
 ## Roadmap
 
-- Optional full-stack hosted demo for live API routes, while GitHub Pages remains the stable public dashboard.
+- Full-stack hosted demo through Vercel or equivalent dynamic Next host, while GitHub Pages remains the stable public dashboard backup.
 - Direct Casper state query in the dashboard instead of recorded proof facts.
 - Wallet-native buyer signing and supplier payout handoff.
 - OCR and document ingestion pipeline for real invoices and logistics documents.

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { GET as getAttestation } from "./attestation/[scenario]/route";
 import { POST as postEvidenceIntake } from "./evidence/intake/route";
+import { GET as getHealth } from "./health/route";
 
 function jsonRequest(body: unknown) {
   return new Request("http://127.0.0.1:3000/api/evidence/intake", {
@@ -15,6 +16,21 @@ function jsonRequest(body: unknown) {
 }
 
 describe("ProofPay API routes", () => {
+  it("reports full-stack API readiness from the health route", async () => {
+    const response = await getHealth();
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.schemaVersion).toBe("proofpay.api.health.v1");
+    expect(body.status).toBe("ok");
+    expect(body.boundary.noCustody).toBe(true);
+    expect(body.routes).toContain("GET /api/attestation/clean");
+    expect(body.routes).toContain("POST /api/evidence/intake");
+    expect(body.casperProofs.clean.transactionHash).toBe(
+      "94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604"
+    );
+  });
+
   it("returns a recorded Casper proof package for a seeded scenario", async () => {
     const response = await getAttestation(new Request("http://127.0.0.1:3000/api/attestation/clean"), {
       params: {

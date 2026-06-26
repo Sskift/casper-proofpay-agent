@@ -11,6 +11,7 @@
     "pages:publish": "bash scripts/publish-github-pages.sh",
     "test": "npm --workspaces --if-present run test",
     "typecheck": "npm --workspaces --if-present run typecheck",
+    "fullstack:smoke": "tsx scripts/smoke-fullstack-api.ts",
     "submission:check": "node scripts/check-submission-clean.mjs",
     "attestation:export": "tsx scripts/export-attestation-payload.ts",
     "casper:check": "bash scripts/check-casper-testnet.sh",
