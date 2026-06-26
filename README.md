@@ -61,6 +61,7 @@ This is more than a frontend dashboard: the repository includes deterministic ev
 - Three successful Casper Testnet transactions for clean release, finance hold, and duplicate reject scenarios.
 - Next.js dashboard surfaces for cockpit review, Judge walkthrough, evidence intake playground, Casper proof workbench, and audit dossier.
 - Dynamic Next API hooks for attestation lookup, external evidence intake, MCP-style access, and x402-style release gating.
+- Real-case CLI path to prepare a new evidence JSON package and submit a fresh Casper Testnet attestation from a local funded signing key.
 
 ## What Is Simulated
 
@@ -76,6 +77,7 @@ This is more than a frontend dashboard: the repository includes deterministic ev
 4. Locally run `npm install`, `npm test`, `npm run typecheck`, `npm run build`, `npm run pages:build`, and `npm run submission:check`.
 5. For live API replay, run `npm run dev -- --hostname 127.0.0.1 --port 3000`, then call `GET /api/attestation/clean` or `POST /api/evidence/intake`.
 6. For public full-stack replay, run `npm run fullstack:smoke -- https://casper-proofpay-agent-web.vercel.app`.
+7. For a new real case, fill [examples/real-case-template.json](examples/real-case-template.json), run `npm run realcase:prepare -- path/to/real-case.json`, then follow [docs/real-case-runbook.md](docs/real-case-runbook.md) before submitting a fresh Testnet transaction.
 
 ## Why This Is Not A Generic x402 Gateway
 
@@ -214,6 +216,7 @@ GET  /api/attestation/amountMismatch
 GET  /api/attestation/duplicateInvoice
 GET  /api/health
 POST /api/evidence/intake
+POST /api/real-case/prepare
 GET  /api/mcp
 POST /api/x402/release-decision
 ```
@@ -240,6 +243,9 @@ Useful scripts:
 
 ```bash
 npm run submission:check        # repository cleanliness and submission asset check
+npm run realcase:prepare        # prepare a new redacted evidence JSON for Testnet attestation
+npm run realcase:deploy:print   # inspect the new Casper Testnet transaction command
+npm run realcase:deploy:testnet # submit the new case from a funded local Testnet key
 npm run attestation:export      # print a scenario's Casper attestation payload
 npm run casper:check            # verify Casper CLI, Testnet RPC, and account status
 npm run contract:build          # build Casper Wasm
@@ -258,6 +264,7 @@ Prepared submission materials:
 - [docs/fullstack-hosting.md](docs/fullstack-hosting.md)
 - [docs/next-iteration-agent-brief.md](docs/next-iteration-agent-brief.md)
 - [docs/real-world-use.md](docs/real-world-use.md)
+- [docs/real-case-runbook.md](docs/real-case-runbook.md)
 - [docs/demo/proofpay-agent-demo.mp4](docs/demo/proofpay-agent-demo.mp4)
 - [docs/casper-testnet.md](docs/casper-testnet.md)
 - [docs/casper-cli-runbook.md](docs/casper-cli-runbook.md)

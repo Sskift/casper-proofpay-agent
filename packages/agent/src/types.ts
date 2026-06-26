@@ -79,7 +79,7 @@ export interface EvidenceBundle {
   id: string;
   dealId: string;
   milestoneId: string;
-  scenario: "clean" | "amountMismatch" | "duplicateInvoice";
+  scenario: "clean" | "amountMismatch" | "duplicateInvoice" | "realCase";
   submittedBy: string;
   submittedAt: string;
   summary: string;

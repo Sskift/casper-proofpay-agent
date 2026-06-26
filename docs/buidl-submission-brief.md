@@ -28,11 +28,11 @@ Every assessment produces an evidence hash and decision hash. All three judge sc
 
 The user experience is designed for judges and operators: a scroll-tracked left navigation, clear Cockpit, Journey, Trust, Charts, Evidence, Casper, and Dossier sections, a compact Judge walkthrough, an API-first evidence intake playground with clean/hold/reject JSON samples and static replay fallback, a settlement runbook, a Casper payload-to-Testnet verifier, an Evidence review workbench, a Casper proof workbench with CSPR.live links and copy buttons, and an Audit Dossier that packages the reasoning trace, hashes, Testnet proof facts, CLI command, and reviewer checklist into a copy-ready JSON artifact.
 
-The core advantage is the trust chain, not the UI alone: external evidence enters as a validated package, AI produces a bounded and explainable payment decision, Casper makes the decision auditable, and humans still control the final release, hold, or dispute action.
+The core advantage is the trust chain, not the UI alone: external evidence enters as a validated package, AI produces a bounded and explainable payment decision, Casper makes the decision auditable, and humans still control the final release, hold, or dispute action. The repo also includes a `realcase:*` CLI path so a new redacted evidence JSON can be prepared and signed into a fresh Casper Testnet attestation without relying on the pre-recorded judge transactions.
 
 Prototype boundary: ProofPay does not custody real funds or claim production automatic settlement. It creates the missing RWA evidence decision layer before release: evidence normalization, bounded AI review, human release control, and Casper attestations that make the decision replayable.
 
-Full-stack demo note: the public Vercel deployment at `https://casper-proofpay-agent-web.vercel.app/` lets judges call `GET /api/health`, `GET /api/attestation/clean`, and `POST /api/evidence/intake`. GitHub Pages remains the static fallback dashboard.
+Full-stack demo note: the public Vercel deployment at `https://casper-proofpay-agent-web.vercel.app/` lets judges call `GET /api/health`, `GET /api/attestation/clean`, `POST /api/evidence/intake`, and `POST /api/real-case/prepare`. GitHub Pages remains the static fallback dashboard.
 
 ## Casper Integration
 

@@ -64,6 +64,7 @@ ProofPay Agent lets autonomous agents release real-world payments only when evid
 - Full-stack hosting runbook is ready in `docs/fullstack-hosting.md`.
 - Dashboard Evidence room shows reviewer summary, documents, claims, and timeline without table stacking.
 - Dashboard Casper proof workbench shows Testnet transaction, CSPR.live link, copy buttons, block height, named key, stored URef, deploy command, verification states, readiness gates, public key, and Casper session args.
+- Real-case path is ready: `npm run realcase:prepare -- examples/real-case-template.json` and `POST /api/real-case/prepare` return a fresh pending payload that can be signed into a new Casper Testnet transaction.
 - Dashboard Casper copy states cover tx hash, evidence hash, decision hash, stored URef, and replay command.
 - Dashboard clearly states that the hosted GitHub Pages demo is static and ProofPay does not custody real funds in this prototype.
 - Demo video URL is public and tracked in `docs/demo/proofpay-agent-demo.mp4`.
@@ -71,7 +72,7 @@ ProofPay Agent lets autonomous agents release real-world payments only when evid
 - DoraHacks form copy is ready in `docs/buidl-submission-brief.md`.
 - README links to contract, testnet docs, and demo script.
 - README links to `docs/demo-recording-workflow.md` and `docs/next-iteration-agent-brief.md`.
-- README links to `docs/real-world-use.md` and documents `POST /api/evidence/intake`.
+- README links to `docs/real-world-use.md`, `docs/real-case-runbook.md`, and documents `POST /api/evidence/intake`.
 - Ignored generated artifacts are not uploaded manually: `node_modules/`, `.next/`, `target/`, `*.tsbuildinfo`.
 - Recording intermediates are kept under `.local/demo-recording/` and deleted before submission.
 - Non-ignored temporary files are removed or committed intentionally.

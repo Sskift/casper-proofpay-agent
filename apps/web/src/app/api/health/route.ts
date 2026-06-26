@@ -43,6 +43,7 @@ export async function GET() {
       "GET /api/attestation/amountMismatch",
       "GET /api/attestation/duplicateInvoice",
       "POST /api/evidence/intake",
+      "POST /api/real-case/prepare",
       "GET /api/mcp",
       "POST /api/x402/release-decision"
     ],

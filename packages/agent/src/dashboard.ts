@@ -9,6 +9,9 @@ import type {
 } from "./types";
 import { assessEvidence } from "./assess";
 
+const seededScenarios = ["clean", "amountMismatch", "duplicateInvoice"] as const;
+type SeededScenario = (typeof seededScenarios)[number];
+
 export type OperationsTone = "positive" | "warning" | "negative" | "neutral";
 
 export interface CockpitMetric {
@@ -96,7 +99,7 @@ export interface WorkflowRole {
 }
 
 export interface EvaluationRow {
-  scenario: EvidenceBundle["scenario"];
+  scenario: SeededScenario;
   expectedDecision: Decision;
   actualDecision: Decision;
   confidence: number;
@@ -229,7 +232,7 @@ function buildEvidenceCoverage(rows: EvidenceMatrixRow[]): OperationsDashboardMo
   }));
 }
 
-function expectedDecisionFor(scenario: EvidenceBundle["scenario"]): Decision {
+function expectedDecisionFor(scenario: SeededScenario): Decision {
   if (scenario === "amountMismatch") return "hold";
   if (scenario === "duplicateInvoice") return "reject";
   return "approve";
@@ -396,16 +399,17 @@ export function createProductDepthModel({
       fingerprint: document.fingerprint
     };
   });
-  const evaluationRows = (Object.values(allBundles) as EvidenceBundle[]).map((scenarioBundle) => {
+  const evaluationRows = seededScenarios.map((scenario) => {
+    const scenarioBundle = allBundles[scenario];
     const scenarioAssessment = assessEvidence(scenarioBundle);
     return {
-      scenario: scenarioBundle.scenario,
-      expectedDecision: expectedDecisionFor(scenarioBundle.scenario),
+      scenario,
+      expectedDecision: expectedDecisionFor(scenario),
       actualDecision: scenarioAssessment.decision,
       confidence: scenarioAssessment.confidence,
       riskScore: scenarioAssessment.riskScore,
       policyGate: scenarioAssessment.flags.length ? scenarioAssessment.flags.join(", ") : "all required claims matched",
-      passed: expectedDecisionFor(scenarioBundle.scenario) === scenarioAssessment.decision
+      passed: expectedDecisionFor(scenario) === scenarioAssessment.decision
     };
   });
 

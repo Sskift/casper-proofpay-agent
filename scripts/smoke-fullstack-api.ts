@@ -95,6 +95,20 @@ async function main() {
   assert(incompleteIntake.body.accepted === false, "Incomplete evidence should not be accepted");
   assert(incompleteReport?.status === "blocked", "Incomplete evidence report should be blocked");
 
+  const realCasePrepare = await postJson("/api/real-case/prepare", {
+    ...seededEvidenceBundles.clean,
+    id: "realcase-smoke-001",
+    dealId: "deal-realcase-smoke-001",
+    milestoneId: "ms-realcase-smoke-001",
+    scenario: "realCase"
+  });
+  const realCasePayload = realCasePrepare.body.payload as JsonObject | undefined;
+  const realCaseVerification = realCasePrepare.body.attestationVerification as JsonObject | undefined;
+  assert(realCasePrepare.response.status === 200, `POST /api/real-case/prepare returned ${realCasePrepare.response.status}`);
+  assert(realCasePrepare.body.accepted === true, "Real case prepare was not accepted");
+  assert(realCasePayload?.milestoneId === "ms-realcase-smoke-001", "Real case milestone did not round-trip");
+  assert(realCaseVerification?.status === "pending", "Real case prepare should be pending before deploy");
+
   console.log(JSON.stringify({
     baseUrl,
     status: "ok",
@@ -107,6 +121,10 @@ async function main() {
       duplicateIntake: {
         decision: duplicateAssessment.decision,
         riskScore: duplicateAssessment.riskScore
+      },
+      realCasePrepare: {
+        milestoneId: realCasePayload.milestoneId,
+        attestationVerification: realCaseVerification.status
       },
       invalidJson: invalidJson.response.status,
       incompleteEvidence: incompleteIntake.response.status

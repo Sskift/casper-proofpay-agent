@@ -391,6 +391,99 @@ h1 {
   background: #ffffff;
 }
 
+.realcase-run {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.realcase-run__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fbff;
+}
+
+.realcase-run__head span,
+.realcase-step__title {
+  color: var(--teal);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.realcase-run__head strong {
+  display: block;
+  margin-top: 3px;
+  color: #0f172a;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.realcase-run__head p,
+.realcase-step p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.realcase-run__grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.realcase-step {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  min-height: 158px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.realcase-step__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: #1d2939;
+  text-transform: none;
+}
+
+.realcase-step__title svg {
+  flex: 0 0 auto;
+  color: var(--primary);
+}
+
+.realcase-step__title strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.realcase-step pre {
+  max-height: 112px;
+  overflow: auto;
+  padding: 8px;
+  border: 1px solid #d0d5dd;
+  border-radius: 7px;
+  background: #0f172a;
+  color: #e5e7eb;
+  font-size: 0.68rem;
+}
+
 .judge-walkthrough__head {
   display: grid;
   gap: 4px;
@@ -2974,6 +3067,7 @@ h1 {
   .proof-workbench,
   .viz-grid,
   .realuse-grid,
+  .realcase-run__grid,
   .judge-walkthrough,
   .dossier-grid {
     grid-template-columns: 1fr;
@@ -3012,6 +3106,8 @@ h1 {
 
   .sidebar-inner,
   .scenario-switch,
+  .realcase-run__head,
+  .realcase-run__grid,
   .judge-walkthrough,
   .walkthrough-steps,
   .side-nav,

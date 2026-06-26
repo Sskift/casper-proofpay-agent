@@ -231,6 +231,22 @@ describe("ProofPay evidence agent", () => {
     }
   });
 
+  it("accepts real case evidence without coercing it to a seeded demo scenario", () => {
+    const parsed = parseEvidenceBundle({
+      ...seededEvidenceBundles.clean,
+      id: "realcase-001",
+      dealId: "deal-realcase-001",
+      milestoneId: "ms-realcase-001",
+      scenario: "realCase"
+    });
+
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.bundle.scenario).toBe("realCase");
+      expect(parsed.bundle.id).toBe("realcase-001");
+    }
+  });
+
   it("turns an agent decision into a real settlement runbook", () => {
     const deal = seededDeals[0];
     const milestone = deal.milestones[0];

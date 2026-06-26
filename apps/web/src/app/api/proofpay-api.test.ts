@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { GET as getAttestation } from "./attestation/[scenario]/route";
 import { POST as postEvidenceIntake } from "./evidence/intake/route";
 import { GET as getHealth } from "./health/route";
+import { POST as postRealCasePrepare } from "./real-case/prepare/route";
 
 function jsonRequest(body: unknown) {
   return new Request("http://127.0.0.1:3000/api/evidence/intake", {
@@ -26,6 +27,7 @@ describe("ProofPay API routes", () => {
     expect(body.boundary.noCustody).toBe(true);
     expect(body.routes).toContain("GET /api/attestation/clean");
     expect(body.routes).toContain("POST /api/evidence/intake");
+    expect(body.routes).toContain("POST /api/real-case/prepare");
     expect(body.casperProofs.clean.transactionHash).toBe(
       "94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604"
     );
@@ -60,6 +62,25 @@ describe("ProofPay API routes", () => {
     expect(body.assessment.riskScore).toBe(88);
     expect(body.payload.evidenceHash).toBe("0x745f85d8760dde067cdf8b1e375139396e69bef7f40103209018acfea5c61ff9");
     expect(body.dossier.trace.find((step: { id: string; status: string }) => step.id === "duplicate-invoice")?.status).toBe("failed");
+  });
+
+  it("prepares a new real case payload without a recorded deployment", async () => {
+    const response = await postRealCasePrepare(jsonRequest({
+      ...seededEvidenceBundles.clean,
+      id: "realcase-api-001",
+      dealId: "deal-realcase-api-001",
+      milestoneId: "ms-realcase-api-001",
+      scenario: "realCase"
+    }));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.schemaVersion).toBe("proofpay.api.realCasePrepare.v1");
+    expect(body.accepted).toBe(true);
+    expect(body.payload.milestoneId).toBe("ms-realcase-api-001");
+    expect(body.attestationVerification.status).toBe("pending");
+    expect(body.deploy.cliCommand).toContain("casper-client put-transaction session");
+    expect(body.deploy.cliCommand).toContain("$CASPER_SECRET_KEY");
   });
 
   it("returns friendly validation details for incomplete evidence", async () => {

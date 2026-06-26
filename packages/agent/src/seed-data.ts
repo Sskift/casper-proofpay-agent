@@ -1,5 +1,7 @@
 import type { Deal, EvidenceBundle } from "./types";
 
+type SeededScenario = "clean" | "amountMismatch" | "duplicateInvoice";
+
 const expected = {
   buyer: "Northstar Health Cooperative",
   supplier: "Aster Cold Chain Logistics",
@@ -111,7 +113,7 @@ const cleanDocuments: EvidenceBundle["documents"] = [
   }
 ];
 
-export const seededEvidenceBundles: Record<EvidenceBundle["scenario"], EvidenceBundle> = {
+export const seededEvidenceBundles: Record<SeededScenario, EvidenceBundle> = {
   clean: {
     id: "bundle-clean-acceptance",
     dealId: "deal-vaccine-lane-042",

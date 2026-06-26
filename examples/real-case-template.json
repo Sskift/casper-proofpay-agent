@@ -1,0 +1,84 @@
+{
+  "id": "realcase-2026-06-26-001",
+  "dealId": "deal-real-rwa-001",
+  "milestoneId": "ms-real-delivery-acceptance",
+  "scenario": "realCase",
+  "submittedBy": "operations@example.com",
+  "submittedAt": "2026-06-26T08:00:00.000Z",
+  "summary": "Replace this template with a real, redacted shipment or milestone payment evidence package.",
+  "expected": {
+    "buyer": "Buyer Legal Entity",
+    "supplier": "Supplier Legal Entity",
+    "amount": 42000,
+    "currency": "USD",
+    "shipmentId": "SHIP-REAL-001",
+    "temperatureMinC": 2,
+    "temperatureMaxC": 8
+  },
+  "documents": [
+    {
+      "id": "real-invoice-001",
+      "type": "invoice",
+      "title": "Invoice INV-REAL-001",
+      "issuedAt": "2026-06-25T09:10:00.000Z",
+      "fingerprint": "sha256:replace-with-stable-invoice-file-or-record-hash",
+      "claims": {
+        "invoiceId": "INV-REAL-001",
+        "purchaseOrder": "PO-REAL-001",
+        "buyer": "Buyer Legal Entity",
+        "supplier": "Supplier Legal Entity",
+        "amount": 42000,
+        "currency": "USD",
+        "shipmentId": "SHIP-REAL-001",
+        "assetDescription": "Redacted real-world asset delivery"
+      }
+    },
+    {
+      "id": "real-bol-001",
+      "type": "bill_of_lading",
+      "title": "Bill of Lading BL-REAL-001",
+      "issuedAt": "2026-06-25T10:00:00.000Z",
+      "fingerprint": "sha256:replace-with-stable-bol-file-or-record-hash",
+      "claims": {
+        "supplier": "Supplier Legal Entity",
+        "shipmentId": "SHIP-REAL-001",
+        "assetDescription": "Redacted real-world asset delivery"
+      }
+    },
+    {
+      "id": "real-delivery-note-001",
+      "type": "delivery_note",
+      "title": "Signed Delivery Note DN-REAL-001",
+      "issuedAt": "2026-06-26T05:30:00.000Z",
+      "fingerprint": "sha256:replace-with-stable-delivery-note-file-or-record-hash",
+      "claims": {
+        "shipmentId": "SHIP-REAL-001",
+        "deliveredAt": "2026-06-26T05:10:00.000Z",
+        "deliveryLocation": "Redacted delivery location",
+        "signedBy": "Receiving operator or warehouse name"
+      }
+    },
+    {
+      "id": "real-temperature-log-001",
+      "type": "temperature_log",
+      "title": "Cold Chain Logger Export TLOG-REAL-001",
+      "issuedAt": "2026-06-26T05:20:00.000Z",
+      "fingerprint": "sha256:replace-with-stable-telemetry-export-hash",
+      "claims": {
+        "shipmentId": "SHIP-REAL-001",
+        "temperatureMinC": 3.1,
+        "temperatureMaxC": 6.7
+      }
+    },
+    {
+      "id": "real-vendor-registry-001",
+      "type": "vendor_registry",
+      "title": "Supplier Registry Snapshot",
+      "issuedAt": "2026-06-25T08:00:00.000Z",
+      "fingerprint": "sha256:replace-with-stable-registry-snapshot-hash",
+      "claims": {
+        "supplier": "Supplier Legal Entity"
+      }
+    }
+  ]
+}

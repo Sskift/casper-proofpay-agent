@@ -317,7 +317,10 @@ export function parseEvidenceBundle(input: unknown): EvidenceBundleParseResult {
   const id = asString(input.id);
   const dealId = asString(input.dealId);
   const milestoneId = asString(input.milestoneId);
-  const scenario = input.scenario === "amountMismatch" || input.scenario === "duplicateInvoice" ? input.scenario : "clean";
+  const scenario =
+    input.scenario === "amountMismatch" || input.scenario === "duplicateInvoice" || input.scenario === "realCase"
+      ? input.scenario
+      : "clean";
   const submittedBy = asString(input.submittedBy);
   const submittedAt = asString(input.submittedAt);
   const summary = asString(input.summary);

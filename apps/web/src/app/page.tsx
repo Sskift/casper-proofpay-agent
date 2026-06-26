@@ -91,6 +91,10 @@ const scenarioCopy: Record<ScenarioKey, { label: string; short: string; operator
   }
 };
 
+function scenarioLabelFor(scenario: EvidenceBundle["scenario"]) {
+  return scenario === "realCase" ? "Real case" : scenarioCopy[scenario].label;
+}
+
 const dashboardSections: Array<{ id: SectionId; label: string; eyebrow: string; detail: string }> = [
   {
     id: "cockpit",
@@ -532,6 +536,61 @@ function JudgeWalkthrough({ activeSection }: { activeSection: SectionId }) {
   );
 }
 
+function RealCaseRunSection() {
+  const commands = [
+    {
+      label: "1. Prepare a redacted evidence JSON",
+      detail: "Use the committed template as the schema, then replace placeholder values with the real case facts.",
+      command: "examples/real-case-template.json"
+    },
+    {
+      label: "2. Generate a fresh ProofPay payload",
+      detail: "The output includes the agent decision, evidence hash, decision hash, and Casper session args.",
+      command: "npm run realcase:prepare -- path/to/real-case.json"
+    },
+    {
+      label: "3. Inspect the transaction command",
+      detail: "This is a dry run. It prints the exact Casper Testnet transaction command without signing.",
+      command: "npm run realcase:deploy:print -- path/to/real-case.json"
+    },
+    {
+      label: "4. Sign locally with a funded Testnet key",
+      detail: "Private keys stay on the operator machine. The server never receives custody keys.",
+      command: "CASPER_SECRET_KEY=/absolute/path/to/secret_key.pem npm run realcase:deploy:testnet -- path/to/real-case.json"
+    },
+    {
+      label: "5. Verify the public API path",
+      detail: "The same evidence JSON can be prepared through the hosted API before local signing.",
+      command: "curl -X POST https://casper-proofpay-agent-web.vercel.app/api/real-case/prepare -H 'content-type: application/json' --data @path/to/real-case.json"
+    }
+  ];
+
+  return (
+    <section className="realcase-run" id="realcase-run" aria-label="Run a new real case on Casper Testnet">
+      <div className="realcase-run__head">
+        <div>
+          <span>Fresh transaction path</span>
+          <strong>Run one new real case end to end</strong>
+          <p>Submit a redacted evidence package, let ProofPay compute a new attestation payload, then sign one new Casper Testnet transaction from a local funded key.</p>
+        </div>
+        <SectionBadge tone="success">new tx ready</SectionBadge>
+      </div>
+      <div className="realcase-run__grid">
+        {commands.map((item) => (
+          <article className="realcase-step" key={item.label}>
+            <div className="realcase-step__title">
+              <Terminal aria-hidden="true" size={16} />
+              <strong>{item.label}</strong>
+            </div>
+            <p>{item.detail}</p>
+            <pre><code>{item.command}</code></pre>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function CockpitSection({
   assessment,
   model,
@@ -940,7 +999,7 @@ function JourneySection({ productDepth }: { productDepth: ProductDepthModel }) {
                 </div>
                 {productDepth.evaluation.rows.map((row) => (
                   <div className="evaluation-row" key={row.scenario} role="row">
-                    <strong role="cell">{scenarioCopy[row.scenario].label}</strong>
+                    <strong role="cell">{scenarioLabelFor(row.scenario)}</strong>
                     <span role="cell">{row.expectedDecision}</span>
                     <Chip color={chipColor(row.actualDecision)} variant="soft">{row.actualDecision}</Chip>
                     <code role="cell">{row.riskScore}/100 · {row.confidence}%</code>
@@ -1000,7 +1059,7 @@ function TrustChainSection({
     setDraft(JSON.stringify(bundle, null, 2));
     setPlaygroundResult({
       status: "idle",
-      message: `Loaded ${scenarioCopy[bundle.scenario].label}; click Assess evidence to recompute.`
+      message: `Loaded ${scenarioLabelFor(bundle.scenario)}; click Assess evidence to recompute.`
     });
   }, [bundle]);
 
@@ -2154,9 +2213,14 @@ export default function Home() {
                 <ScrollText aria-hidden="true" size={15} />
                 Testnet evidence
               </Link>
+              <Link className="button-link secondary" href="#realcase-run">
+                <Terminal aria-hidden="true" size={15} />
+                Run real case
+              </Link>
             </div>
           </header>
 
+          <RealCaseRunSection />
           <ScenarioSwitch scenario={scenario} setScenario={setScenario} />
           <JudgeWalkthrough activeSection={activeSection} />
 
