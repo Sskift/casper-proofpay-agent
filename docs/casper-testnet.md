@@ -9,6 +9,7 @@ This document tracks the path from local ProofPay attestation payloads to a real
 - The contract builds to Casper-compatible Wasm with `npm run contract:build`.
 - The build path uses Rust plus Binaryen `wasm-opt` to remove Casper-incompatible bulk-memory instructions.
 - Real Casper Testnet transactions have executed successfully for all three judge scenarios: `clean`, `amountMismatch`, and `duplicateInvoice`.
+- A fresh video-integrated real case has also executed successfully on Casper Testnet from `examples/video-integrated-cold-chain-real-case.json`.
 - CLI deployment steps are captured in `docs/casper-cli-runbook.md`.
 - `casper-client 5.0.1` and `cargo-casper 3.0.0` are installed locally.
 - Current verified `casper-client` node address: `https://node.testnet.casper.network`.
@@ -28,7 +29,9 @@ Current account state:
 ```text
 named_key: proofpay_attestation_ms-delivery-acceptance
 named_key_uref_current: uref-409325b098f841565f2667d96986d7f41ff08e606f33bf06f76a0564ac1eb76f-007
-balance_after_three_successful_deploys: 46210258377 motes
+fresh_case_named_key: proofpay_attestation_ms-video-fresh-delivery-acceptance
+fresh_case_uref: uref-9f8050677d97d4e1560ca87c7909256a4e027d2b1a13bd1a544be0176c3fc68d-007
+balance_after_fresh_case_deploy: 38256319936 motes
 ```
 
 ## Funding Path
@@ -52,8 +55,43 @@ All three judge-mode scenarios now have real Casper Testnet transactions with `e
 | `clean` | `approve` | `94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604` | `8282603` | `uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007` |
 | `amountMismatch` | `hold` | `c92cdcd8f11f6453134745900ea2c91defa0f8b37f4c6782dd38b2aa7a720d84` | `8285869` | `uref-798a146f6456d0318bb0e960465a7e251321fc1ff32c36d4354bd5860a9a6d7a-007` |
 | `duplicateInvoice` | `reject` | `08995093b6ef978b381c4cee7d8faeb960f31bb64083544c8cfa0c3c8952e885` | `8285872` | `uref-409325b098f841565f2667d96986d7f41ff08e606f33bf06f76a0564ac1eb76f-007` |
+| `realcase-video-coldchain-2026-06-26` | `approve` | `d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca` | `8305098` | `uref-9f8050677d97d4e1560ca87c7909256a4e027d2b1a13bd1a544be0176c3fc68d-007` |
 
-Each deployment writes a scenario-specific attestation string. The simple prototype contract uses the same account named key, `proofpay_attestation_ms-delivery-acceptance`, so the account named key currently points to the latest `duplicateInvoice` URef. The historical URefs above remain queryable by their direct URef values.
+Each deployment writes a milestone-specific attestation string. The three seeded judge scenarios use `proofpay_attestation_ms-delivery-acceptance`; the fresh case uses `proofpay_attestation_ms-video-fresh-delivery-acceptance`. Historical URefs remain queryable by their direct URef values.
+
+### Fresh Video-Integrated Real Case
+
+```text
+case_file: examples/video-integrated-cold-chain-real-case.json
+case_id: realcase-video-coldchain-2026-06-26
+transaction_hash: d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca
+block_hash: 55e7f0ab1329d2edfbe779dd0df9d3a430604b33cf05d72ac153c13012ca115a
+block_height: 8305098
+initiator_public_key: 01275bb5c5b24490df3996c0ce68a1b757b27567499c8f81b9df13e29835db054e
+initiator_account_hash: account-hash-537db3bdbf915dfcfdf3568411087c4535c1b6cc15aa3e207f52d27de1cebd3d
+named_key: proofpay_attestation_ms-video-fresh-delivery-acceptance
+stored_uref: uref-9f8050677d97d4e1560ca87c7909256a4e027d2b1a13bd1a544be0176c3fc68d-007
+execution_error: null
+payment_amount: 30000000000 motes
+execution_consumed: 605251254
+execution_refund: 22046061559
+submitted_at: 2026-06-26T07:54:11.586Z
+```
+
+The URef stores the attestation payload:
+
+```json
+{
+  "milestone_id": "ms-video-fresh-delivery-acceptance",
+  "evidence_hash": "0xc3102b59b3554463ab1871e1fda0b1e0791f99052426a758a3006b0da3dc5803",
+  "decision": "approve",
+  "decision_hash": "0xd20d3a10c09c7e8d0b693b553afcc4442e0323b81991d350ffc23a486ccd211d",
+  "confidence": 94,
+  "risk_score": 12
+}
+```
+
+See [real-case-execution.md](real-case-execution.md) for the case story, public explorer link, and replay commands.
 
 ### Clean Release
 

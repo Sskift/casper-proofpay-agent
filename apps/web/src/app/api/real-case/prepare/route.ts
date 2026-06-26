@@ -93,13 +93,21 @@ export async function POST(request: Request) {
       wasmPath: deployPlan.wasmPath,
       paymentAmount: deployPlan.paymentAmount,
       gasPriceTolerance: deployPlan.gasPriceTolerance,
+      deployment: deployPlan.deployment,
       sessionArgs: deployPlan.sessionArgs,
       cliCommand: deployPlan.cliCommand
     },
-    nextSteps: [
-      "Run the same JSON locally with npm run realcase:prepare -- <case.json>.",
-      "Set CASPER_SECRET_KEY to a funded Casper Testnet account on your machine.",
-      "Run npm run realcase:deploy:testnet -- <case.json> to submit a new transaction."
-    ]
+    nextSteps:
+      attestationVerification.status === "verified"
+        ? [
+            "Open the CSPR.live transaction link for the recorded fresh case.",
+            "Query the stored URef to confirm the on-chain payload matches the agent output.",
+            "Use the same realcase:* scripts with a new redacted JSON file to run another case."
+          ]
+        : [
+            "Run the same JSON locally with npm run realcase:prepare -- <case.json>.",
+            "Set CASPER_SECRET_KEY to a funded Casper Testnet account on your machine.",
+            "Run npm run realcase:deploy:testnet -- <case.json> to submit a new transaction."
+          ]
   });
 }

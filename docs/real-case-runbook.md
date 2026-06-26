@@ -34,7 +34,16 @@ For the buildathon walkthrough, use the committed fresh case:
 examples/video-integrated-cold-chain-real-case.json
 ```
 
-This case is the next shipment on the same Singapore to Istanbul cold-chain trade lane shown in the dashboard and demo video. It uses the same buyer and supplier, but a new shipment id, invoice id, amount, evidence fingerprints, evidence hash, and decision hash. Before deployment its Casper verification status should be `pending`, proving it is not reusing the pre-recorded judge transactions.
+This case is the next shipment on the same Singapore to Istanbul cold-chain trade lane shown in the dashboard and demo video. It uses the same buyer and supplier, but a new shipment id, invoice id, amount, evidence fingerprints, evidence hash, and decision hash. Before its first deployment its Casper verification status was `pending`, proving it was not reusing the pre-recorded judge transactions. After the fresh deployment below, the same payload should verify as `verified`.
+
+This case has now been executed on Casper Testnet. The public execution record is in [real-case-execution.md](real-case-execution.md).
+
+```text
+transaction_hash: d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca
+block_height: 8305098
+named_key: proofpay_attestation_ms-video-fresh-delivery-acceptance
+stored_uref: uref-9f8050677d97d4e1560ca87c7909256a4e027d2b1a13bd1a544be0176c3fc68d-007
+```
 
 ## Prepare The Case
 
@@ -51,10 +60,11 @@ Expected output:
 - `assessment.decision`
 - `payload.evidenceHash`
 - `payload.decisionHash`
-- `attestationVerification.status: pending`
+- `attestationVerification.status: verified` for `examples/video-integrated-cold-chain-real-case.json`
+- `attestationVerification.status: pending` for a new unmatched evidence package before deployment
 - `deploy.cliCommand`
 
-`pending` is expected before a new transaction is submitted. It means this is not reusing a recorded demo deployment.
+`pending` is expected before a new transaction is submitted. It means that evidence package is not reusing a recorded deployment. The committed video-integrated case is now expected to verify against transaction `d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca`.
 
 ## Hosted API Preparation
 
@@ -67,6 +77,8 @@ curl -X POST https://casper-proofpay-agent-web.vercel.app/api/real-case/prepare 
 ```
 
 The hosted API never signs a transaction and does not need a Casper private key.
+
+For the committed video-integrated case, the hosted API should return the same evidence hash and decision hash documented in [real-case-execution.md](real-case-execution.md). The hosted API still does not submit the chain transaction; local signing remains an operator action.
 
 ## Print The Transaction Command
 
@@ -119,7 +131,7 @@ casper-client query-global-state \
   --key <NEW_STORED_UREF>
 ```
 
-## What I Need From You To Run It Here
+## What I Need From You To Run Another Case Here
 
 Provide one of these:
 

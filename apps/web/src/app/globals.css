@@ -436,6 +436,86 @@ h1 {
   line-height: 1.45;
 }
 
+.realcase-proof {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid rgba(16, 185, 129, 0.24);
+  border-radius: 8px;
+  background: #f6fef9;
+}
+
+.realcase-proof__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.realcase-proof__head > div {
+  min-width: 0;
+}
+
+.realcase-proof__head span,
+.realcase-proof-card span {
+  color: #047857;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.realcase-proof__head strong {
+  display: block;
+  margin-top: 3px;
+  color: #0f172a;
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+.realcase-proof__head p {
+  max-width: 760px;
+  margin: 5px 0 0;
+  color: #475467;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.realcase-proof__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.realcase-proof-card {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.realcase-proof-card code {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: #102a43;
+  font-family: var(--font-num);
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.realcase-proof__payload {
+  max-height: 142px;
+  overflow: auto;
+  padding: 9px;
+  border: 1px solid rgba(16, 185, 129, 0.24);
+  border-radius: 7px;
+  background: #052e2b;
+  color: #d1fae5;
+  font-size: 0.68rem;
+}
+
 .realcase-run__grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -3067,6 +3147,7 @@ h1 {
   .proof-workbench,
   .viz-grid,
   .realuse-grid,
+  .realcase-proof__grid,
   .realcase-run__grid,
   .judge-walkthrough,
   .dossier-grid {
@@ -3104,8 +3185,14 @@ h1 {
     justify-content: flex-start;
   }
 
+  .realcase-proof__head {
+    display: grid;
+  }
+
   .sidebar-inner,
   .scenario-switch,
+  .realcase-proof__head,
+  .realcase-proof__grid,
   .realcase-run__head,
   .realcase-run__grid,
   .judge-walkthrough,

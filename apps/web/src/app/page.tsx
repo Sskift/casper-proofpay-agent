@@ -538,6 +538,39 @@ function JudgeWalkthrough({ activeSection }: { activeSection: SectionId }) {
 
 function RealCaseRunSection() {
   const realCasePath = "examples/video-integrated-cold-chain-real-case.json";
+  const freshProof = {
+    transactionHash: "d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca",
+    blockHeight: "8305098",
+    namedKey: "proofpay_attestation_ms-video-fresh-delivery-acceptance",
+    storedURef: "uref-9f8050677d97d4e1560ca87c7909256a4e027d2b1a13bd1a544be0176c3fc68d-007",
+    evidenceHash: "0xc3102b59b3554463ab1871e1fda0b1e0791f99052426a758a3006b0da3dc5803",
+    decisionHash: "0xd20d3a10c09c7e8d0b693b553afcc4442e0323b81991d350ffc23a486ccd211d",
+    blockHash: "55e7f0ab1329d2edfbe779dd0df9d3a430604b33cf05d72ac153c13012ca115a",
+    submittedAt: "2026-06-26T07:54:11.586Z"
+  };
+  const freshProofFacts = [
+    { label: "Decision", value: "approve" },
+    { label: "Block height", value: freshProof.blockHeight },
+    { label: "Block hash", value: shortHash(freshProof.blockHash, 12, 10), title: freshProof.blockHash },
+    { label: "Transaction", value: shortHash(freshProof.transactionHash, 12, 10), title: freshProof.transactionHash },
+    { label: "Named key", value: freshProof.namedKey },
+    { label: "Stored URef", value: shortHash(freshProof.storedURef, 16, 12), title: freshProof.storedURef },
+    { label: "Evidence hash", value: shortHash(freshProof.evidenceHash, 14, 10), title: freshProof.evidenceHash },
+    { label: "Decision hash", value: shortHash(freshProof.decisionHash, 14, 10), title: freshProof.decisionHash },
+    { label: "Submitted", value: freshProof.submittedAt }
+  ];
+  const storedPayload = JSON.stringify(
+    {
+      milestone_id: "ms-video-fresh-delivery-acceptance",
+      evidence_hash: freshProof.evidenceHash,
+      decision: "approve",
+      decision_hash: freshProof.decisionHash,
+      confidence: 94,
+      risk_score: 12
+    },
+    null,
+    2
+  );
   const commands = [
     {
       label: "1. Use the video-integrated case",
@@ -561,7 +594,7 @@ function RealCaseRunSection() {
     },
     {
       label: "5. Verify the public API path",
-      detail: "The same evidence JSON can be prepared through the hosted API before local signing.",
+      detail: "The same evidence JSON now verifies through the hosted API against the recorded fresh transaction.",
       command: `curl -X POST https://casper-proofpay-agent-web.vercel.app/api/real-case/prepare -H 'content-type: application/json' --data @${realCasePath}`
     }
   ];
@@ -571,10 +604,37 @@ function RealCaseRunSection() {
       <div className="realcase-run__head">
         <div>
           <span>Fresh transaction path</span>
-          <strong>Run one new real case end to end</strong>
-          <p>Use the video story's next cold-chain shipment, let ProofPay compute a new attestation payload, then sign one new Casper Testnet transaction from a local funded key.</p>
+          <strong>Run and verify one new real case</strong>
+          <p>The video story's next cold-chain shipment was assessed by ProofPay, signed from a local funded key, and recorded on Casper Testnet. The commands below reproduce the same path for another case.</p>
         </div>
-        <SectionBadge tone="success">new tx ready</SectionBadge>
+        <SectionBadge tone="success">fresh tx recorded</SectionBadge>
+      </div>
+      <div className="realcase-proof">
+        <div className="realcase-proof__head">
+          <div>
+            <span>Executed on Casper Testnet</span>
+            <strong>Fresh real case proof</strong>
+            <p>The video-integrated case was assessed by ProofPay, signed locally, and recorded as a new Casper Testnet attestation. No private key or custody key touched the hosted app.</p>
+          </div>
+          <Link
+            className="button-link primary"
+            href={`https://testnet.cspr.live/transaction/${freshProof.transactionHash}`}
+            rel="noreferrer"
+            target="_blank"
+          >
+            <ExternalLink aria-hidden="true" size={15} />
+            View fresh tx
+          </Link>
+        </div>
+        <div className="realcase-proof__grid" aria-label="Fresh real case Casper proof facts">
+          {freshProofFacts.map((fact) => (
+            <article className="realcase-proof-card" key={fact.label}>
+              <span>{fact.label}</span>
+              <code title={fact.title ?? fact.value}>{fact.value}</code>
+            </article>
+          ))}
+        </div>
+        <pre className="realcase-proof__payload"><code>{storedPayload}</code></pre>
       </div>
       <div className="realcase-run__grid">
         {commands.map((item) => (

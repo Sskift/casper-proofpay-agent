@@ -7,7 +7,8 @@ import {
   createCasperDeployPlan,
   createCasperVerificationSummary,
   submitDemoAttestation,
-  verifyCasperAttestation
+  verifyCasperAttestation,
+  type CasperAttestationPayload
 } from "./index";
 
 describe("ProofPay Casper adapter", () => {
@@ -128,6 +129,35 @@ describe("ProofPay Casper adapter", () => {
     expect(report.status).toBe("verified");
     expect(report.checks.every((check) => check.status === "passed")).toBe(true);
     expect(report.summary).toContain("recorded Testnet transaction matches");
+  });
+
+  it("recognizes the fresh video-integrated real case deployment", () => {
+    const payload: CasperAttestationPayload = {
+      schemaVersion: "proofpay.attestation.v1",
+      attestationId: "att-ms-video-fresh-delivery-acceptance-assessment-realcase-video-coldchain-2026-06-26-approve",
+      milestoneId: "ms-video-fresh-delivery-acceptance",
+      dealId: "deal-vaccine-lane-043",
+      evidenceHash: "0xc3102b59b3554463ab1871e1fda0b1e0791f99052426a758a3006b0da3dc5803",
+      decision: "approve",
+      decisionHash: "0xd20d3a10c09c7e8d0b693b553afcc4442e0323b81991d350ffc23a486ccd211d",
+      confidence: 94,
+      riskScore: 12,
+      riskFlags: [],
+      agentId: "proofpay-agent-v1",
+      assessedAt: "2026-06-26T11:00:00.000Z",
+      amount: 46500,
+      currency: "USD"
+    };
+    const plan = createCasperDeployPlan({ payload, scenario: "realCase" });
+    const report = verifyCasperAttestation({ payload, deployment: plan.deployment });
+
+    expect(plan.deployment?.transactionHash).toBe(
+      "d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca"
+    );
+    expect(plan.deployment?.namedKey).toBe("proofpay_attestation_ms-video-fresh-delivery-acceptance");
+    expect(plan.readiness.find((item) => item.id === "testnet-deploy")?.status).toBe("ready");
+    expect(report.status).toBe("verified");
+    expect(report.checks.every((check) => check.status === "passed")).toBe(true);
   });
 
   it("builds judge-facing Casper proof links, copy fields, and verification states", () => {

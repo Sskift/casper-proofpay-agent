@@ -66,6 +66,22 @@ const RECORDED_TESTNET_DEPLOYMENTS: CasperDeploymentRecord[] = [
     confidence: 91,
     riskScore: 88,
     submittedAt: "2026-06-24T13:10:48.355Z"
+  },
+  {
+    transactionHash: "d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca",
+    blockHash: "55e7f0ab1329d2edfbe779dd0df9d3a430604b33cf05d72ac153c13012ca115a",
+    blockHeight: 8305098,
+    publicKeyHex: DEFAULT_PUBLIC_KEY_HEX,
+    accountHash: DEFAULT_ACCOUNT_HASH,
+    namedKey: "proofpay_attestation_ms-video-fresh-delivery-acceptance",
+    uref: "uref-9f8050677d97d4e1560ca87c7909256a4e027d2b1a13bd1a544be0176c3fc68d-007",
+    milestoneId: "ms-video-fresh-delivery-acceptance",
+    evidenceHash: "0xc3102b59b3554463ab1871e1fda0b1e0791f99052426a758a3006b0da3dc5803",
+    decision: "approve",
+    decisionHash: "0xd20d3a10c09c7e8d0b693b553afcc4442e0323b81991d350ffc23a486ccd211d",
+    confidence: 94,
+    riskScore: 12,
+    submittedAt: "2026-06-26T07:54:11.586Z"
   }
 ];
 

@@ -129,14 +129,22 @@ if (asEnv) {
       wasmPath: deployPlan.wasmPath,
       paymentAmount: deployPlan.paymentAmount,
       gasPriceTolerance: deployPlan.gasPriceTolerance,
+      deployment: deployPlan.deployment,
       sessionArgs: deployPlan.sessionArgs,
       cliCommand: deployPlan.cliCommand
     },
-    nextSteps: [
-      "Review the assessment decision, evidence hash, and decision hash.",
-      "Set CASPER_SECRET_KEY to a funded Casper Testnet secret_key.pem path on this machine.",
-      "Run npm run realcase:deploy:print -- <casePath> to inspect the exact transaction command.",
-      "Run npm run realcase:deploy:testnet -- <casePath> only when you are ready to submit a new Casper Testnet transaction."
-    ]
+    nextSteps:
+      attestationVerification.status === "verified"
+        ? [
+            "Open the recorded Casper Testnet transaction in CSPR.live.",
+            "Query the stored URef to confirm the on-chain payload matches this evidence hash and decision hash.",
+            "Use a new redacted case JSON with the same realcase:* scripts to run another fresh case."
+          ]
+        : [
+            "Review the assessment decision, evidence hash, and decision hash.",
+            "Set CASPER_SECRET_KEY to a funded Casper Testnet secret_key.pem path on this machine.",
+            "Run npm run realcase:deploy:print -- <casePath> to inspect the exact transaction command.",
+            "Run npm run realcase:deploy:testnet -- <casePath> only when you are ready to submit a new Casper Testnet transaction."
+          ]
   }, null, 2));
 }

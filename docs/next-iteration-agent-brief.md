@@ -45,7 +45,7 @@ Avoid presenting ProofPay as:
 
 | Gap | Why it matters | Preferred fix |
 | --- | --- | --- |
-| GitHub Pages is static | Judges can view the UI, but hosted API routes do not run there. | Add a full-stack hosted demo or make the static demo clearly self-contained with local replay instructions. |
+| GitHub Pages is static | Judges can view the UI, but hosted API routes do not run there. | Use the Vercel full-stack demo as the primary public URL and keep GitHub Pages as a stable static backup. |
 | Casper proof is visible but not one-click enough | Transaction hashes exist, but judges should not need to copy them manually. | Add explorer links, verify states, replay commands, and expected hash checks directly in the Casper panel. |
 | Funds are not actually custodied | OutcomePay and Escrow402-style projects claim lock/settle/refund flows. | State the boundary clearly and present ProofPay as the attestation layer that can precede escrow release. |
 | Agent path feels deterministic | Stable policy logic is good, but competitors advertise GPT/Gemini/live data. | Add an evidence intake playground and show the policy recomputing decisions from user-provided evidence JSON. |
@@ -60,7 +60,8 @@ Current implementation status:
 - P0 Judge Walkthrough Mode: completed with Cockpit, Trust, Evidence, Casper, and Dossier scroll steps.
 - P1 Evidence Intake Playground: completed with API-first `POST /api/evidence/intake` assessment on a dynamic Next server, GitHub Pages client replay fallback, sample loaders, explicit assessment, invalid JSON handling, hashes, reasons, next actions, and mini dossier preview.
 - P1 CI and Repository Signals: completed with a dedicated Node 22 GitHub Actions workflow and README badge.
-- P1 Full-Stack Hosted Demo: still deferred as a public deployment decision; the dashboard is now API-first when hosted on a dynamic Next server, while GitHub Pages remains the stable public URL with client replay fallback.
+- P1 Full-Stack Hosted Demo: completed through the public Vercel deployment at `https://casper-proofpay-agent-web.vercel.app/`, while GitHub Pages remains the static public backup with client replay fallback.
+- P1 Fresh Real Case: completed with `examples/video-integrated-cold-chain-real-case.json`, local signing, and Casper Testnet transaction `d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca`.
 - P2 Demo Refresh: recommended after final UI review because the judge story changed materially.
 
 ### P0: Casper Proof Workbench

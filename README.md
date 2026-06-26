@@ -7,7 +7,8 @@
 **AI verifies off-chain delivery evidence. Humans control payment release. Casper records the decision proof.**
 
 [![Demo Video](https://img.shields.io/badge/Demo%20Video-GitHub%20MP4-0F172A?style=for-the-badge)](https://github.com/Sskift/casper-proofpay-agent/blob/main/docs/demo/proofpay-agent-demo.mp4)
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-0969DA?style=for-the-badge)](https://sskift.github.io/casper-proofpay-agent/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel%20Full%20Stack-0969DA?style=for-the-badge)](https://casper-proofpay-agent-web.vercel.app/)
+[![Static Backup](https://img.shields.io/badge/Static%20Backup-GitHub%20Pages-64748B?style=for-the-badge)](https://sskift.github.io/casper-proofpay-agent/)
 [![CI](https://github.com/Sskift/casper-proofpay-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/Sskift/casper-proofpay-agent/actions/workflows/ci.yml)
 [![DoraHacks BUIDL](https://img.shields.io/badge/DoraHacks-BUIDL%2045992-2563EB?style=for-the-badge)](https://dorahacks.io/buidl/45992)
 [![Casper Testnet](https://img.shields.io/badge/Casper-Testnet%20Recorded-10B981?style=for-the-badge)](docs/casper-testnet.md)
@@ -35,7 +36,7 @@ ProofPay Agent is a verifiable RWA payment decision chain: external delivery evi
 | Agent task | Review invoices, bill of lading, delivery note, temperature log, and supplier registry evidence |
 | Decision outputs | `approve`, `hold`, `reject`, confidence, risk score, reviewer actions |
 | Casper role | Public attestation anchor for evidence hash, decision hash, milestone id, and final decision |
-| Testnet proof | Three recorded Casper Testnet transactions for clean, hold, and reject judge flows |
+| Testnet proof | Three recorded Casper Testnet transactions for clean, hold, and reject judge flows, plus one fresh video-integrated real-case transaction |
 | Live demo | [casper-proofpay-agent-web.vercel.app](https://casper-proofpay-agent-web.vercel.app/) |
 | Static backup | [sskift.github.io/casper-proofpay-agent](https://sskift.github.io/casper-proofpay-agent/) |
 | Demo asset | [docs/demo/proofpay-agent-demo.mp4](docs/demo/proofpay-agent-demo.mp4) |
@@ -59,6 +60,7 @@ This is more than a frontend dashboard: the repository includes deterministic ev
 - Deterministic evidence intake, validation, scoring, reasons, follow-up actions, evidence hashes, and decision hashes in `packages/agent`.
 - Casper attestation payload generation, deploy command generation, verifier checks, and recorded Testnet deployment facts in `packages/casper`.
 - Three successful Casper Testnet transactions for clean release, finance hold, and duplicate reject scenarios.
+- A fresh video-integrated real case was prepared from `examples/video-integrated-cold-chain-real-case.json` and recorded on Casper Testnet as transaction `d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca`.
 - Next.js dashboard surfaces for cockpit review, Judge walkthrough, evidence intake playground, Casper proof workbench, and audit dossier.
 - Dynamic Next API hooks for attestation lookup, external evidence intake, MCP-style access, and x402-style release gating.
 - Real-case CLI path to prepare a new evidence JSON package and submit a fresh Casper Testnet attestation from a local funded signing key.
@@ -77,7 +79,7 @@ This is more than a frontend dashboard: the repository includes deterministic ev
 4. Locally run `npm install`, `npm test`, `npm run typecheck`, `npm run build`, `npm run pages:build`, and `npm run submission:check`.
 5. For live API replay, run `npm run dev -- --hostname 127.0.0.1 --port 3000`, then call `GET /api/attestation/clean` or `POST /api/evidence/intake`.
 6. For public full-stack replay, run `npm run fullstack:smoke -- https://casper-proofpay-agent-web.vercel.app`.
-7. For a video-integrated fresh case, run `npm run realcase:prepare -- examples/video-integrated-cold-chain-real-case.json`, then follow [docs/real-case-runbook.md](docs/real-case-runbook.md) before submitting a fresh Testnet transaction.
+7. For the video-integrated fresh case, open [docs/real-case-execution.md](docs/real-case-execution.md) or run `npm run realcase:prepare -- examples/video-integrated-cold-chain-real-case.json`, then follow [docs/real-case-runbook.md](docs/real-case-runbook.md) to submit another fresh Testnet transaction from a funded local key.
 
 ## Why This Is Not A Generic x402 Gateway
 
@@ -113,6 +115,7 @@ ProofPay does not try to replace escrow custody in this prototype. It creates th
 | Bounded agent authority | The agent recommends payment actions, but human release control remains explicit. |
 | Three exception paths | Clean release, finance hold, and duplicate-invoice reject are all modeled. |
 | Casper evidence | Each judge scenario has a recorded Casper Testnet transaction, not only a local mock. |
+| Fresh case proof | A new cold-chain evidence package was run through ProofPay and anchored on Casper Testnet after the seeded scenarios. |
 | Replayable proof | Evidence hash, decision hash, named key, stored URef, and transaction hash are packaged together. |
 | Integration surface | Local APIs demonstrate evidence intake, MCP-style access, x402-style release gating, and attestation retrieval. |
 | Submission discipline | Hackathon rules, CLI runbook, demo script, Testnet notes, and final checklist are committed in the repo. |
@@ -165,14 +168,22 @@ All three judge scenarios have recorded Casper Testnet transaction-producing com
 | Hold for finance | `hold` | `c92cdcd8f11f6453134745900ea2c91defa0f8b37f4c6782dd38b2aa7a720d84` |
 | Reject duplicate | `reject` | `08995093b6ef978b381c4cee7d8faeb960f31bb64083544c8cfa0c3c8952e885` |
 
+The video-integrated fresh case was also run after the seeded scenarios:
+
+| Case | Decision | Casper Testnet transaction | Block | Stored URef |
+| --- | --- | --- | --- | --- |
+| Fresh cold-chain delivery | `approve` | [`d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca`](https://testnet.cspr.live/transaction/d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca) | `8305098` | `uref-9f8050677d97d4e1560ca87c7909256a4e027d2b1a13bd1a544be0176c3fc68d-007` |
+
 Current named key facts:
 
 ```text
 named_key: proofpay_attestation_ms-delivery-acceptance
 current_named_key_uref: uref-409325b098f841565f2667d96986d7f41ff08e606f33bf06f76a0564ac1eb76f-007
+fresh_case_named_key: proofpay_attestation_ms-video-fresh-delivery-acceptance
+fresh_case_uref: uref-9f8050677d97d4e1560ca87c7909256a4e027d2b1a13bd1a544be0176c3fc68d-007
 ```
 
-Full proof notes are in [docs/casper-testnet.md](docs/casper-testnet.md). Casper CLI commands and deployment shapes are in [docs/casper-cli-runbook.md](docs/casper-cli-runbook.md).
+Full proof notes are in [docs/casper-testnet.md](docs/casper-testnet.md). The fresh execution record is in [docs/real-case-execution.md](docs/real-case-execution.md). Casper CLI commands and deployment shapes are in [docs/casper-cli-runbook.md](docs/casper-cli-runbook.md).
 
 ## Audit Dossier
 
@@ -265,6 +276,7 @@ Prepared submission materials:
 - [docs/next-iteration-agent-brief.md](docs/next-iteration-agent-brief.md)
 - [docs/real-world-use.md](docs/real-world-use.md)
 - [docs/real-case-runbook.md](docs/real-case-runbook.md)
+- [docs/real-case-execution.md](docs/real-case-execution.md)
 - [docs/demo/proofpay-agent-demo.mp4](docs/demo/proofpay-agent-demo.mp4)
 - [docs/casper-testnet.md](docs/casper-testnet.md)
 - [docs/casper-cli-runbook.md](docs/casper-cli-runbook.md)
@@ -283,6 +295,7 @@ Final submission still happens through DoraHacks `Submit BUIDL`; there does not 
 - [x] Public GitHub repository
 - [x] Public demo video
 - [x] Casper Testnet transaction evidence for clean, hold, and reject scenarios
+- [x] Fresh video-integrated real case executed on Casper Testnet
 - [x] Evidence scoring and deterministic hash generation
 - [x] Casper attestation payload and verifier panel
 - [x] Operator dashboard with scenario switcher and charted proof sections
@@ -295,7 +308,7 @@ Final submission still happens through DoraHacks `Submit BUIDL`; there does not 
 
 ## Roadmap
 
-- Full-stack hosted demo through Vercel or equivalent dynamic Next host, while GitHub Pages remains the stable public dashboard backup.
+- Keep the Vercel full-stack demo stable while GitHub Pages remains the static public dashboard backup.
 - Direct Casper state query in the dashboard instead of recorded proof facts.
 - Wallet-native buyer signing and supplier payout handoff.
 - OCR and document ingestion pipeline for real invoices and logistics documents.

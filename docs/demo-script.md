@@ -98,14 +98,16 @@ Show:
 
 ## Scene 9: Fresh Real Case
 
-ProofPay can also run a new case, not only replay seeded scenarios. Use the video-integrated fresh case `examples/video-integrated-cold-chain-real-case.json`: the next Singapore to Istanbul cold-chain shipment on the same trade lane, with a new invoice, shipment id, evidence fingerprints, evidence hash, decision hash, and pending Casper attestation.
+ProofPay can also run a new case, not only replay seeded scenarios. The video-integrated fresh case `examples/video-integrated-cold-chain-real-case.json` is the next Singapore to Istanbul cold-chain shipment on the same trade lane, with a new invoice, shipment id, evidence fingerprints, evidence hash, decision hash, and Casper Testnet attestation.
 
 Show:
 
 - The `Run real case` panel near the top of the dashboard.
 - `npm run realcase:prepare -- examples/video-integrated-cold-chain-real-case.json`.
-- `POST /api/real-case/prepare` returning a pending attestation package.
-- If a funded Testnet key is approved, submit the new transaction and show the new CSPR.live transaction page.
+- `POST /api/real-case/prepare` returning the same evidence hash, decision hash, and verified deployment facts for the recorded fresh case.
+- Fresh Casper Testnet transaction `d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca`.
+- Fresh named key `proofpay_attestation_ms-video-fresh-delivery-acceptance` and stored URef `uref-9f8050677d97d4e1560ca87c7909256a4e027d2b1a13bd1a544be0176c3fc68d-007`.
+- Make the boundary explicit: the hosted app prepared the attestation payload, the operator signed locally, and ProofPay does not custody real funds.
 
 ## Closing
 

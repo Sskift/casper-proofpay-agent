@@ -64,9 +64,9 @@ ProofPay Agent lets autonomous agents release real-world payments only when evid
 - Full-stack hosting runbook is ready in `docs/fullstack-hosting.md`.
 - Dashboard Evidence room shows reviewer summary, documents, claims, and timeline without table stacking.
 - Dashboard Casper proof workbench shows Testnet transaction, CSPR.live link, copy buttons, block height, named key, stored URef, deploy command, verification states, readiness gates, public key, and Casper session args.
-- Real-case path is ready: `npm run realcase:prepare -- examples/real-case-template.json` and `POST /api/real-case/prepare` return a fresh pending payload that can be signed into a new Casper Testnet transaction.
+- Real-case path is proven: `examples/video-integrated-cold-chain-real-case.json` was prepared, signed locally, and recorded on Casper Testnet as `d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca`; another redacted JSON can still be prepared with `POST /api/real-case/prepare`.
 - Dashboard Casper copy states cover tx hash, evidence hash, decision hash, stored URef, and replay command.
-- Dashboard clearly states that the hosted GitHub Pages demo is static and ProofPay does not custody real funds in this prototype.
+- Dashboard clearly states that Vercel is the full-stack hosted demo, GitHub Pages is the static backup, and ProofPay does not custody real funds in this prototype.
 - Demo video URL is public and tracked in `docs/demo/proofpay-agent-demo.mp4`.
 - Casper Testnet transaction hash and stored attestation are documented in `docs/casper-testnet.md`.
 - DoraHacks form copy is ready in `docs/buidl-submission-brief.md`.
@@ -93,10 +93,14 @@ public_key_hex: 01275bb5c5b24490df3996c0ce68a1b757b27567499c8f81b9df13e29835db05
 account_hash: account-hash-537db3bdbf915dfcfdf3568411087c4535c1b6cc15aa3e207f52d27de1cebd3d
 named_key: proofpay_attestation_ms-delivery-acceptance
 current_named_key_uref: uref-409325b098f841565f2667d96986d7f41ff08e606f33bf06f76a0564ac1eb76f-007
+fresh_case_tx: d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca
+fresh_case_block_height: 8305098
+fresh_case_named_key: proofpay_attestation_ms-video-fresh-delivery-acceptance
+fresh_case_uref: uref-9f8050677d97d4e1560ca87c7909256a4e027d2b1a13bd1a544be0176c3fc68d-007
 execution_error: null
 ```
 
-The latest stored attestation payload is:
+The latest stored seeded-scenario attestation payload is:
 
 ```json
 {
@@ -106,5 +110,18 @@ The latest stored attestation payload is:
   "decision_hash": "0x95e24b90c3d51d52cd5babe1eaa3accb2d478c654f57ca7bb479b17cb515aa34",
   "confidence": 91,
   "risk_score": 88
+}
+```
+
+The fresh real-case stored attestation payload is:
+
+```json
+{
+  "milestone_id": "ms-video-fresh-delivery-acceptance",
+  "evidence_hash": "0xc3102b59b3554463ab1871e1fda0b1e0791f99052426a758a3006b0da3dc5803",
+  "decision": "approve",
+  "decision_hash": "0xd20d3a10c09c7e8d0b693b553afcc4442e0323b81991d350ffc23a486ccd211d",
+  "confidence": 94,
+  "risk_score": 12
 }
 ```
