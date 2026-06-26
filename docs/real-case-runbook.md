@@ -26,12 +26,22 @@ shasum -a 256 path/to/source-file.pdf
 
 If a document is sensitive, do not include the raw file. Include only the redacted extracted claims and a stable fingerprint.
 
+## Recommended Video-Integrated Case
+
+For the buildathon walkthrough, use the committed fresh case:
+
+```text
+examples/video-integrated-cold-chain-real-case.json
+```
+
+This case is the next shipment on the same Singapore to Istanbul cold-chain trade lane shown in the dashboard and demo video. It uses the same buyer and supplier, but a new shipment id, invoice id, amount, evidence fingerprints, evidence hash, and decision hash. Before deployment its Casper verification status should be `pending`, proving it is not reusing the pre-recorded judge transactions.
+
 ## Prepare The Case
 
 Run:
 
 ```bash
-npm run realcase:prepare -- path/to/real-case.json
+npm run realcase:prepare -- examples/video-integrated-cold-chain-real-case.json
 ```
 
 Expected output:
@@ -53,7 +63,7 @@ The same evidence JSON can be prepared through the public full-stack API:
 ```bash
 curl -X POST https://casper-proofpay-agent-web.vercel.app/api/real-case/prepare \
   -H 'content-type: application/json' \
-  --data @path/to/real-case.json
+  --data @examples/video-integrated-cold-chain-real-case.json
 ```
 
 The hosted API never signs a transaction and does not need a Casper private key.

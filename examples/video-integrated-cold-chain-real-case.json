@@ -1,0 +1,85 @@
+{
+  "id": "realcase-video-coldchain-2026-06-26",
+  "dealId": "deal-vaccine-lane-043",
+  "milestoneId": "ms-video-fresh-delivery-acceptance",
+  "scenario": "realCase",
+  "submittedBy": "Aster Cold Chain Logistics",
+  "submittedAt": "2026-06-26T11:00:00.000Z",
+  "summary": "Fresh follow-on shipment for the demo trade lane: oncology biologics delivered from Singapore to Istanbul with matching invoice, bill of lading, receiver signature, cold-chain telemetry, and supplier registry evidence.",
+  "expected": {
+    "buyer": "Northstar Health Cooperative",
+    "supplier": "Aster Cold Chain Logistics",
+    "amount": 46500,
+    "currency": "USD",
+    "shipmentId": "VX-2026-043",
+    "temperatureMinC": 2,
+    "temperatureMaxC": 8
+  },
+  "documents": [
+    {
+      "id": "doc-invoice-real-vx-043",
+      "type": "invoice",
+      "title": "Invoice INV-9026",
+      "issuedAt": "2026-06-26T07:15:00.000Z",
+      "fingerprint": "sha256:d1355191d66eb43dabd43e2a6d0fc907de0799ef90a2d3df088cb45da22991db",
+      "claims": {
+        "invoiceId": "INV-9026",
+        "purchaseOrder": "PO-7814",
+        "buyer": "Northstar Health Cooperative",
+        "supplier": "Aster Cold Chain Logistics",
+        "amount": 46500,
+        "currency": "USD",
+        "shipmentId": "VX-2026-043",
+        "assetDescription": "1,800 oncology biologics packs in monitored cold-chain containers"
+      }
+    },
+    {
+      "id": "doc-bol-real-vx-043",
+      "type": "bill_of_lading",
+      "title": "Bill of Lading BOL-2026-91",
+      "issuedAt": "2026-06-26T07:40:00.000Z",
+      "fingerprint": "sha256:d33c437dceba7c9f1c5bd24c69d9fa1cb3724a5fce553e372ac88345c607dc79",
+      "claims": {
+        "buyer": "Northstar Health Cooperative",
+        "supplier": "Aster Cold Chain Logistics",
+        "shipmentId": "VX-2026-043",
+        "assetDescription": "1,800 oncology biologics packs in monitored cold-chain containers"
+      }
+    },
+    {
+      "id": "doc-delivery-real-vx-043",
+      "type": "delivery_note",
+      "title": "Signed Delivery Note DN-2026-588",
+      "issuedAt": "2026-06-26T10:45:00.000Z",
+      "fingerprint": "sha256:3f9eca6e9c2aa788e261a46ec0d8788120e184d1b944566fa7e8790bc08e0c90",
+      "claims": {
+        "shipmentId": "VX-2026-043",
+        "deliveredAt": "2026-06-26T10:42:00.000Z",
+        "deliveryLocation": "Istanbul BioPharma Receiving Dock 3",
+        "signedBy": "M. Kaya"
+      }
+    },
+    {
+      "id": "doc-temp-real-vx-043",
+      "type": "temperature_log",
+      "title": "Cold Chain Sensor Export CTL-8861",
+      "issuedAt": "2026-06-26T10:48:00.000Z",
+      "fingerprint": "sha256:72e8628b6b16ecc37e76a290974b80ef25078c2cdb49b2338a4adc4d0cff5623",
+      "claims": {
+        "shipmentId": "VX-2026-043",
+        "temperatureMinC": 2.9,
+        "temperatureMaxC": 6.4
+      }
+    },
+    {
+      "id": "doc-vendor-real-vx-043",
+      "type": "vendor_registry",
+      "title": "Supplier Registry Snapshot SG-UEN-201912345K",
+      "issuedAt": "2026-06-25T08:00:00.000Z",
+      "fingerprint": "sha256:23a4980268a0f2180e909d06f290b863231089dc4bba78d820d5adfe5f4efe63",
+      "claims": {
+        "supplier": "Aster Cold Chain Logistics"
+      }
+    }
+  ]
+}

@@ -77,7 +77,7 @@ This is more than a frontend dashboard: the repository includes deterministic ev
 4. Locally run `npm install`, `npm test`, `npm run typecheck`, `npm run build`, `npm run pages:build`, and `npm run submission:check`.
 5. For live API replay, run `npm run dev -- --hostname 127.0.0.1 --port 3000`, then call `GET /api/attestation/clean` or `POST /api/evidence/intake`.
 6. For public full-stack replay, run `npm run fullstack:smoke -- https://casper-proofpay-agent-web.vercel.app`.
-7. For a new real case, fill [examples/real-case-template.json](examples/real-case-template.json), run `npm run realcase:prepare -- path/to/real-case.json`, then follow [docs/real-case-runbook.md](docs/real-case-runbook.md) before submitting a fresh Testnet transaction.
+7. For a video-integrated fresh case, run `npm run realcase:prepare -- examples/video-integrated-cold-chain-real-case.json`, then follow [docs/real-case-runbook.md](docs/real-case-runbook.md) before submitting a fresh Testnet transaction.
 
 ## Why This Is Not A Generic x402 Gateway
 
@@ -243,7 +243,7 @@ Useful scripts:
 
 ```bash
 npm run submission:check        # repository cleanliness and submission asset check
-npm run realcase:prepare        # prepare a new redacted evidence JSON for Testnet attestation
+npm run realcase:prepare -- examples/video-integrated-cold-chain-real-case.json # prepare the video-integrated fresh case
 npm run realcase:deploy:print   # inspect the new Casper Testnet transaction command
 npm run realcase:deploy:testnet # submit the new case from a funded local Testnet key
 npm run attestation:export      # print a scenario's Casper attestation payload

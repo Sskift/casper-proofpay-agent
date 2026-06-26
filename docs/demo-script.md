@@ -96,6 +96,17 @@ Show:
 - Blocked cockpit state.
 - Fraud review escalation.
 
+## Scene 9: Fresh Real Case
+
+ProofPay can also run a new case, not only replay seeded scenarios. Use the video-integrated fresh case `examples/video-integrated-cold-chain-real-case.json`: the next Singapore to Istanbul cold-chain shipment on the same trade lane, with a new invoice, shipment id, evidence fingerprints, evidence hash, decision hash, and pending Casper attestation.
+
+Show:
+
+- The `Run real case` panel near the top of the dashboard.
+- `npm run realcase:prepare -- examples/video-integrated-cold-chain-real-case.json`.
+- `POST /api/real-case/prepare` returning a pending attestation package.
+- If a funded Testnet key is approved, submit the new transaction and show the new CSPR.live transaction page.
+
 ## Closing
 
 ProofPay combines agentic evidence review, decentralized escrow operations, and Casper attestations. AI does the evidence work, humans control the payment action, and Casper makes the final decision auditable.

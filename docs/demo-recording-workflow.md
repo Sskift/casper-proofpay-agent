@@ -140,7 +140,8 @@ Use `docs/demo-script.md` as the canonical structure. The current recommended fl
 6. Dossier: show policy trace cards, verification chain, copy-ready JSON, and reviewer checklist.
 7. Hold scenario: show amount mismatch and human finance review.
 8. Reject scenario: show duplicate invoice block and fraud escalation.
-9. Close: restate the trust chain: evidence, agent decision, human release control, Casper attestation.
+9. Fresh real case: show `examples/video-integrated-cold-chain-real-case.json`, prepare the new payload, and, when approved, submit a new Casper Testnet transaction.
+10. Close: restate the trust chain: evidence, agent decision, human release control, Casper attestation.
 
 Target length:
 

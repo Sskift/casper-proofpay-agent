@@ -537,31 +537,32 @@ function JudgeWalkthrough({ activeSection }: { activeSection: SectionId }) {
 }
 
 function RealCaseRunSection() {
+  const realCasePath = "examples/video-integrated-cold-chain-real-case.json";
   const commands = [
     {
-      label: "1. Prepare a redacted evidence JSON",
-      detail: "Use the committed template as the schema, then replace placeholder values with the real case facts.",
-      command: "examples/real-case-template.json"
+      label: "1. Use the video-integrated case",
+      detail: "Fresh follow-on cold-chain shipment on the same buyer, supplier, and trade lane used in the demo story.",
+      command: realCasePath
     },
     {
       label: "2. Generate a fresh ProofPay payload",
       detail: "The output includes the agent decision, evidence hash, decision hash, and Casper session args.",
-      command: "npm run realcase:prepare -- path/to/real-case.json"
+      command: `npm run realcase:prepare -- ${realCasePath}`
     },
     {
       label: "3. Inspect the transaction command",
       detail: "This is a dry run. It prints the exact Casper Testnet transaction command without signing.",
-      command: "npm run realcase:deploy:print -- path/to/real-case.json"
+      command: `npm run realcase:deploy:print -- ${realCasePath}`
     },
     {
       label: "4. Sign locally with a funded Testnet key",
       detail: "Private keys stay on the operator machine. The server never receives custody keys.",
-      command: "CASPER_SECRET_KEY=/absolute/path/to/secret_key.pem npm run realcase:deploy:testnet -- path/to/real-case.json"
+      command: `CASPER_SECRET_KEY=/absolute/path/to/secret_key.pem npm run realcase:deploy:testnet -- ${realCasePath}`
     },
     {
       label: "5. Verify the public API path",
       detail: "The same evidence JSON can be prepared through the hosted API before local signing.",
-      command: "curl -X POST https://casper-proofpay-agent-web.vercel.app/api/real-case/prepare -H 'content-type: application/json' --data @path/to/real-case.json"
+      command: `curl -X POST https://casper-proofpay-agent-web.vercel.app/api/real-case/prepare -H 'content-type: application/json' --data @${realCasePath}`
     }
   ];
 
@@ -571,7 +572,7 @@ function RealCaseRunSection() {
         <div>
           <span>Fresh transaction path</span>
           <strong>Run one new real case end to end</strong>
-          <p>Submit a redacted evidence package, let ProofPay compute a new attestation payload, then sign one new Casper Testnet transaction from a local funded key.</p>
+          <p>Use the video story's next cold-chain shipment, let ProofPay compute a new attestation payload, then sign one new Casper Testnet transaction from a local funded key.</p>
         </div>
         <SectionBadge tone="success">new tx ready</SectionBadge>
       </div>
