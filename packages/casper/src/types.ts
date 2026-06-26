@@ -102,3 +102,41 @@ export interface CasperDeployPlan {
   cliCommand: string;
   postFundingCommands: string[];
 }
+
+export type CasperProofCopyFieldId =
+  | "transaction-hash"
+  | "evidence-hash"
+  | "decision-hash"
+  | "stored-uref"
+  | "replay-command";
+
+export interface CasperProofCopyField {
+  id: CasperProofCopyFieldId;
+  label: string;
+  value: string;
+}
+
+export type CasperProofVerificationStateId =
+  | "transaction-recorded"
+  | "payload-hash-matches"
+  | "named-key-documented"
+  | "stored-uref-documented";
+
+export interface CasperProofVerificationState {
+  id: CasperProofVerificationStateId;
+  label: string;
+  status: "passed" | "failed" | "pending";
+  detail: string;
+}
+
+export interface CasperProofDocLink {
+  label: string;
+  href: string;
+}
+
+export interface CasperProofWorkbench {
+  explorerUrl: string | null;
+  copyFields: CasperProofCopyField[];
+  verificationStates: CasperProofVerificationState[];
+  docsLinks: CasperProofDocLink[];
+}

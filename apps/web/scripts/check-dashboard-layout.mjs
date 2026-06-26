@@ -51,7 +51,24 @@ const requiredPageContracts = [
   ['id="dossier"', "The dashboard needs a Dossier section for judge-facing audit review."],
   ["Audit dossier", "The Dossier section heading should be visible to reviewers."],
   ["dossier-tabs", "Dossier details should be grouped into secondary tabs instead of a long side stack."],
-  ["dossier-meter", "Dossier should include a compact trace meter for audit status distribution."]
+  ["dossier-meter", "Dossier should include a compact trace meter for audit status distribution."],
+  ["JudgeWalkthrough", "The dashboard needs a compact Judge walkthrough control."],
+  ["judge-walkthrough", "The Judge walkthrough should have a stable, styled container."],
+  ["See the release decision.", "The walkthrough should include compact Cockpit guidance."],
+  ["Verify Testnet attestation.", "The walkthrough should include compact Casper guidance."],
+  ["copyProofValue", "Casper proof fields should be copyable from the dashboard."],
+  ["copy-proof-button", "Casper proof copy controls should use a stable button class."],
+  ["View on cspr.live", "Recorded Testnet transactions should link to CSPR.live."],
+  ["proofWorkbench.explorerUrl", "Casper explorer links should point to package-owned CSPR.live Testnet URLs."],
+  ["ProofPay does not custody real funds in this prototype.", "Dashboard copy must preserve the no-custody boundary."],
+  ["createCasperProofWorkbench", "Casper proof UI should use reusable proof workbench metadata."],
+  ["Load clean release sample", "Evidence intake playground should include a clean sample loader."],
+  ["Load hold for finance sample", "Evidence intake playground should include a hold sample loader."],
+  ["Load reject duplicate sample", "Evidence intake playground should include a reject sample loader."],
+  ["Assess evidence", "Evidence intake playground should have an explicit assessment action."],
+  ["mini dossier preview", "Evidence intake playground should show a compact dossier preview."],
+  ["local API replay available in repository", "Static GitHub Pages mode should honestly explain local API replay."],
+  ["playgroundResult", "Evidence intake playground should store explicit assessment output state."]
 ];
 
 for (const [needle, message] of requiredPageContracts) {
@@ -90,7 +107,14 @@ const requiredCssContracts = [
   [".dossier-grid", "Audit dossier layout styles are missing."],
   [".trace-grid", "Audit trace grid styles are missing."],
   [".dossier-tabs", "Dossier tab layout styles are missing."],
-  [".dossier-meter", "Dossier trace meter styles are missing."]
+  [".dossier-meter", "Dossier trace meter styles are missing."],
+  [".judge-walkthrough", "Judge walkthrough styles are missing."],
+  [".walkthrough-step.is-active", "Judge walkthrough active state styles are missing."],
+  [".sample-loader-row", "Evidence intake sample loader styles are missing."],
+  [".playground-result-grid", "Evidence intake result grid styles are missing."],
+  [".copy-proof-button", "Casper proof copy button styles are missing."],
+  [".proof-verification-grid", "Casper proof verification state styles are missing."],
+  [".proof-doc-links", "Casper proof documentation link styles are missing."]
 ];
 
 for (const [needle, message] of requiredCssContracts) {

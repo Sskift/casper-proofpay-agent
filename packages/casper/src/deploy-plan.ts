@@ -2,10 +2,12 @@ import type {
   CasperAttestationPayload,
   CasperDeployPlan,
   CasperDeploymentRecord,
+  CasperProofWorkbench,
   CasperVerificationSummary,
   CreateCasperDeployPlanInput
 } from "./types";
 
+const TESTNET_EXPLORER_BASE_URL = "https://testnet.cspr.live";
 const DEFAULT_NODE_ADDRESS = "https://node.testnet.casper.network";
 const DEFAULT_CHAIN_NAME = "casper-test";
 const DEFAULT_PAYMENT_AMOUNT = "30000000000";
@@ -224,5 +226,93 @@ export function createCasperVerificationSummary(plan: CasperDeployPlan): CasperV
     network: plan.network,
     primaryHash: decisionHash ?? plan.accountHash,
     checkedAt: new Date(0).toISOString()
+  };
+}
+
+function verificationStatus(value: boolean, hasDeployment: boolean): "passed" | "failed" | "pending" {
+  if (!hasDeployment) return "pending";
+  return value ? "passed" : "failed";
+}
+
+export function createCasperProofWorkbench({
+  payload,
+  deployPlan
+}: {
+  payload: CasperAttestationPayload;
+  deployPlan: CasperDeployPlan;
+}): CasperProofWorkbench {
+  const deployment = deployPlan.deployment;
+  const hasDeployment = Boolean(deployment);
+  const explorerUrl = deployment ? `${TESTNET_EXPLORER_BASE_URL}/transaction/${deployment.transactionHash}` : null;
+  const storedURef = deployment?.uref ?? "pending scenario deploy";
+  const transactionHash = deployment?.transactionHash ?? "pending scenario deploy";
+  const hashMatches = Boolean(
+    deployment &&
+      deployment.evidenceHash === payload.evidenceHash &&
+      deployment.decisionHash === payload.decisionHash &&
+      deployment.decision === payload.decision
+  );
+
+  return {
+    explorerUrl,
+    copyFields: [
+      {
+        id: "transaction-hash",
+        label: "Copy tx hash",
+        value: transactionHash
+      },
+      {
+        id: "evidence-hash",
+        label: "Copy evidence hash",
+        value: payload.evidenceHash
+      },
+      {
+        id: "decision-hash",
+        label: "Copy decision hash",
+        value: payload.decisionHash
+      },
+      {
+        id: "stored-uref",
+        label: "Copy stored URef",
+        value: storedURef
+      },
+      {
+        id: "replay-command",
+        label: "Copy replay command",
+        value: deployPlan.cliCommand
+      }
+    ],
+    verificationStates: [
+      {
+        id: "transaction-recorded",
+        label: "Casper Testnet transaction recorded",
+        status: verificationStatus(Boolean(deployment?.transactionHash), hasDeployment),
+        detail: deployment ? `Block ${deployment.blockHeight}` : "No recorded Testnet transaction for this payload."
+      },
+      {
+        id: "payload-hash-matches",
+        label: "Payload hash matches current scenario",
+        status: verificationStatus(hashMatches, hasDeployment),
+        detail: deployment
+          ? "Evidence hash, decision hash, and decision match the selected scenario."
+          : "A matching deployment is required before payload comparison."
+      },
+      {
+        id: "named-key-documented",
+        label: "Named key documented",
+        status: verificationStatus(Boolean(deployment?.namedKey), hasDeployment),
+        detail: deployment?.namedKey ?? "Named key appears after Testnet attestation."
+      },
+      {
+        id: "stored-uref-documented",
+        label: "Stored URef documented",
+        status: verificationStatus(Boolean(deployment?.uref?.startsWith("uref-")), hasDeployment),
+        detail: deployment?.uref ?? "Stored URef appears after Testnet attestation."
+      }
+    ],
+    docsLinks: [
+      { label: "Casper Testnet notes", href: "docs/casper-testnet.md" },
+      { label: "Casper CLI runbook", href: "docs/casper-cli-runbook.md" }
+    ]
   };
 }

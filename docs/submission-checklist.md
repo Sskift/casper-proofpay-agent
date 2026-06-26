@@ -53,9 +53,14 @@ ProofPay Agent lets autonomous agents release real-world payments only when evid
 - `npm run casper:check` shows a funded Testnet account.
 - `npm run contract:deploy:testnet` returns a real Casper transaction hash.
 - Dashboard sidebar clearly shows the active Cockpit, Journey, Trust, Charts, Evidence, Casper, or Dossier section.
+- Dashboard Judge walkthrough scrolls to Cockpit, Trust, Evidence, Casper, and Dossier with a clear active state.
 - Dashboard Trust section shows external evidence intake, settlement runbook actions, and Casper verifier checks.
+- Dashboard evidence intake playground loads clean, hold, and reject samples; `Assess evidence` returns decision, risk score, confidence, evidence hash, decision hash, reasons, next actions, and mini dossier preview.
+- Dashboard evidence intake playground shows a friendly error for invalid JSON.
 - Dashboard Evidence room shows reviewer summary, documents, claims, and timeline without table stacking.
-- Dashboard Casper proof workbench shows Testnet transaction, named key, stored URef, deploy command, readiness gates, public key, and Casper session args.
+- Dashboard Casper proof workbench shows Testnet transaction, CSPR.live link, copy buttons, block height, named key, stored URef, deploy command, verification states, readiness gates, public key, and Casper session args.
+- Dashboard Casper copy states cover tx hash, evidence hash, decision hash, stored URef, and replay command.
+- Dashboard clearly states that the hosted GitHub Pages demo is static and ProofPay does not custody real funds in this prototype.
 - Demo video URL is public and tracked in `docs/demo/proofpay-agent-demo.mp4`.
 - Casper Testnet transaction hash and stored attestation are documented in `docs/casper-testnet.md`.
 - DoraHacks form copy is ready in `docs/buidl-submission-brief.md`.

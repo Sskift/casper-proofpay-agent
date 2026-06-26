@@ -13,8 +13,10 @@ import {
   seededEvidenceBundles,
   type AgentAssessment,
   type AuditDossier,
+  type Deal,
   type EvidenceBundle,
   type EvidenceIntakeReport,
+  type Milestone,
   type OperationsDashboardModel,
   type ProductDepthModel,
   type SettlementRunbook,
@@ -23,6 +25,7 @@ import {
 import {
   createAttestationPayload,
   createCasperDeployPlan,
+  createCasperProofWorkbench,
   createCasperVerificationSummary,
   submitDemoAttestation,
   verifyCasperAttestation,
@@ -134,6 +137,35 @@ const dashboardSections: Array<{ id: SectionId; label: string; eyebrow: string; 
 ];
 
 const dashboardSectionIds = dashboardSections.map((section) => section.id);
+const repositoryBlobBaseUrl = "https://github.com/Sskift/casper-proofpay-agent/blob/main";
+
+const judgeWalkthroughSteps: Array<{ id: Extract<SectionId, "cockpit" | "trust" | "evidence" | "casper" | "dossier">; label: string; detail: string }> = [
+  {
+    id: "cockpit",
+    label: "Cockpit",
+    detail: "See the release decision."
+  },
+  {
+    id: "trust",
+    label: "Trust",
+    detail: "Follow evidence to settlement actions."
+  },
+  {
+    id: "evidence",
+    label: "Evidence",
+    detail: "Inspect source claims."
+  },
+  {
+    id: "casper",
+    label: "Casper",
+    detail: "Verify Testnet attestation."
+  },
+  {
+    id: "dossier",
+    label: "Dossier",
+    detail: "Export the audit package."
+  }
+];
 
 const chartColors = {
   blue: "#1664ff",
@@ -164,6 +196,95 @@ function shortHash(value: string, left = 10, right = 8) {
 
 function statusLabel(value: string) {
   return value.replaceAll("_", " ");
+}
+
+type PlaygroundResult =
+  | {
+      status: "idle";
+      message: string;
+    }
+  | {
+      status: "invalid_json";
+      message: string;
+    }
+  | {
+      status: "invalid_bundle";
+      report: EvidenceIntakeReport;
+    }
+  | {
+      status: "assessed";
+      bundle: EvidenceBundle;
+      report: EvidenceIntakeReport;
+      assessment: AgentAssessment;
+      evidenceHash: `0x${string}`;
+      payload: CasperAttestationPayload;
+      dossier: AuditDossier;
+      runbook: SettlementRunbook;
+    };
+
+function createPlaygroundContext(bundle: EvidenceBundle): { deal: Deal; milestone: Milestone } {
+  const milestone: Milestone = {
+    id: bundle.milestoneId,
+    dealId: bundle.dealId,
+    title: "Release payment after verified RWA delivery",
+    description: "Pay the supplier when the evidence bundle matches the milestone terms.",
+    amount: bundle.expected.amount,
+    currency: bundle.expected.currency,
+    dueDate: "external evidence package",
+    state: "under_agent_review",
+    requiredEvidence: ["invoice", "bill_of_lading", "delivery_note", "temperature_log", "vendor_registry"]
+  };
+
+  return {
+    milestone,
+    deal: {
+      id: bundle.dealId,
+      name: "External RWA Milestone Escrow",
+      buyer: bundle.expected.buyer,
+      supplier: bundle.expected.supplier,
+      assetType: bundle.documents.find((document) => document.claims.assetDescription)?.claims.assetDescription ?? "Real-world asset shipment",
+      jurisdiction: "external evidence package",
+      escrowAmount: bundle.expected.amount,
+      currency: bundle.expected.currency,
+      milestones: [milestone]
+    }
+  };
+}
+
+function assessPlaygroundBundle(bundle: EvidenceBundle, report: EvidenceIntakeReport): Extract<PlaygroundResult, { status: "assessed" }> {
+  const { deal, milestone } = createPlaygroundContext(bundle);
+  const assessment = assessEvidence(bundle);
+  const evidenceHash = createEvidenceHash(bundle);
+  const payload = createAttestationPayload({ milestone, evidenceHash, assessment });
+  const deployPlan = createCasperDeployPlan({ payload, scenario: bundle.scenario });
+  const dossier = createAuditDossier({
+    deal,
+    milestone,
+    bundle,
+    assessment,
+    evidenceHash,
+    decisionHash: payload.decisionHash,
+    casper: {
+      network: deployPlan.network,
+      transactionHash: deployPlan.deployment?.transactionHash,
+      blockHeight: deployPlan.deployment?.blockHeight,
+      namedKey: deployPlan.deployment?.namedKey,
+      storedURef: deployPlan.deployment?.uref
+    },
+    cliCommand: deployPlan.cliCommand
+  });
+  const runbook = createSettlementRunbook({ deal, milestone, bundle, assessment, dossier });
+
+  return {
+    status: "assessed",
+    bundle,
+    report,
+    assessment,
+    evidenceHash,
+    payload,
+    dossier,
+    runbook
+  };
 }
 
 function useScrollSpy(sectionIds: SectionId[], offset = 118) {
@@ -342,6 +463,40 @@ function ScenarioSwitch({
         </button>
       ))}
     </div>
+  );
+}
+
+function JudgeWalkthrough({ activeSection }: { activeSection: SectionId }) {
+  const scrollToStep = (id: SectionId) => {
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    target.scrollIntoView({ block: "start" });
+    window.history.replaceState(null, "", `#${id}`);
+  };
+
+  return (
+    <section className="judge-walkthrough" aria-label="Judge walkthrough">
+      <div className="judge-walkthrough__head">
+        <span>Judge walkthrough</span>
+        <strong>Three-minute review route</strong>
+      </div>
+      <div className="walkthrough-steps">
+        {judgeWalkthroughSteps.map((step, index) => (
+          <button
+            aria-current={activeSection === step.id ? "step" : undefined}
+            className={activeSection === step.id ? "walkthrough-step is-active" : "walkthrough-step"}
+            key={step.id}
+            onClick={() => scrollToStep(step.id)}
+            type="button"
+          >
+            <span>{index + 1}</span>
+            <strong>{step.label}</strong>
+            <em>{step.detail}</em>
+          </button>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -800,41 +955,47 @@ function TrustChainSection({
   attestationVerification: AttestationVerificationReport;
 }) {
   const [draft, setDraft] = useState(() => JSON.stringify(bundle, null, 2));
+  const [playgroundResult, setPlaygroundResult] = useState<PlaygroundResult>({
+    status: "idle",
+    message: "Load or edit an evidence package, then assess evidence."
+  });
 
   useEffect(() => {
     setDraft(JSON.stringify(bundle, null, 2));
+    setPlaygroundResult({
+      status: "idle",
+      message: `Loaded ${scenarioCopy[bundle.scenario].label}; click Assess evidence to recompute.`
+    });
   }, [bundle]);
 
-  const preview = useMemo(() => {
+  const loadSample = (key: ScenarioKey) => {
+    setDraft(JSON.stringify(seededEvidenceBundles[key], null, 2));
+    setPlaygroundResult({
+      status: "idle",
+      message: `Loaded ${scenarioCopy[key].label}; click Assess evidence to recompute.`
+    });
+  };
+
+  const assessDraft = () => {
     try {
       const parsed = parseEvidenceBundle(JSON.parse(draft));
 
       if (!parsed.ok) {
-        return {
-          ok: false as const,
-          report: parsed.report,
-          error: null
-        };
+        setPlaygroundResult({
+          status: "invalid_bundle",
+          report: parsed.report
+        });
+        return;
       }
 
-      const assessment = assessEvidence(parsed.bundle);
-      const evidenceHash = createEvidenceHash(parsed.bundle);
-
-      return {
-        ok: true as const,
-        report: parsed.report,
-        decision: assessment.decision,
-        riskScore: assessment.riskScore,
-        evidenceHash
-      };
+      setPlaygroundResult(assessPlaygroundBundle(parsed.bundle, parsed.report));
     } catch {
-      return {
-        ok: false as const,
-        report: null,
-        error: "JSON parse failed"
-      };
+      setPlaygroundResult({
+        status: "invalid_json",
+        message: "Invalid JSON: check commas, quotes, and object braces before assessment."
+      });
     }
-  }, [draft]);
+  };
 
   const trustNodes = [
     {
@@ -866,7 +1027,10 @@ function TrustChainSection({
       detail: attestationVerification.summary
     }
   ];
-  const previewCoverage = preview.report?.coverage ?? [];
+  const playgroundReport = playgroundResult.status === "assessed" || playgroundResult.status === "invalid_bundle"
+    ? playgroundResult.report
+    : null;
+  const previewCoverage = playgroundReport?.coverage ?? intakeReport.coverage;
   const intakeStatusData = [
     {
       name: "complete",
@@ -934,10 +1098,17 @@ function TrustChainSection({
         <div className="intake-lab">
           <div className="realuse-head">
             <div>
-              <span>External intake lab</span>
-              <strong>Paste an evidence bundle JSON</strong>
+              <span>Evidence intake playground</span>
+              <strong>Paste or load an evidence bundle JSON</strong>
             </div>
-            <Chip color={preview.ok ? "success" : "warning"} variant="soft">{preview.ok ? "assessable" : "needs fix"}</Chip>
+            <Chip color={playgroundResult.status === "assessed" ? "success" : playgroundResult.status === "invalid_json" || playgroundResult.status === "invalid_bundle" ? "danger" : "warning"} variant="soft">
+              {playgroundResult.status === "assessed" ? "assessed" : playgroundResult.status === "idle" ? "ready" : "needs fix"}
+            </Chip>
+          </div>
+          <div className="sample-loader-row" aria-label="Evidence intake sample loaders">
+            <button onClick={() => loadSample("clean")} type="button">Load clean release sample</button>
+            <button onClick={() => loadSample("amountMismatch")} type="button">Load hold for finance sample</button>
+            <button onClick={() => loadSample("duplicateInvoice")} type="button">Load reject duplicate sample</button>
           </div>
           <textarea
             aria-label="External evidence bundle JSON"
@@ -945,21 +1116,33 @@ function TrustChainSection({
             spellCheck={false}
             value={draft}
           />
+          <div className="playground-actions">
+            <button className="assess-button" onClick={assessDraft} type="button">
+              <ClipboardCheck aria-hidden="true" size={15} />
+              Assess evidence
+            </button>
+            <span>Client-side deterministic assessment; local API replay available in repository.</span>
+          </div>
           <div className="intake-preview">
-            {preview.error ? (
+            {playgroundResult.status === "invalid_json" ? (
               <div className="preview-status preview-status--failed">
                 <TriangleAlert aria-hidden="true" size={16} />
-                <span>{preview.error}</span>
+                <span>{playgroundResult.message}</span>
               </div>
-            ) : preview.ok ? (
+            ) : playgroundResult.status === "assessed" ? (
               <div className="preview-status preview-status--passed">
                 <CheckCircle2 aria-hidden="true" size={16} />
-                <span>{preview.decision} · risk {preview.riskScore}/100 · {shortHash(preview.evidenceHash)}</span>
+                <span>{playgroundResult.assessment.decision} · risk {playgroundResult.assessment.riskScore}/100 · confidence {playgroundResult.assessment.confidence}%</span>
+              </div>
+            ) : playgroundResult.status === "invalid_bundle" ? (
+              <div className="preview-status preview-status--failed">
+                <TriangleAlert aria-hidden="true" size={16} />
+                <span>{playgroundResult.report.summary}</span>
               </div>
             ) : (
               <div className="preview-status preview-status--warning">
                 <TriangleAlert aria-hidden="true" size={16} />
-                <span>{preview.report?.summary}</span>
+                <span>{playgroundResult.message}</span>
               </div>
             )}
             <div className="coverage-strip">
@@ -970,7 +1153,61 @@ function TrustChainSection({
                 </div>
               ))}
             </div>
-            <code>POST /api/evidence/intake</code>
+            {playgroundResult.status === "assessed" ? (
+              <div className="playground-result-grid" aria-label="Evidence intake assessment result">
+                <div>
+                  <span>Decision</span>
+                  <strong>{playgroundResult.assessment.decision}</strong>
+                </div>
+                <div>
+                  <span>Risk score</span>
+                  <strong>{playgroundResult.assessment.riskScore}/100</strong>
+                </div>
+                <div>
+                  <span>Confidence</span>
+                  <strong>{playgroundResult.assessment.confidence}%</strong>
+                </div>
+                <div>
+                  <span>Evidence hash</span>
+                  <code title={playgroundResult.evidenceHash}>{shortHash(playgroundResult.evidenceHash, 14, 10)}</code>
+                </div>
+                <div>
+                  <span>Decision hash</span>
+                  <code title={playgroundResult.payload.decisionHash}>{shortHash(playgroundResult.payload.decisionHash, 14, 10)}</code>
+                </div>
+                <div>
+                  <span>mini dossier preview</span>
+                  <strong>{playgroundResult.dossier.trace.filter((step) => step.status === "passed").length}/{playgroundResult.dossier.trace.length} trace passed</strong>
+                </div>
+              </div>
+            ) : null}
+            {playgroundResult.status === "assessed" ? (
+              <div className="playground-detail-grid">
+                <div>
+                  <div className="mini-title">Reasons</div>
+                  {playgroundResult.assessment.reasons.map((reason) => (
+                    <p key={reason}>{reason}</p>
+                  ))}
+                </div>
+                <div>
+                  <div className="mini-title">Next reviewer actions</div>
+                  {playgroundResult.runbook.actions.slice(0, 3).map((action) => (
+                    <p key={action.id}>{action.actor}: {action.label}</p>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+            {playgroundResult.status === "invalid_bundle" ? (
+              <div className="playground-issues">
+                {playgroundResult.report.issues.slice(0, 4).map((issue) => (
+                  <div key={`${issue.field}-${issue.message}`}>
+                    <strong>{issue.field}</strong>
+                    <span>{issue.message}</span>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            <code>POST /api/evidence/intake · local API replay available in repository</code>
           </div>
         </div>
 
@@ -1224,6 +1461,17 @@ function CasperSection({
 }) {
   const deployment = deployPlan.deployment;
   const verification = createCasperVerificationSummary(deployPlan);
+  const proofWorkbench = createCasperProofWorkbench({ payload, deployPlan });
+  const [copiedProofField, setCopiedProofField] = useState<string | null>(null);
+  const copyProofValue = async (field: (typeof proofWorkbench.copyFields)[number]) => {
+    try {
+      await navigator.clipboard.writeText(field.value);
+      setCopiedProofField(field.id);
+      window.setTimeout(() => setCopiedProofField((current) => (current === field.id ? null : current)), 1400);
+    } catch {
+      setCopiedProofField(null);
+    }
+  };
   const flowSteps = [
     {
       label: "Evidence sealed",
@@ -1293,7 +1541,7 @@ function CasperSection({
       eyebrow="On-chain proof"
       step="06"
       title="Casper attestation"
-      sub={deployment ? "Selected scenario is anchored on Casper Testnet." : "This scenario is deploy-ready and waiting for a matching Testnet attestation."}
+      sub={deployment ? "Selected scenario is anchored on Casper Testnet. ProofPay does not custody real funds in this prototype." : "This scenario is deploy-ready and waiting for a matching Testnet attestation. ProofPay does not custody real funds in this prototype."}
       action={<SectionBadge tone={deployment ? "success" : "warning"}>{deployment ? "on-chain" : "deploy-ready"}</SectionBadge>}
     >
       <div className="proof-workbench">
@@ -1308,7 +1556,7 @@ function CasperSection({
           <div>
             <span>{verification.network}</span>
             <strong>{verification.label}</strong>
-            <p>{verification.detail}</p>
+            <p>{verification.detail} This is a Testnet attestation proof. ProofPay does not custody real funds in this prototype.</p>
           </div>
           <code title={verification.primaryHash}>{shortHash(verification.primaryHash, 14, 10)}</code>
         </div>
@@ -1323,6 +1571,33 @@ function CasperSection({
               </div>
               {index < flowSteps.length - 1 ? <i aria-hidden="true" /> : null}
             </div>
+          ))}
+        </div>
+
+        <div className="proof-action-row" aria-label="Casper proof actions">
+          {proofWorkbench.explorerUrl ? (
+            <Link className="button-link primary" href={proofWorkbench.explorerUrl} rel="noreferrer" target="_blank">
+              <ExternalLink aria-hidden="true" size={15} />
+              View on cspr.live
+            </Link>
+          ) : null}
+          {proofWorkbench.copyFields.map((field) => (
+            <button className="copy-proof-button" key={field.id} onClick={() => copyProofValue(field)} type="button">
+              <CopyCheck aria-hidden="true" size={15} />
+              {copiedProofField === field.id ? "Copied" : field.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="proof-verification-grid" aria-label="Casper proof verification states">
+          {proofWorkbench.verificationStates.map((state) => (
+            <article className={`proof-verification-card proof-verification-card--${state.status}`} key={state.id}>
+              <div>
+                <span>{state.label}</span>
+                <strong>{statusLabel(state.status)}</strong>
+              </div>
+              <p>{state.detail}</p>
+            </article>
           ))}
         </div>
 
@@ -1375,6 +1650,16 @@ function CasperSection({
             </Tabs.Panel>
           </Tabs>
         </div>
+      </div>
+
+      <div className="proof-doc-links" aria-label="Casper proof documentation">
+        {proofWorkbench.docsLinks.map((link) => (
+          <Link href={`${repositoryBlobBaseUrl}/${link.href}`} key={link.href} rel="noreferrer" target="_blank">
+            <ScrollText aria-hidden="true" size={15} />
+            <span>{link.label}</span>
+            <code>{link.href}</code>
+          </Link>
+        ))}
       </div>
 
       <div className="readiness-grid" aria-label="Submission readiness">
@@ -1739,6 +2024,7 @@ export default function Home() {
           </header>
 
           <ScenarioSwitch scenario={scenario} setScenario={setScenario} />
+          <JudgeWalkthrough activeSection={activeSection} />
 
           <section className="deal-strip" aria-label="Deal summary">
             <div>

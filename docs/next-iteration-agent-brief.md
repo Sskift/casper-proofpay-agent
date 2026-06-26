@@ -54,6 +54,15 @@ Avoid presenting ProofPay as:
 
 ## Prioritized Workstreams
 
+Current implementation status:
+
+- P0 Casper Proof Workbench: completed in the dashboard with CSPR.live links, copy buttons, scenario-specific Testnet facts, verification states, and docs links.
+- P0 Judge Walkthrough Mode: completed with Cockpit, Trust, Evidence, Casper, and Dossier scroll steps.
+- P1 Evidence Intake Playground: completed client-side for GitHub Pages with sample loaders, explicit assessment, invalid JSON handling, hashes, reasons, next actions, and mini dossier preview.
+- P1 CI and Repository Signals: completed with a dedicated Node 22 GitHub Actions workflow and README badge.
+- P1 Full-Stack Hosted Demo: deferred; GitHub Pages remains the stable public URL and local API replay is documented.
+- P2 Demo Refresh: recommended after final UI review because the judge story changed materially.
+
 ### P0: Casper Proof Workbench
 
 Goal: make Casper verification obvious without reading docs.

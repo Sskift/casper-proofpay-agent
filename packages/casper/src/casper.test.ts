@@ -2,6 +2,7 @@ import { assessEvidence, createEvidenceHash, seededDeals, seededEvidenceBundles 
 import { describe, expect, it } from "vitest";
 
 import {
+  createCasperProofWorkbench,
   createAttestationPayload,
   createCasperDeployPlan,
   createCasperVerificationSummary,
@@ -127,6 +128,41 @@ describe("ProofPay Casper adapter", () => {
     expect(report.status).toBe("verified");
     expect(report.checks.every((check) => check.status === "passed")).toBe(true);
     expect(report.summary).toContain("recorded Testnet transaction matches");
+  });
+
+  it("builds judge-facing Casper proof links, copy fields, and verification states", () => {
+    const milestone = seededDeals[0].milestones[0];
+    const assessment = assessEvidence(seededEvidenceBundles.duplicateInvoice);
+    const evidenceHash = createEvidenceHash(seededEvidenceBundles.duplicateInvoice);
+    const payload = createAttestationPayload({ milestone, evidenceHash, assessment });
+    const plan = createCasperDeployPlan({ payload, scenario: "duplicateInvoice" });
+
+    const workbench = createCasperProofWorkbench({ payload, deployPlan: plan });
+
+    expect(workbench.explorerUrl).toBe(
+      "https://testnet.cspr.live/transaction/08995093b6ef978b381c4cee7d8faeb960f31bb64083544c8cfa0c3c8952e885"
+    );
+    expect(workbench.copyFields.map((field) => field.id)).toEqual([
+      "transaction-hash",
+      "evidence-hash",
+      "decision-hash",
+      "stored-uref",
+      "replay-command"
+    ]);
+    expect(workbench.copyFields.find((field) => field.id === "evidence-hash")?.value).toBe(payload.evidenceHash);
+    expect(workbench.copyFields.find((field) => field.id === "replay-command")?.value).toContain(
+      "casper-client put-transaction session"
+    );
+    expect(workbench.verificationStates.map((state) => [state.id, state.status])).toEqual([
+      ["transaction-recorded", "passed"],
+      ["payload-hash-matches", "passed"],
+      ["named-key-documented", "passed"],
+      ["stored-uref-documented", "passed"]
+    ]);
+    expect(workbench.docsLinks).toEqual([
+      { label: "Casper Testnet notes", href: "docs/casper-testnet.md" },
+      { label: "Casper CLI runbook", href: "docs/casper-cli-runbook.md" }
+    ]);
   });
 
   it("flags Casper proof mismatches", () => {

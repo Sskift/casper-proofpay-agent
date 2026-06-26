@@ -8,6 +8,7 @@
 
 [![Demo Video](https://img.shields.io/badge/Demo%20Video-GitHub%20MP4-0F172A?style=for-the-badge)](https://github.com/Sskift/casper-proofpay-agent/blob/main/docs/demo/proofpay-agent-demo.mp4)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-0969DA?style=for-the-badge)](https://sskift.github.io/casper-proofpay-agent/)
+[![CI](https://github.com/Sskift/casper-proofpay-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/Sskift/casper-proofpay-agent/actions/workflows/ci.yml)
 [![DoraHacks BUIDL](https://img.shields.io/badge/DoraHacks-BUIDL%2045992-2563EB?style=for-the-badge)](https://dorahacks.io/buidl/45992)
 [![Casper Testnet](https://img.shields.io/badge/Casper-Testnet%20Recorded-10B981?style=for-the-badge)](docs/casper-testnet.md)
 [![Audit Dossier](https://img.shields.io/badge/Audit-Dossier%20Ready-7C3AED?style=for-the-badge)](#audit-dossier)
@@ -51,6 +52,32 @@ ProofPay joins the two:
 - Suppliers, buyers, and arbiters share one audit package instead of arguing over screenshots and email threads.
 
 This is more than a frontend dashboard: the repository includes deterministic evidence scoring, hash generation, local API hooks, Casper attestation payload generation, Testnet transaction evidence, contract materials, CLI runbooks, and a portable audit dossier.
+
+## What Is Real
+
+- Deterministic evidence intake, validation, scoring, reasons, follow-up actions, evidence hashes, and decision hashes in `packages/agent`.
+- Casper attestation payload generation, deploy command generation, verifier checks, and recorded Testnet deployment facts in `packages/casper`.
+- Three successful Casper Testnet transactions for clean release, finance hold, and duplicate reject scenarios.
+- Next.js dashboard surfaces for cockpit review, Judge walkthrough, evidence intake playground, Casper proof workbench, and audit dossier.
+- Local API hooks for attestation lookup, external evidence intake, MCP-style access, and x402-style release gating.
+
+## What Is Simulated
+
+- ProofPay does not custody real funds in this prototype and does not claim production escrow settlement.
+- The GitHub Pages demo is a stable static dashboard; API routes run locally from the repository or on a future full-stack host.
+- The agent is deterministic and bounded for auditability; production OCR, identity verification, wallet signing, and payment rail integration are future work.
+
+## How To Verify
+
+1. Open the [live GitHub Pages demo](https://sskift.github.io/casper-proofpay-agent/) and use the Judge walkthrough: Cockpit, Trust, Evidence, Casper, Dossier.
+2. In Casper, switch clean / hold / reject scenarios, open `View on cspr.live`, and compare transaction hash, block height, named key, stored URef, evidence hash, and decision hash.
+3. In Trust, load each evidence intake sample, click `Assess evidence`, and confirm the recomputed decision, risk score, confidence, evidence hash, decision hash, reasons, actions, and mini dossier preview.
+4. Locally run `npm install`, `npm test`, `npm run typecheck`, `npm run build`, `npm run pages:build`, and `npm run submission:check`.
+5. For API replay, run `npm run dev -- --hostname 127.0.0.1 --port 3000`, then call `GET /api/attestation/clean` or `POST /api/evidence/intake`.
+
+## Why This Is Not A Generic x402 Gateway
+
+ProofPay does not try to replace escrow custody in this prototype. It creates the missing RWA evidence decision layer before release: evidence normalization, bounded AI review, human release control, and Casper attestations that make the decision replayable. The x402-style route is a demo integration surface for release decisions, not the product thesis.
 
 ## Screenshots
 
@@ -169,10 +196,12 @@ docs                           Submission, demo, Testnet, and runbook documentat
 Core dashboard capabilities:
 
 - Scroll-tracked operator sidebar for the seven judge sections.
+- Compact Judge walkthrough for Cockpit, Trust, Evidence, Casper, and Dossier.
 - Scenario switcher for `approve`, `hold`, and `reject` payment flows.
 - Evidence room for documents, claims, timeline, reasons, and follow-up actions.
 - Recharts-based visuals for risk, cold-chain telemetry, cashflow, evidence coverage, Casper checks, and audit trace distribution.
-- Casper proof workbench with transaction hash, named key, stored URef, deploy command, and readiness gates.
+- Evidence intake playground with JSON sample loaders, deterministic assessment, hashes, reasons, next actions, and mini dossier preview.
+- Casper proof workbench with CSPR.live links, copy buttons, transaction hash, block height, named key, stored URef, deploy command, explicit verification states, and readiness gates.
 - Audit dossier workbench with decision trace, hashes, Testnet proof facts, reproduction checklist, and copy-ready JSON.
 
 Local integration hooks:

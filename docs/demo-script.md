@@ -14,6 +14,7 @@ ProofPay Agent is an agentic milestone escrow cockpit for real-world asset payme
 
 Show:
 
+- Judge walkthrough control with Cockpit, Trust, Evidence, Casper, and Dossier.
 - Release readiness, risk, confidence, evidence coverage, and Casper anchor metrics.
 - Confidence, risk health, and evidence radial gauges.
 - Reviewer action queue.
@@ -36,7 +37,8 @@ ProofPay is more than a dashboard. It accepts an external evidence pack, validat
 
 Show:
 
-- External evidence intake lab.
+- Evidence intake playground with clean, hold, and reject sample loaders.
+- Click `Assess evidence` and show decision, risk score, confidence, evidence hash, decision hash, reasons, next actions, and mini dossier preview.
 - Evidence coverage and Casper verifier mini charts.
 - Settlement runbook actions for supplier, buyer, arbiter, and Casper.
 - Casper verifier checks for evidence hash, decision hash, transaction hash, and stored URef.
@@ -56,9 +58,12 @@ The Casper panel exposes the real Testnet transaction, block height, named key, 
 
 Mention:
 
+- CSPR.live transaction link and copy buttons for tx hash, evidence hash, decision hash, stored URef, and replay command.
+- Verification states for Testnet transaction recorded, payload hash match, named key documented, and stored URef documented.
 - Successful Casper Testnet transaction `94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604`.
 - Stored URef `uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007`.
 - Contract and deploy details are documented in `docs/casper-testnet.md`.
+- This is a Casper Testnet attestation proof; ProofPay does not custody real funds in this prototype.
 
 ## Scene 6: Audit Dossier
 

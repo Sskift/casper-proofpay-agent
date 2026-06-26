@@ -26,9 +26,11 @@ The agent normalizes five evidence sources: invoice, bill of lading, signed deli
 
 Every assessment produces an evidence hash and decision hash. All three judge scenarios are anchored on Casper Testnet through the `proofpay-attestation` contract path. The dashboard shows the Testnet transaction hash, block height, named key, stored URef, public key, deploy command, session arguments, submission readiness gates, and a portable Audit Dossier.
 
-The user experience is designed for judges and operators: a scroll-tracked left navigation, clear Cockpit, Journey, Trust, Charts, Evidence, Casper, and Dossier sections, an external evidence intake lab, a settlement runbook, a Casper payload-to-Testnet verifier, an Evidence review workbench, a Casper proof workbench with checklist-style submission gates, and an Audit Dossier that packages the reasoning trace, hashes, Testnet proof facts, CLI command, and reviewer checklist into a copy-ready JSON artifact.
+The user experience is designed for judges and operators: a scroll-tracked left navigation, clear Cockpit, Journey, Trust, Charts, Evidence, Casper, and Dossier sections, a compact Judge walkthrough, an evidence intake playground with clean/hold/reject JSON samples, a settlement runbook, a Casper payload-to-Testnet verifier, an Evidence review workbench, a Casper proof workbench with CSPR.live links and copy buttons, and an Audit Dossier that packages the reasoning trace, hashes, Testnet proof facts, CLI command, and reviewer checklist into a copy-ready JSON artifact.
 
 The core advantage is the trust chain, not the UI alone: external evidence enters as a validated package, AI produces a bounded and explainable payment decision, Casper makes the decision auditable, and humans still control the final release, hold, or dispute action.
+
+Prototype boundary: ProofPay does not custody real funds or claim production automatic settlement. It creates the missing RWA evidence decision layer before release: evidence normalization, bounded AI review, human release control, and Casper attestations that make the decision replayable.
 
 ## Casper Integration
 
@@ -37,9 +39,13 @@ ProofPay uses Casper as the trust anchor for agentic RWA payment decisions.
 - Casper Testnet transaction hash: `94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604`
 - Hold scenario transaction hash: `c92cdcd8f11f6453134745900ea2c91defa0f8b37f4c6782dd38b2aa7a720d84`
 - Reject scenario transaction hash: `08995093b6ef978b381c4cee7d8faeb960f31bb64083544c8cfa0c3c8952e885`
-- Block height: `8282603`
+- Clean block height: `8282603`
+- Hold block height: `8285869`
+- Reject block height: `8285872`
 - Named key: `proofpay_attestation_ms-delivery-acceptance`
-- Stored URef: `uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007`
+- Clean stored URef: `uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007`
+- Hold stored URef: `uref-798a146f6456d0318bb0e960465a7e251321fc1ff32c36d4354bd5860a9a6d7a-007`
+- Reject stored URef: `uref-409325b098f841565f2667d96986d7f41ff08e606f33bf06f76a0564ac1eb76f-007`
 - Contract package: `contracts/proofpay-attestation`
 - Testnet documentation: `docs/casper-testnet.md`
 
@@ -98,14 +104,15 @@ Record with `docs/demo-script.md`.
 The prepared video follows this flow:
 
 1. Open the dashboard and show the seven operator sections.
-2. Select `Clean release` and explain the approve decision.
-3. Open the Trust section and show external evidence intake, settlement actions, and Casper verifier checks.
-4. Open the Evidence room and show document, claim, and timeline drilldowns.
-5. Open the Casper section and show the Testnet transaction hash, named key, stored URef, deploy command, and readiness gates.
-6. Open the Dossier section and show the trace cards, verification chain, copy-ready JSON package, and reviewer checklist.
-7. Switch to `Hold for finance` and explain amount mismatch handling.
-8. Switch to `Reject duplicate` and explain duplicate invoice blocking.
-9. Open the repository docs and point to `docs/casper-testnet.md` and `docs/real-world-use.md`.
+2. Use the Judge walkthrough to move through Cockpit, Trust, Evidence, Casper, and Dossier.
+3. Select `Clean release` and explain the approve decision.
+4. In Trust, load a sample evidence bundle and click `Assess evidence`.
+5. Open the Evidence room and show document, claim, and timeline drilldowns.
+6. Open the Casper section and show the CSPR.live link, copy buttons, Testnet transaction hash, named key, stored URef, deploy command, and verification states.
+7. Open the Dossier section and show the trace cards, verification chain, copy-ready JSON package, and reviewer checklist.
+8. Switch to `Hold for finance` and explain amount mismatch handling.
+9. Switch to `Reject duplicate` and explain duplicate invoice blocking.
+10. Open the repository docs and point to `docs/casper-testnet.md` and `docs/real-world-use.md`.
 
 ## CSPR.fans Community Pitch
 
