@@ -6,6 +6,8 @@ The submitted demo video is a 1080p dynamic browser walkthrough with Coze AI tex
 
 The exact narration source for the current video lives at `docs/demo/proofpay-agent-demo-narration.txt`.
 
+For recording setup, voiceover handling, ffmpeg commands, quality review, and cleanup rules, use `docs/demo-recording-workflow.md`.
+
 ## Scene 1: Cockpit
 
 ProofPay Agent is an agentic milestone escrow cockpit for real-world asset payments on Casper. It verifies delivery evidence before an escrow release can move forward.

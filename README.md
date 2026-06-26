@@ -222,6 +222,8 @@ Prepared submission materials:
 - [docs/buidl-submission-brief.md](docs/buidl-submission-brief.md)
 - [docs/submission-checklist.md](docs/submission-checklist.md)
 - [docs/demo-script.md](docs/demo-script.md)
+- [docs/demo-recording-workflow.md](docs/demo-recording-workflow.md)
+- [docs/next-iteration-agent-brief.md](docs/next-iteration-agent-brief.md)
 - [docs/real-world-use.md](docs/real-world-use.md)
 - [docs/demo/proofpay-agent-demo.mp4](docs/demo/proofpay-agent-demo.mp4)
 - [docs/casper-testnet.md](docs/casper-testnet.md)
@@ -247,12 +249,13 @@ Final submission still happens through DoraHacks `Submit BUIDL`; there does not 
 - [x] Audit dossier with replayable proof facts
 - [x] Local MCP-style, x402-style, evidence intake, and attestation APIs
 - [x] DoraHacks BUIDL materials
-- [ ] Hosted public read-only deployment
+- [x] Hosted public read-only deployment on GitHub Pages
+- [x] Demo recording workflow and next-iteration agent brief
 - [ ] Production custody, wallet signing, OCR, and live payment settlement
 
 ## Roadmap
 
-- Hosted public read-only demo for judges who do not run the repo locally.
+- Optional full-stack hosted demo for live API routes, while GitHub Pages remains the stable public dashboard.
 - Direct Casper state query in the dashboard instead of recorded proof facts.
 - Wallet-native buyer signing and supplier payout handoff.
 - OCR and document ingestion pipeline for real invoices and logistics documents.

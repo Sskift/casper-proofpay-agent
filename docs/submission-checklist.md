@@ -60,8 +60,10 @@ ProofPay Agent lets autonomous agents release real-world payments only when evid
 - Casper Testnet transaction hash and stored attestation are documented in `docs/casper-testnet.md`.
 - DoraHacks form copy is ready in `docs/buidl-submission-brief.md`.
 - README links to contract, testnet docs, and demo script.
+- README links to `docs/demo-recording-workflow.md` and `docs/next-iteration-agent-brief.md`.
 - README links to `docs/real-world-use.md` and documents `POST /api/evidence/intake`.
 - Ignored generated artifacts are not uploaded manually: `node_modules/`, `.next/`, `target/`, `*.tsbuildinfo`.
+- Recording intermediates are kept under `.local/demo-recording/` and deleted before submission.
 - Non-ignored temporary files are removed or committed intentionally.
 - The user explicitly confirms action-time submission on DoraHacks.
 
