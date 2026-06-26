@@ -12,8 +12,9 @@ Use this checklist before manually submitting ProofPay Agent through the Casper 
 - Public project summary: use the copy below.
 - Copy-ready BUIDL fields: `docs/buidl-submission-brief.md`.
 - Casper Testnet transaction hashes: `94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604`, `c92cdcd8f11f6453134745900ea2c91defa0f8b37f4c6782dd38b2aa7a720d84`, `08995093b6ef978b381c4cee7d8faeb960f31bb64083544c8cfa0c3c8952e885`
-- Live demo link: `https://sskift.github.io/casper-proofpay-agent/`
-- Optional full-stack demo link: fill with the Vercel URL after `npm run fullstack:smoke -- https://YOUR-DEPLOYED-URL` passes.
+- Live demo link: `https://casper-proofpay-agent-web.vercel.app/`
+- Static backup demo link: `https://sskift.github.io/casper-proofpay-agent/`
+- Full-stack smoke check: `npm run fullstack:smoke -- https://casper-proofpay-agent-web.vercel.app`
 - Team members: fill manually in DoraHacks.
 
 ## Public Summary

@@ -36,7 +36,8 @@ ProofPay Agent is a verifiable RWA payment decision chain: external delivery evi
 | Decision outputs | `approve`, `hold`, `reject`, confidence, risk score, reviewer actions |
 | Casper role | Public attestation anchor for evidence hash, decision hash, milestone id, and final decision |
 | Testnet proof | Three recorded Casper Testnet transactions for clean, hold, and reject judge flows |
-| Live demo | [sskift.github.io/casper-proofpay-agent](https://sskift.github.io/casper-proofpay-agent/) |
+| Live demo | [casper-proofpay-agent-web.vercel.app](https://casper-proofpay-agent-web.vercel.app/) |
+| Static backup | [sskift.github.io/casper-proofpay-agent](https://sskift.github.io/casper-proofpay-agent/) |
 | Demo asset | [docs/demo/proofpay-agent-demo.mp4](docs/demo/proofpay-agent-demo.mp4) |
 | Boundary | Prototype does not custody real funds; it models milestone state plus on-chain attestation |
 
@@ -64,17 +65,17 @@ This is more than a frontend dashboard: the repository includes deterministic ev
 ## What Is Simulated
 
 - ProofPay does not custody real funds in this prototype and does not claim production escrow settlement.
-- The GitHub Pages demo is a stable static dashboard; API routes run on the local Next server or a future full-stack host, and the dashboard falls back to deterministic client replay on static hosting.
+- The Vercel demo is the public full-stack dashboard with API routes. The GitHub Pages demo remains a stable static backup and falls back to deterministic client replay.
 - The agent is deterministic and bounded for auditability; production OCR, identity verification, wallet signing, and payment rail integration are future work.
 
 ## How To Verify
 
-1. Open the [live GitHub Pages demo](https://sskift.github.io/casper-proofpay-agent/) and use the Judge walkthrough: Cockpit, Trust, Evidence, Casper, Dossier.
+1. Open the [live Vercel demo](https://casper-proofpay-agent-web.vercel.app/) and use the Judge walkthrough: Cockpit, Trust, Evidence, Casper, Dossier.
 2. In Casper, switch clean / hold / reject scenarios, open `View on cspr.live`, and compare transaction hash, block height, named key, stored URef, evidence hash, and decision hash.
 3. In Trust, load each evidence intake sample, click `Assess evidence`, and confirm the recomputed decision, risk score, confidence, evidence hash, decision hash, reasons, actions, and mini dossier preview. On a Next server this calls `POST /api/evidence/intake`; on GitHub Pages it falls back to deterministic client replay.
 4. Locally run `npm install`, `npm test`, `npm run typecheck`, `npm run build`, `npm run pages:build`, and `npm run submission:check`.
 5. For live API replay, run `npm run dev -- --hostname 127.0.0.1 --port 3000`, then call `GET /api/attestation/clean` or `POST /api/evidence/intake`.
-6. For a public full-stack host, follow [docs/fullstack-hosting.md](docs/fullstack-hosting.md), then run `npm run fullstack:smoke -- https://YOUR-DEPLOYED-URL`.
+6. For public full-stack replay, run `npm run fullstack:smoke -- https://casper-proofpay-agent-web.vercel.app`.
 
 ## Why This Is Not A Generic x402 Gateway
 

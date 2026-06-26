@@ -32,7 +32,7 @@ The core advantage is the trust chain, not the UI alone: external evidence enter
 
 Prototype boundary: ProofPay does not custody real funds or claim production automatic settlement. It creates the missing RWA evidence decision layer before release: evidence normalization, bounded AI review, human release control, and Casper attestations that make the decision replayable.
 
-Full-stack demo note: when deployed on a dynamic Next host such as Vercel, judges can call `GET /api/health`, `GET /api/attestation/clean`, and `POST /api/evidence/intake` from the public deployment URL. GitHub Pages remains the static fallback dashboard.
+Full-stack demo note: the public Vercel deployment at `https://casper-proofpay-agent-web.vercel.app/` lets judges call `GET /api/health`, `GET /api/attestation/clean`, and `POST /api/evidence/intake`. GitHub Pages remains the static fallback dashboard.
 
 ## Casper Integration
 
@@ -124,6 +124,7 @@ ProofPay Agent makes AI payment decisions auditable. It verifies real-world deli
 ## Final Submission Fields To Fill Manually
 
 - Team member profile details
-- Live demo URL: `https://sskift.github.io/casper-proofpay-agent/`
+- Live demo URL: `https://casper-proofpay-agent-web.vercel.app/`
+- Static backup URL: `https://sskift.github.io/casper-proofpay-agent/`
 - Project socials, if created before final submission
 - DoraHacks organizer disclaimer confirmation
