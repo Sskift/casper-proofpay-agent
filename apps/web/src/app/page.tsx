@@ -550,6 +550,7 @@ function RealCaseRunSection() {
   };
   const freshProofFacts = [
     { label: "Decision", value: "approve" },
+    { label: "API verification", value: "verified" },
     { label: "Block height", value: freshProof.blockHeight },
     { label: "Block hash", value: shortHash(freshProof.blockHash, 12, 10), title: freshProof.blockHash },
     { label: "Transaction", value: shortHash(freshProof.transactionHash, 12, 10), title: freshProof.transactionHash },

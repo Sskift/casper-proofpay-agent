@@ -132,21 +132,20 @@ The demo should feel like a live product, not a slide deck:
 
 Use `docs/demo-script.md` as the canonical structure. The current recommended flow is:
 
-1. Cockpit: show readiness, risk, confidence, evidence coverage, and active sidebar state.
-2. Charts: show risk, cold-chain telemetry, escrow cashflow, and evidence coverage.
-3. Trust: show evidence intake, settlement actions, and Casper verifier checks.
-4. Evidence: show documents, extracted claims, timeline, and reviewer actions.
-5. Casper: show Testnet transaction, named key, stored URef, public key, and replay command.
-6. Dossier: show policy trace cards, verification chain, copy-ready JSON, and reviewer checklist.
-7. Hold scenario: show amount mismatch and human finance review.
-8. Reject scenario: show duplicate invoice block and fraud escalation.
-9. Fresh real case: show `examples/video-integrated-cold-chain-real-case.json`, the prepared payload, and the recorded fresh Casper Testnet transaction `d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca`.
-10. Close: restate the trust chain: evidence, agent decision, human release control, Casper attestation.
+1. Product thesis: show the cockpit, Judge walkthrough, and the evidence-to-payment attestation positioning.
+2. Trust Chain: show evidence intake, API-backed assessment, settlement actions, and Casper verifier checks.
+3. Decision paths: switch clean release, hold for finance, and reject duplicate.
+4. Evidence room: show documents, claims, timeline, reasons, and follow-up actions.
+5. Casper proof: show seeded Testnet transaction, named key, stored URef, public key, replay command, and copy controls.
+6. Fresh real case: show the recorded fresh Casper Testnet transaction `d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca` and its verified API path.
+7. CSPR.live verification: briefly open or show the explorer page for the fresh transaction.
+8. Audit Dossier: show policy trace cards, verification chain, copy-ready JSON, and reviewer checklist.
+9. Close: restate the trust chain: evidence, agent decision, human release control, Casper attestation.
 
 Target length:
 
 ```text
-115 to 150 seconds
+140 to 160 seconds
 ```
 
 ## Narration
@@ -165,7 +164,7 @@ Voice requirements:
 - No claims that ProofPay custodies real funds.
 - Say "Casper Testnet attestation" rather than "production settlement" unless production settlement has actually been built.
 
-Coze or another AI voice tool may be used. Keep credentials out of the repo:
+Coze, macOS `say`, or another AI voice tool may be used. Keep credentials out of the repo:
 
 ```bash
 export COZE_PAT='paste-token-in-shell-only'

@@ -1,114 +1,106 @@
 # ProofPay Agent Demo Script
 
-Target length: 115 to 120 seconds.
+Target length: 140 to 160 seconds.
 
-The submitted demo video is a 1080p dynamic browser walkthrough with Coze AI text-to-speech narration, visible cursor movement, section navigation, page scrolling, chart hover states, tab switching, scenario switching, and compact lower-third captions. The video file lives at `docs/demo/proofpay-agent-demo.mp4` so the DoraHacks BUIDL link can keep pointing at the same GitHub path after updates.
+The submitted demo video is a single combined product introduction and real-case walkthrough. It should feel like a live product demo: browser movement, section navigation, scenario switching, API-backed evidence replay, Casper proof, and the fresh real-case transaction are all visible in one flow.
 
-The exact narration source for the current video lives at `docs/demo/proofpay-agent-demo-narration.txt`.
+The video file lives at `docs/demo/proofpay-agent-demo.mp4` so the DoraHacks BUIDL link can keep pointing at the same GitHub path after updates.
+
+The exact narration source lives at `docs/demo/proofpay-agent-demo-narration.txt`.
 
 For recording setup, voiceover handling, ffmpeg commands, quality review, and cleanup rules, use `docs/demo-recording-workflow.md`.
 
-## Scene 1: Cockpit
+## Scene 1: Product Thesis
 
-ProofPay Agent is an agentic milestone escrow cockpit for real-world asset payments on Casper. It verifies delivery evidence before an escrow release can move forward.
+ProofPay Agent is the evidence-to-payment attestation layer for RWA payments on Casper. It reviews delivery evidence before a payment release can move forward.
 
 Show:
 
-- Judge walkthrough control with Cockpit, Trust, Evidence, Casper, and Dossier.
+- Vercel dashboard at `https://casper-proofpay-agent-web.vercel.app/` or local full-stack dashboard at `http://127.0.0.1:3000`.
+- Top cockpit and Judge walkthrough.
 - Release readiness, risk, confidence, evidence coverage, and Casper anchor metrics.
-- Confidence, risk health, and evidence radial gauges.
-- Reviewer action queue.
-- Left navigation with the active Cockpit section.
+- Clear boundary: ProofPay does not custody real funds in this prototype.
 
-## Scene 2: Charts
+## Scene 2: Trust Chain And Intake
 
-In the clean release scenario, the invoice, bill of lading, delivery note, vendor registry, and cold-chain telemetry all align. The agent recommends release with high confidence.
+External evidence enters as a normalized package. The agent recomputes the decision, evidence hash, decision hash, reasons, next actions, and mini dossier.
 
 Show:
 
-- Risk tape.
-- Cold-chain telemetry.
-- Escrow cashflow and evidence coverage charts.
-- All four charts visible as a chart gallery, not a hidden tab set.
+- Trust Chain section.
+- Evidence intake playground.
+- Load a sample and click `Assess evidence`.
+- The result grid with decision, risk score, confidence, evidence hash, decision hash, reasons, actions, and mini dossier preview.
+- Settlement runbook and Casper verifier checks.
 
-## Scene 3: Trust Chain
+## Scene 3: Three Decision Paths
 
-ProofPay is more than a dashboard. It accepts an external evidence pack, validates whether the package is assessable, turns the AI decision into settlement actions, and verifies that the Casper Testnet attestation matches the current payload.
-
-Show:
-
-- Evidence intake playground with clean, hold, and reject sample loaders.
-- Click `Assess evidence` and show decision, risk score, confidence, evidence hash, decision hash, reasons, next actions, and mini dossier preview.
-- Evidence coverage and Casper verifier mini charts.
-- Settlement runbook actions for supplier, buyer, arbiter, and Casper.
-- Casper verifier checks for evidence hash, decision hash, transaction hash, and stored URef.
-
-## Scene 4: Evidence
-
-The Evidence room keeps the decision explainable. Reviewers can inspect the source documents, extracted claims, and event timeline instead of trusting a black box.
+ProofPay demonstrates approve, hold, and reject. This is not a single happy-path dashboard.
 
 Show:
 
-- Clean release decision and confidence.
-- Document status, claim extraction, and timeline tabs.
+- `Clean release`: ready to release.
+- `Hold for finance`: invoice amount mismatch and human finance review.
+- `Reject duplicate`: duplicate invoice and fraud escalation.
+- Keep the decision cards and reviewer action queue visible after switching.
 
-## Scene 5: Casper
+## Scene 4: Evidence Room
 
-The Casper panel exposes the real Testnet transaction, block height, named key, stored URef, public key, and the deploy command used for the attestation.
+The Evidence room keeps the AI explainable. Reviewers can inspect source documents, normalized claims, timeline events, reasons, and follow-up actions.
 
-Mention:
+Show:
 
+- Document tab.
+- Claims tab.
+- Timeline tab.
+- Reasons or follow-up tab.
+
+## Scene 5: Casper Proof
+
+Casper is the trust anchor for the decision proof.
+
+Show:
+
+- Casper proof workbench.
 - CSPR.live transaction link and copy buttons for tx hash, evidence hash, decision hash, stored URef, and replay command.
-- Verification states for Testnet transaction recorded, payload hash match, named key documented, and stored URef documented.
-- Successful Casper Testnet transaction `94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604`.
-- Stored URef `uref-21583db858a355546ea8812cbf3104fc04880c2b32361e4848e181aba79a27a1-007`.
-- Contract and deploy details are documented in `docs/casper-testnet.md`.
-- This is a Casper Testnet attestation proof; ProofPay does not custody real funds in this prototype.
+- Testnet transaction hash, block height, named key, stored URef, public key, session args, and verification states.
+- Successful seeded clean transaction `94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604`.
 
-## Scene 6: Audit Dossier
+## Scene 6: Fresh Real Case
 
-New in this iteration is the Audit Dossier. Every policy check becomes a trace card with expected value, observed value, status, impact, and evidence source.
+This is the proof that the system can run a new case, not only replay the three seeded judge scenarios. The video-integrated fresh case is `examples/video-integrated-cold-chain-real-case.json`.
 
 Show:
 
-- Passed trace cards for invoice amount, settlement currency, shipment identity, delivery confirmation, temperature band, and counterparty registry.
-- Audit trace distribution chart.
-- Verification chain with evidence hash, decision hash, local demo transaction, Casper Testnet transaction, and stored URef.
-- Copy-ready JSON audit package.
-
-## Scene 7: Hold Path
-
-When the invoice amount is too high, ProofPay changes the decision to human review. The dossier marks invoice amount as failed and asks buyer finance to resolve the mismatch.
-
-Show:
-
-- `Hold for finance` scenario.
-- Failed invoice amount trace.
-- Human review decision.
-
-## Scene 8: Reject Path
-
-When the invoice fingerprint is duplicated, ProofPay blocks release and escalates the payment to fraud review. The failed trace stays visible in the same dossier format.
-
-Show:
-
-- `Reject duplicate` scenario.
-- Blocked cockpit state.
-- Fraud review escalation.
-
-## Scene 9: Fresh Real Case
-
-ProofPay can also run a new case, not only replay seeded scenarios. The video-integrated fresh case `examples/video-integrated-cold-chain-real-case.json` is the next Singapore to Istanbul cold-chain shipment on the same trade lane, with a new invoice, shipment id, evidence fingerprints, evidence hash, decision hash, and Casper Testnet attestation.
-
-Show:
-
-- The `Run real case` panel near the top of the dashboard.
-- `npm run realcase:prepare -- examples/video-integrated-cold-chain-real-case.json`.
-- `POST /api/real-case/prepare` returning the same evidence hash, decision hash, and verified deployment facts for the recorded fresh case.
+- `Run real case` panel near the top of the dashboard.
+- Fresh case proof card with `fresh tx recorded`.
 - Fresh Casper Testnet transaction `d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca`.
-- Fresh named key `proofpay_attestation_ms-video-fresh-delivery-acceptance` and stored URef `uref-9f8050677d97d4e1560ca87c7909256a4e027d2b1a13bd1a544be0176c3fc68d-007`.
-- Make the boundary explicit: the hosted app prepared the attestation payload, the operator signed locally, and ProofPay does not custody real funds.
+- Block height `8305098`.
+- Fresh named key `proofpay_attestation_ms-video-fresh-delivery-acceptance`.
+- Stored URef `uref-9f8050677d97d4e1560ca87c7909256a4e027d2b1a13bd1a544be0176c3fc68d-007`.
+- The public API path returning verified deployment facts for the same evidence JSON.
 
-## Closing
+## Scene 7: CSPR.live Verification
 
-ProofPay combines agentic evidence review, decentralized escrow operations, and Casper attestations. AI does the evidence work, humans control the payment action, and Casper makes the final decision auditable.
+Open or briefly show the CSPR.live transaction page for the fresh case.
+
+Show:
+
+- Transaction page URL:
+  `https://testnet.cspr.live/transaction/d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca`
+- If the explorer is slow, keep the dashboard proof card visible and mention that the same tx URL is committed in `docs/real-case-execution.md`.
+
+## Scene 8: Audit Dossier And Close
+
+The Audit Dossier packages the case for buyers, suppliers, arbiters, and judges.
+
+Show:
+
+- Dossier section.
+- Policy trace cards.
+- Verification chain.
+- Copy-ready JSON package.
+
+Closing line:
+
+ProofPay does the evidence work, humans control payment release, and Casper makes the decision auditable.
