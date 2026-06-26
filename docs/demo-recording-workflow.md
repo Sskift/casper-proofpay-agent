@@ -2,11 +2,13 @@
 
 This document explains how to record or refresh the ProofPay Agent demo video without leaving temporary files on the Desktop or committing generated artifacts by accident.
 
-The final public video path is:
+The generated local video path is:
 
 ```text
 docs/demo/proofpay-agent-demo.mp4
 ```
+
+This MP4 is intentionally ignored by Git. Upload the final video directly to the DoraHacks BUIDL form instead of linking to a GitHub MP4.
 
 The narration source path is:
 
@@ -14,7 +16,7 @@ The narration source path is:
 docs/demo/proofpay-agent-demo-narration.txt
 ```
 
-Keep those paths stable so the DoraHacks BUIDL video link does not need to change after updates.
+Keep the narration path stable so reviewers can see exactly what was recorded. Replace the DoraHacks upload whenever the final MP4 changes.
 
 ## When To Re-Record
 
@@ -52,9 +54,10 @@ Do not commit:
 
 Only commit:
 
-- `docs/demo/proofpay-agent-demo.mp4`
 - `docs/demo/proofpay-agent-demo-narration.txt`
 - Any intentional docs updates that explain the new demo.
+
+Keep `docs/demo/proofpay-agent-demo.mp4` locally as the ignored DoraHacks upload asset.
 
 ## Preflight
 
@@ -164,7 +167,7 @@ Voice requirements:
 - No claims that ProofPay custodies real funds.
 - Say "Casper Testnet attestation" rather than "production settlement" unless production settlement has actually been built.
 
-Coze, macOS `say`, or another AI voice tool may be used. Keep credentials out of the repo:
+Use Coze or another human-quality AI voice tool for the final submission. macOS `say` is acceptable only as a timing placeholder and should not be used for the final DoraHacks upload. Keep credentials out of the repo:
 
 ```bash
 export COZE_PAT='paste-token-in-shell-only'
@@ -299,7 +302,7 @@ Then open the video locally and watch it end to end.
 
 ## Commit And Cleanup
 
-After replacing the final demo video:
+After rendering the final demo video:
 
 ```bash
 git status --short
@@ -309,11 +312,12 @@ npm run submission:check
 Only expected committed changes:
 
 ```text
-docs/demo/proofpay-agent-demo.mp4
 docs/demo/proofpay-agent-demo-narration.txt
 docs/demo-script.md
 docs/demo-recording-workflow.md
 ```
+
+The rendered MP4 should remain ignored locally until it is uploaded to DoraHacks.
 
 Clean local recording artifacts:
 
@@ -328,4 +332,4 @@ find .local -maxdepth 3 -type f 2>/dev/null
 git status --short
 ```
 
-If the video file path remains `docs/demo/proofpay-agent-demo.mp4`, the DoraHacks video URL does not need to change. Update DoraHacks only if the project description, live demo URL, or repository URL changes.
+Upload the rendered MP4 directly to DoraHacks after reviewing it locally. Update the DoraHacks video asset whenever the project story, voiceover, or real-case walkthrough changes.

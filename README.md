@@ -6,7 +6,6 @@
 
 **AI verifies off-chain delivery evidence. Humans control payment release. Casper records the decision proof.**
 
-[![Demo Video](https://img.shields.io/badge/Demo%20Video-GitHub%20MP4-0F172A?style=for-the-badge)](https://github.com/Sskift/casper-proofpay-agent/blob/main/docs/demo/proofpay-agent-demo.mp4)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel%20Full%20Stack-0969DA?style=for-the-badge)](https://casper-proofpay-agent-web.vercel.app/)
 [![Static Backup](https://img.shields.io/badge/Static%20Backup-GitHub%20Pages-64748B?style=for-the-badge)](https://sskift.github.io/casper-proofpay-agent/)
 [![CI](https://github.com/Sskift/casper-proofpay-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/Sskift/casper-proofpay-agent/actions/workflows/ci.yml)
@@ -39,7 +38,7 @@ ProofPay Agent is a verifiable RWA payment decision chain: external delivery evi
 | Testnet proof | Three recorded Casper Testnet transactions for clean, hold, and reject judge flows, plus one fresh video-integrated real-case transaction |
 | Live demo | [casper-proofpay-agent-web.vercel.app](https://casper-proofpay-agent-web.vercel.app/) |
 | Static backup | [sskift.github.io/casper-proofpay-agent](https://sskift.github.io/casper-proofpay-agent/) |
-| Demo asset | [docs/demo/proofpay-agent-demo.mp4](docs/demo/proofpay-agent-demo.mp4) |
+| Demo video | Upload the final MP4 directly to the DoraHacks BUIDL form; the generated local MP4 is intentionally not tracked in Git |
 | Boundary | Prototype does not custody real funds; it models milestone state plus on-chain attestation |
 
 ## Why This Matters
@@ -277,15 +276,15 @@ Prepared submission materials:
 - [docs/real-world-use.md](docs/real-world-use.md)
 - [docs/real-case-runbook.md](docs/real-case-runbook.md)
 - [docs/real-case-execution.md](docs/real-case-execution.md)
-- [docs/demo/proofpay-agent-demo.mp4](docs/demo/proofpay-agent-demo.mp4)
+- [docs/demo/proofpay-agent-demo-narration.txt](docs/demo/proofpay-agent-demo-narration.txt)
 - [docs/casper-testnet.md](docs/casper-testnet.md)
 - [docs/casper-cli-runbook.md](docs/casper-cli-runbook.md)
 - [docs/hackathon-constraints.md](docs/hackathon-constraints.md)
 
-Public demo video URL for the DoraHacks BUIDL form:
+Demo video handling for the DoraHacks BUIDL form:
 
 ```text
-https://github.com/Sskift/casper-proofpay-agent/blob/main/docs/demo/proofpay-agent-demo.mp4
+Upload the final MP4 directly in DoraHacks. Do not use a GitHub MP4 link as the primary video asset.
 ```
 
 Final submission still happens through DoraHacks `Submit BUIDL`; there does not appear to be a DoraHacks CLI submission path. The repository-level rules are captured in [docs/hackathon-constraints.md](docs/hackathon-constraints.md).
@@ -293,7 +292,7 @@ Final submission still happens through DoraHacks `Submit BUIDL`; there does not 
 ## Status
 
 - [x] Public GitHub repository
-- [x] Public demo video
+- [ ] Final demo video uploaded directly to DoraHacks
 - [x] Casper Testnet transaction evidence for clean, hold, and reject scenarios
 - [x] Fresh video-integrated real case executed on Casper Testnet
 - [x] Evidence scoring and deterministic hash generation

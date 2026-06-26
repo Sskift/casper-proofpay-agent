@@ -24,6 +24,10 @@ if (status) {
 }
 
 const trackedFiles = git(["ls-files"]).split("\n").filter(Boolean);
+if (trackedFiles.includes("docs/demo/proofpay-agent-demo.mp4")) {
+  fail("docs/demo/proofpay-agent-demo.mp4 is a DoraHacks upload asset and must not be tracked in Git");
+}
+
 const forbiddenTrackedPatterns = [
   /(^|\/)node_modules\//,
   /(^|\/)\.next\//,
@@ -50,7 +54,7 @@ const requiredFiles = [
   "docs/submission-checklist.md",
   "docs/buidl-submission-brief.md",
   "docs/demo-script.md",
-  "docs/demo/proofpay-agent-demo.mp4",
+  "docs/demo/proofpay-agent-demo-narration.txt",
   "docs/casper-testnet.md",
   "docs/casper-cli-runbook.md",
   "contracts/proofpay-attestation/README.md"
@@ -73,7 +77,7 @@ const requiredContentChecks = [
   },
   {
     file: "docs/buidl-submission-brief.md",
-    text: "https://github.com/Sskift/casper-proofpay-agent/blob/main/docs/demo/proofpay-agent-demo.mp4"
+    text: "Upload the final MP4 directly to the DoraHacks BUIDL form"
   },
   {
     file: "docs/casper-testnet.md",

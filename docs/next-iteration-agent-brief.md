@@ -50,7 +50,7 @@ Avoid presenting ProofPay as:
 | Funds are not actually custodied | OutcomePay and Escrow402-style projects claim lock/settle/refund flows. | State the boundary clearly and present ProofPay as the attestation layer that can precede escrow release. |
 | Agent path feels deterministic | Stable policy logic is good, but competitors advertise GPT/Gemini/live data. | Add an evidence intake playground and show the policy recomputing decisions from user-provided evidence JSON. |
 | Quality signals are mostly local | Tests and build exist, but CI status is not visible. | Add GitHub Actions for test, typecheck, build, and submission check. |
-| Demo may need re-recording after feature changes | A stale video weakens a polished submission. | Follow `docs/demo-recording-workflow.md` and replace `docs/demo/proofpay-agent-demo.mp4` only after the product changes are stable. |
+| Demo may need re-recording after feature changes | A stale video weakens a polished submission. | Follow `docs/demo-recording-workflow.md`, render the ignored local MP4, and upload the final video directly to DoraHacks. |
 
 ## Prioritized Workstreams
 
@@ -156,9 +156,9 @@ Goal: record a final video only after meaningful product changes land.
 Expected output:
 
 - Updated narration in `docs/demo/proofpay-agent-demo-narration.txt`.
-- Updated video in `docs/demo/proofpay-agent-demo.mp4`.
+- Updated ignored local video at `docs/demo/proofpay-agent-demo.mp4` for DoraHacks upload.
 - No local recording temp files committed.
-- DoraHacks video URL remains stable because it points to the same GitHub file path.
+- DoraHacks video asset is replaced manually in the BUIDL form when the final MP4 changes.
 
 Follow `docs/demo-recording-workflow.md`.
 
@@ -231,7 +231,7 @@ Primary tasks, in order:
 6. Decide whether to re-record the demo:
    - Re-record only if the UI/product story materially changed.
    - If re-recording, follow docs/demo-recording-workflow.md.
-   - Replace only docs/demo/proofpay-agent-demo.mp4 and docs/demo/proofpay-agent-demo-narration.txt.
+   - Commit narration/docs updates, but keep docs/demo/proofpay-agent-demo.mp4 as an ignored local upload asset.
 
 Verification commands:
 - npm install
@@ -264,7 +264,7 @@ The next iteration is ready to submit only when:
 
 - `npm test`, `npm run typecheck`, `npm run build`, `npm run pages:build`, and `npm run submission:check` pass.
 - Public demo URL returns HTTP 200.
-- README links to the live demo, demo video, DoraHacks BUIDL, Casper Testnet proof, and demo recording workflow.
+- README links to the live demo, DoraHacks BUIDL, Casper Testnet proof, and demo recording workflow.
 - DoraHacks BUIDL description matches the current repo state.
 - No temporary recording, build, or dependency artifacts are left on Desktop or committed in git.
-- The final demo video, if changed, is committed at `docs/demo/proofpay-agent-demo.mp4`.
+- The final demo video, if changed, is uploaded directly to DoraHacks and remains ignored locally at `docs/demo/proofpay-agent-demo.mp4`.

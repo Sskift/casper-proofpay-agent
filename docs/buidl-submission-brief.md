@@ -110,13 +110,13 @@ ProofPay combines:
 
 ## Demo Video
 
-Public URL for the DoraHacks form:
+Upload target:
 
-`https://github.com/Sskift/casper-proofpay-agent/blob/main/docs/demo/proofpay-agent-demo.mp4`
+Upload the final MP4 directly to the DoraHacks BUIDL form. Do not use a GitHub MP4 URL as the primary demo video asset.
 
-Repository path:
+Local render path:
 
-`docs/demo/proofpay-agent-demo.mp4`
+`docs/demo/proofpay-agent-demo.mp4` (ignored by Git)
 
 Record with `docs/demo-script.md`.
 

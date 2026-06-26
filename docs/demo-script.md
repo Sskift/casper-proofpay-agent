@@ -4,7 +4,7 @@ Target length: 140 to 160 seconds.
 
 The submitted demo video is a single combined product introduction and real-case walkthrough. It should feel like a live product demo: browser movement, section navigation, scenario switching, API-backed evidence replay, Casper proof, and the fresh real-case transaction are all visible in one flow.
 
-The video file lives at `docs/demo/proofpay-agent-demo.mp4` so the DoraHacks BUIDL link can keep pointing at the same GitHub path after updates.
+The rendered MP4 is kept locally at `docs/demo/proofpay-agent-demo.mp4` for manual upload to DoraHacks. The MP4 is intentionally ignored by Git so the repository stays lightweight.
 
 The exact narration source lives at `docs/demo/proofpay-agent-demo-narration.txt`.
 
