@@ -110,9 +110,11 @@ ProofPay combines:
 
 ## Demo Video
 
-Upload target:
+Submission URL:
 
-Upload the final MP4 directly to the DoraHacks BUIDL form. Do not use a GitHub MP4 URL as the primary demo video asset.
+`https://dorahacks-video.vercel.app/proofpay-agent-demo.mp4`
+
+Use the Vercel-hosted MP4 URL in the DoraHacks BUIDL form. Do not use a GitHub MP4 URL as the primary demo video asset.
 
 Local render path:
 
@@ -144,5 +146,6 @@ ProofPay Agent makes AI payment decisions auditable. It verifies real-world deli
 - Team member profile details
 - Live demo URL: `https://casper-proofpay-agent-web.vercel.app/`
 - Static backup URL: `https://sskift.github.io/casper-proofpay-agent/`
+- Demo video URL: `https://dorahacks-video.vercel.app/proofpay-agent-demo.mp4`
 - Project socials, if created before final submission
 - DoraHacks organizer disclaimer confirmation

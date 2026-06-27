@@ -1,21 +1,19 @@
-Meet ProofPay Agent: the evidence-to-payment attestation layer for real-world asset payments on Casper.
+Here is the real payment problem ProofPay is built for.
 
-The problem is simple. Buyers should not release milestone payments until delivery evidence is trustworthy. Suppliers should not wait through slow manual review. And once AI helps with the decision, every party needs a proof trail they can replay.
+Northstar Health is about to release a forty-six thousand five hundred dollar milestone payment to Aster Cold Chain Logistics. The shipment is high-value biologics. Before anyone releases funds, the buyer needs proof that the goods arrived, stayed inside the cold-chain contract, and were submitted by the right supplier.
 
-ProofPay starts with an operations cockpit. The reviewer sees release readiness, risk, confidence, evidence coverage, and the Casper anchor in one view. The judge walkthrough keeps the route tight: cockpit, trust chain, evidence, Casper proof, and dossier.
+The supplier sends a package of off-chain evidence: invoice, bill of lading, signed delivery note, temperature export, and supplier registry snapshot. ProofPay turns that package into a structured review instead of another email thread.
 
-Now the evidence enters the system. The Trust Chain accepts a normalized package of invoice, bill of lading, delivery note, temperature log, and supplier registry data. The agent recomputes the decision, evidence hash, decision hash, reasons, next actions, and a mini dossier.
+First, the cockpit shows the current release state: readiness, risk, confidence, evidence coverage, and Casper proof status. This is the operator view. It does not move money by itself. It tells humans whether the payment is safe to release.
 
-The clean case is ready to release. But this is not a one-path demo. If the invoice amount is wrong, ProofPay moves the milestone to human finance review. If the invoice fingerprint is duplicated, ProofPay blocks release and escalates fraud review.
+Next, the Trust Chain recomputes the case. The API accepts the evidence JSON, checks that every required document is present, and produces a decision, risk score, confidence, reasons, next actions, evidence hash, and decision hash.
 
-The Evidence room shows why. Reviewers can inspect documents, extracted claims, timeline events, policy reasons, and follow-up actions. The AI is bounded: it recommends approve, hold, or reject, but humans still control the real payment action.
+In the clean case, the invoice amount matches the milestone, the shipment IDs line up, the receiver signed, the supplier registry matches, and temperature stayed inside the two to eight degree band. ProofPay recommends approve.
 
-Casper is the trust anchor. The dashboard exposes Testnet transaction hashes, block heights, named keys, stored URefs, evidence hashes, decision hashes, and replay commands. This prototype does not custody funds. It records the payment decision proof.
+Then the same system handles bad cases. If the invoice amount is higher than the escrowed milestone, ProofPay does not fake confidence. It routes the case to finance review. If the invoice fingerprint has already been settled, ProofPay rejects the release and escalates fraud review.
 
-Now for the real case. We took a fresh cold-chain delivery on the same trade lane, with a new shipment id, invoice, evidence fingerprints, and amount. ProofPay assessed the case as approve, generated a new evidence hash and decision hash, and the operator signed locally.
+For the fresh case used in this demo, ProofPay ran a new evidence package through the same path. The hosted API returns verified. The operator signed locally with a funded Casper Testnet key. The Casper transaction executed successfully, and the dashboard records the block height, named key, stored URef, and matching verification checks.
 
-That fresh case is now recorded on Casper Testnet as transaction d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca. The hosted API returns verified, and the stored URef contains the same milestone id, hashes, decision, confidence, and risk score.
+That is the point: the AI does the evidence work, humans keep payment authority, and Casper makes the release decision replayable for buyers, suppliers, arbiters, and judges.
 
-That same proof is packaged in the Audit Dossier for buyers, suppliers, arbiters, and judges.
-
-ProofPay does the evidence work. Humans control payment release. Casper makes the decision auditable.
+ProofPay is not a generic payment gateway. It is the evidence-to-payment attestation layer missing from real-world asset settlement.

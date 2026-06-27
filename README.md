@@ -38,7 +38,7 @@ ProofPay Agent is a verifiable RWA payment decision chain: external delivery evi
 | Testnet proof | Three recorded Casper Testnet transactions for clean, hold, and reject judge flows, plus one fresh video-integrated real-case transaction |
 | Live demo | [casper-proofpay-agent-web.vercel.app](https://casper-proofpay-agent-web.vercel.app/) |
 | Static backup | [sskift.github.io/casper-proofpay-agent](https://sskift.github.io/casper-proofpay-agent/) |
-| Demo video | Upload the final MP4 directly to the DoraHacks BUIDL form; the generated local MP4 is intentionally not tracked in Git |
+| Demo video | [dorahacks-video.vercel.app/proofpay-agent-demo.mp4](https://dorahacks-video.vercel.app/proofpay-agent-demo.mp4); the generated local MP4 is intentionally not tracked in Git |
 | Boundary | Prototype does not custody real funds; it models milestone state plus on-chain attestation |
 
 ## Why This Matters
@@ -284,7 +284,8 @@ Prepared submission materials:
 Demo video handling for the DoraHacks BUIDL form:
 
 ```text
-Upload the final MP4 directly in DoraHacks. Do not use a GitHub MP4 link as the primary video asset.
+Use the Vercel-hosted MP4 URL in DoraHacks. Do not use a GitHub MP4 link as the primary video asset.
+https://dorahacks-video.vercel.app/proofpay-agent-demo.mp4
 ```
 
 Final submission still happens through DoraHacks `Submit BUIDL`; there does not appear to be a DoraHacks CLI submission path. The repository-level rules are captured in [docs/hackathon-constraints.md](docs/hackathon-constraints.md).
@@ -292,7 +293,7 @@ Final submission still happens through DoraHacks `Submit BUIDL`; there does not 
 ## Status
 
 - [x] Public GitHub repository
-- [ ] Final demo video uploaded directly to DoraHacks
+- [x] Final demo video hosted on Vercel and linked from DoraHacks
 - [x] Casper Testnet transaction evidence for clean, hold, and reject scenarios
 - [x] Fresh video-integrated real case executed on Casper Testnet
 - [x] Evidence scoring and deterministic hash generation

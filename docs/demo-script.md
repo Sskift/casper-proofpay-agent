@@ -68,27 +68,26 @@ Show:
 
 ## Scene 6: Fresh Real Case
 
-This is the proof that the system can run a new case, not only replay the three seeded judge scenarios. The video-integrated fresh case is `examples/video-integrated-cold-chain-real-case.json`.
+This is the proof that the system can run a new business event, not only replay the three seeded judge scenarios. The video-integrated fresh case is `examples/video-integrated-cold-chain-real-case.json`: a follow-on cold-chain shipment where the buyer needs payment-release confidence before approving a supplier milestone.
 
 Show:
 
 - `Run real case` panel near the top of the dashboard.
 - Fresh case proof card with `fresh tx recorded`.
-- Fresh Casper Testnet transaction `d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca`.
-- Block height `8305098`.
-- Fresh named key `proofpay_attestation_ms-video-fresh-delivery-acceptance`.
-- Stored URef `uref-9f8050677d97d4e1560ca87c7909256a4e027d2b1a13bd1a544be0176c3fc68d-007`.
-- The public API path returning verified deployment facts for the same evidence JSON.
+- The API returning `verified` for the same evidence JSON.
+- The fresh Casper Testnet transaction executed successfully.
+- Block height, named key, stored URef, and verification checks visible on screen without reading long hashes aloud.
+- The boundary: the hosted app prepares and verifies the payload; the operator signs locally; ProofPay does not custody funds.
 
 ## Scene 7: CSPR.live Verification
 
-Open or briefly show the CSPR.live transaction page for the fresh case.
+Open or briefly show the CSPR.live transaction page for the fresh case as supporting proof, not as the main story.
 
 Show:
 
 - Transaction page URL:
   `https://testnet.cspr.live/transaction/d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca`
-- If the explorer is slow, keep the dashboard proof card visible and mention that the same tx URL is committed in `docs/real-case-execution.md`.
+- If the explorer is slow, keep the dashboard proof card visible and say the transaction executed, the API verifies the facts, and the full URL is documented in `docs/real-case-execution.md`.
 
 ## Scene 8: Audit Dossier And Close
 
@@ -103,4 +102,4 @@ Show:
 
 Closing line:
 
-ProofPay does the evidence work, humans control payment release, and Casper makes the decision auditable.
+ProofPay is not a generic payment gateway. It is the evidence-to-payment attestation layer missing from real-world asset settlement.

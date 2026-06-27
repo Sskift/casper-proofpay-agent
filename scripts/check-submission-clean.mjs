@@ -77,7 +77,7 @@ const requiredContentChecks = [
   },
   {
     file: "docs/buidl-submission-brief.md",
-    text: "Upload the final MP4 directly to the DoraHacks BUIDL form"
+    text: "https://dorahacks-video.vercel.app/proofpay-agent-demo.mp4"
   },
   {
     file: "docs/casper-testnet.md",

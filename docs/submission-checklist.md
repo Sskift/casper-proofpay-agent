@@ -5,7 +5,7 @@ Use this checklist before manually submitting ProofPay Agent through the Casper 
 ## Required Fields And Assets
 
 - Repository link: `https://github.com/Sskift/casper-proofpay-agent`
-- Demo video: upload the final MP4 directly to the DoraHacks BUIDL form.
+- Demo video: `https://dorahacks-video.vercel.app/proofpay-agent-demo.mp4`
 - Project name: `ProofPay Agent`
 - Tag suggestions: `Agentic AI`, `DeFi`, `Real-World Assets`, `Casper Network`, `Web3`, `Rust`
 - Track: `Casper Innovation Track`
@@ -67,7 +67,7 @@ ProofPay Agent lets autonomous agents release real-world payments only when evid
 - Real-case path is proven: `examples/video-integrated-cold-chain-real-case.json` was prepared, signed locally, and recorded on Casper Testnet as `d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca`; another redacted JSON can still be prepared with `POST /api/real-case/prepare`.
 - Dashboard Casper copy states cover tx hash, evidence hash, decision hash, stored URef, and replay command.
 - Dashboard clearly states that Vercel is the full-stack hosted demo, GitHub Pages is the static backup, and ProofPay does not custody real funds in this prototype.
-- Demo video is reviewed locally and uploaded directly to DoraHacks; `docs/demo/proofpay-agent-demo.mp4` is an ignored local render artifact, not a tracked GitHub asset.
+- Demo video is reviewed locally, hosted on Vercel, and linked from DoraHacks; `docs/demo/proofpay-agent-demo.mp4` is an ignored local render artifact, not a tracked GitHub asset.
 - Casper Testnet transaction hash and stored attestation are documented in `docs/casper-testnet.md`.
 - DoraHacks form copy is ready in `docs/buidl-submission-brief.md`.
 - README links to contract, testnet docs, and demo script.
