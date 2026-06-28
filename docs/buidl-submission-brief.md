@@ -34,6 +34,10 @@ Prototype boundary: ProofPay does not custody real funds or claim production aut
 
 Full-stack demo note: the public Vercel deployment at `https://casper-proofpay-agent-web.vercel.app/` lets judges call `GET /api/health`, `GET /api/attestation/clean`, `POST /api/evidence/intake`, and `POST /api/real-case/prepare`. GitHub Pages remains the static fallback dashboard.
 
+Judge proof pack: `https://github.com/Sskift/casper-proofpay-agent/blob/main/docs/judge-proof-pack.md`
+
+Judge proof API: `https://casper-proofpay-agent-web.vercel.app/api/judge-proof`
+
 ## Casper Integration
 
 ProofPay uses Casper as the trust anchor for agentic RWA payment decisions.

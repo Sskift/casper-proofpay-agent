@@ -50,7 +50,7 @@ Avoid presenting ProofPay as:
 | Funds are not actually custodied | OutcomePay and Escrow402-style projects claim lock/settle/refund flows. | State the boundary clearly and present ProofPay as the attestation layer that can precede escrow release. |
 | Agent path feels deterministic | Stable policy logic is good, but competitors advertise GPT/Gemini/live data. | Add an evidence intake playground and show the policy recomputing decisions from user-provided evidence JSON. |
 | Quality signals are mostly local | Tests and build exist, but CI status is not visible. | Add GitHub Actions for test, typecheck, build, and submission check. |
-| Demo may need re-recording after feature changes | A stale video weakens a polished submission. | Follow `docs/demo-recording-workflow.md`, render the ignored local MP4, and upload the final video directly to DoraHacks. |
+| Demo may need re-recording after feature changes | A stale video weakens a polished submission. | Follow `docs/demo-recording-workflow.md`, render the ignored local MP4, redeploy it to the Vercel video host, and update the DoraHacks video URL. |
 
 ## Prioritized Workstreams
 
@@ -267,4 +267,4 @@ The next iteration is ready to submit only when:
 - README links to the live demo, DoraHacks BUIDL, Casper Testnet proof, and demo recording workflow.
 - DoraHacks BUIDL description matches the current repo state.
 - No temporary recording, build, or dependency artifacts are left on Desktop or committed in git.
-- The final demo video, if changed, is uploaded directly to DoraHacks and remains ignored locally at `docs/demo/proofpay-agent-demo.mp4`.
+- The final demo video, if changed, is redeployed to the Vercel video host and remains ignored locally at `docs/demo/proofpay-agent-demo.mp4`.

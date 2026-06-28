@@ -8,7 +8,7 @@ The generated local video path is:
 docs/demo/proofpay-agent-demo.mp4
 ```
 
-This MP4 is intentionally ignored by Git. Upload the final video directly to the DoraHacks BUIDL form instead of linking to a GitHub MP4.
+This MP4 is intentionally ignored by Git. Host the final video through the Vercel video URL used by DoraHacks instead of linking to a GitHub MP4.
 
 The narration source path is:
 
@@ -16,7 +16,7 @@ The narration source path is:
 docs/demo/proofpay-agent-demo-narration.txt
 ```
 
-Keep the narration path stable so reviewers can see exactly what was recorded. Replace the DoraHacks upload whenever the final MP4 changes.
+Keep the narration path stable so reviewers can see exactly what was recorded. Redeploy the Vercel-hosted video and update the DoraHacks video URL whenever the final MP4 changes.
 
 ## When To Re-Record
 
@@ -57,7 +57,7 @@ Only commit:
 - `docs/demo/proofpay-agent-demo-narration.txt`
 - Any intentional docs updates that explain the new demo.
 
-Keep `docs/demo/proofpay-agent-demo.mp4` locally as the ignored DoraHacks upload asset.
+Keep `docs/demo/proofpay-agent-demo.mp4` locally as the ignored render source for the Vercel-hosted DoraHacks video asset.
 
 ## Preflight
 
@@ -317,7 +317,7 @@ docs/demo-script.md
 docs/demo-recording-workflow.md
 ```
 
-The rendered MP4 should remain ignored locally until it is uploaded to DoraHacks.
+The rendered MP4 should remain ignored locally. Deploy the reviewed MP4 to the Vercel video host and keep DoraHacks pointed at that public MP4 URL.
 
 Clean local recording artifacts:
 
@@ -332,4 +332,4 @@ find .local -maxdepth 3 -type f 2>/dev/null
 git status --short
 ```
 
-Upload the rendered MP4 directly to DoraHacks after reviewing it locally. Update the DoraHacks video asset whenever the project story, voiceover, or real-case walkthrough changes.
+Deploy the rendered MP4 to the Vercel video host after reviewing it locally. Update the DoraHacks video URL whenever the project story, voiceover, or real-case walkthrough changes.

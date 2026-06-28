@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { GET as getAttestation } from "./attestation/[scenario]/route";
 import { POST as postEvidenceIntake } from "./evidence/intake/route";
 import { GET as getHealth } from "./health/route";
+import { GET as getJudgeProof } from "./judge-proof/route";
 import { POST as postRealCasePrepare } from "./real-case/prepare/route";
 
 function jsonRequest(body: unknown) {
@@ -28,8 +29,26 @@ describe("ProofPay API routes", () => {
     expect(body.routes).toContain("GET /api/attestation/clean");
     expect(body.routes).toContain("POST /api/evidence/intake");
     expect(body.routes).toContain("POST /api/real-case/prepare");
+    expect(body.routes).toContain("GET /api/judge-proof");
     expect(body.casperProofs.clean.transactionHash).toBe(
       "94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604"
+    );
+  });
+
+  it("returns a compact judge proof pack from the API", async () => {
+    const response = await getJudgeProof();
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.schemaVersion).toBe("proofpay.api.judgeProof.v1");
+    expect(body.links.demoVideo).toBe("https://dorahacks-video.vercel.app/proofpay-agent-demo.mp4");
+    expect(body.boundary.real).toContain("Full-stack Vercel demo with public API routes.");
+    expect(body.casperProofs.seededScenarios).toHaveLength(3);
+    expect(
+      body.casperProofs.seededScenarios.find((item: { scenario: string }) => item.scenario === "clean")?.transactionHash
+    ).toBe("94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604");
+    expect(body.casperProofs.freshRealCase.transactionHash).toBe(
+      "d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca"
     );
   });
 

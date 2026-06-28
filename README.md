@@ -39,6 +39,7 @@ ProofPay Agent is a verifiable RWA payment decision chain: external delivery evi
 | Live demo | [casper-proofpay-agent-web.vercel.app](https://casper-proofpay-agent-web.vercel.app/) |
 | Static backup | [sskift.github.io/casper-proofpay-agent](https://sskift.github.io/casper-proofpay-agent/) |
 | Demo video | [dorahacks-video.vercel.app/proofpay-agent-demo.mp4](https://dorahacks-video.vercel.app/proofpay-agent-demo.mp4); the generated local MP4 is intentionally not tracked in Git |
+| Judge proof pack | [docs/judge-proof-pack.md](docs/judge-proof-pack.md) and [GET /api/judge-proof](https://casper-proofpay-agent-web.vercel.app/api/judge-proof) |
 | Boundary | Prototype does not custody real funds; it models milestone state plus on-chain attestation |
 
 ## Why This Matters
@@ -269,6 +270,8 @@ Prepared submission materials:
 
 - [docs/buidl-submission-brief.md](docs/buidl-submission-brief.md)
 - [docs/submission-checklist.md](docs/submission-checklist.md)
+- [docs/judge-proof-pack.md](docs/judge-proof-pack.md)
+- [docs/submission-verification-log.md](docs/submission-verification-log.md)
 - [docs/demo-script.md](docs/demo-script.md)
 - [docs/demo-recording-workflow.md](docs/demo-recording-workflow.md)
 - [docs/fullstack-hosting.md](docs/fullstack-hosting.md)

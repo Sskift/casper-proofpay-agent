@@ -62,6 +62,10 @@ async function main() {
   assert(health.response.status === 200, `GET /api/health returned ${health.response.status}`);
   assert(health.body.schemaVersion === "proofpay.api.health.v1", "Health schema version mismatch");
   assert(health.body.status === "ok", "Health status was not ok");
+  assert(
+    Array.isArray(health.body.routes) && health.body.routes.includes("GET /api/judge-proof"),
+    "Health route does not advertise judge proof API"
+  );
 
   const attestation = await fetchJson("/api/attestation/clean");
   const attestationAssessment = attestation.body.assessment as JsonObject | undefined;
@@ -72,6 +76,21 @@ async function main() {
   assert(
     attestationDeployment?.transactionHash === "94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604",
     "Clean attestation transaction hash mismatch"
+  );
+
+  const judgeProof = await fetchJson("/api/judge-proof");
+  const judgeProofLinks = judgeProof.body.links as JsonObject | undefined;
+  const judgeProofCasper = judgeProof.body.casperProofs as JsonObject | undefined;
+  const judgeProofFreshCase = judgeProofCasper?.freshRealCase as JsonObject | undefined;
+  assert(judgeProof.response.status === 200, `GET /api/judge-proof returned ${judgeProof.response.status}`);
+  assert(judgeProof.body.schemaVersion === "proofpay.api.judgeProof.v1", "Judge proof schema version mismatch");
+  assert(
+    judgeProofLinks?.demoVideo === "https://dorahacks-video.vercel.app/proofpay-agent-demo.mp4",
+    "Judge proof demo video link mismatch"
+  );
+  assert(
+    judgeProofFreshCase?.transactionHash === "d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca",
+    "Judge proof fresh case transaction mismatch"
   );
 
   const duplicateIntake = await postJson("/api/evidence/intake", seededEvidenceBundles.duplicateInvoice);
@@ -117,6 +136,10 @@ async function main() {
       cleanAttestation: {
         decision: attestationAssessment.decision,
         transactionHash: attestationDeployment.transactionHash
+      },
+      judgeProof: {
+        demoVideo: judgeProofLinks.demoVideo,
+        freshCaseTransaction: judgeProofFreshCase.transactionHash
       },
       duplicateIntake: {
         decision: duplicateAssessment.decision,
