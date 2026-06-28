@@ -39,6 +39,13 @@ Local smoke output included:
 | Vercel full-stack domain | Network timeout from this environment | `curl` and in-app browser navigation to `https://casper-proofpay-agent-web.vercel.app/api/health` timed out. |
 | Vercel-hosted demo video | Network timeout from this environment | `curl -I -L` to `https://dorahacks-video.vercel.app/proofpay-agent-demo.mp4` timed out. |
 
+## Post-push Check
+
+- `git push origin main` completed for commit `070bad9`.
+- `npm run fullstack:smoke -- https://casper-proofpay-agent-web.vercel.app` was retried after the push and still returned `fetch failed` from this machine.
+- The in-app browser could not navigate directly to the production API route either; it timed out on the Vercel page navigation.
+- This repository does not contain `.vercel/project.json`, and the Vercel CLI is not installed locally. The deployment path for this repo is the GitHub main branch integration already configured in Vercel.
+
 ## Public Proof URLs
 
 - Live demo: `https://casper-proofpay-agent-web.vercel.app/`
@@ -51,10 +58,10 @@ Local smoke output included:
 
 ## Follow-up
 
-After pushing this commit, re-run:
+From a network path that can reach Vercel, re-run:
 
 ```bash
 npm run fullstack:smoke -- https://casper-proofpay-agent-web.vercel.app
 ```
 
-If the current network still times out on Vercel, verify the live demo and demo video from a browser/network path that can reach Vercel.
+If that network also times out on Vercel, verify the live demo and demo video from the browser session used for the final DoraHacks submission.
