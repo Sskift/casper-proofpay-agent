@@ -30,7 +30,7 @@ Use this 30-second path if you are reviewing the submission:
 
 | Step | Link | What to verify |
 | --- | --- | --- |
-| 1 | [Live full-stack demo](https://casper-proofpay-agent-web.vercel.app/) | Walk Cockpit, Trust, Evidence, Casper, and Dossier. |
+| 1 | [Live full-stack demo](https://casper-proofpay-agent-web.vercel.app/) | Walk Cockpit, Commerce, Trust, Evidence, Casper, and Dossier. |
 | 2 | [Demo video](https://dorahacks-video.vercel.app/proofpay-agent-demo.mp4) | Watch the real-case flow and Casper proof handoff. |
 | 3 | [Judge proof API](https://casper-proofpay-agent-web.vercel.app/api/judge-proof) | Confirm public links, scenario proof facts, and fresh Testnet transaction. |
 | 4 | [Fresh CSPR.live transaction](https://testnet.cspr.live/transaction/d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca) | Confirm the video-integrated case is recorded on Casper Testnet. |
@@ -74,7 +74,7 @@ This is more than a frontend dashboard: the repository includes deterministic ev
 - Three successful Casper Testnet transactions for clean release, finance hold, and duplicate reject scenarios.
 - A fresh video-integrated real case was prepared from `examples/video-integrated-cold-chain-real-case.json` and recorded on Casper Testnet as transaction `d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca`.
 - Next.js dashboard surfaces for cockpit review, Judge walkthrough, evidence intake playground, Casper proof workbench, and audit dossier.
-- Dynamic Next API hooks for attestation lookup, external evidence intake, MCP-style access, and x402-style release gating.
+- Dynamic Next API hooks for attestation lookup, external evidence intake, MCP-style tool invocation, x402-style paid proof review, and settlement adapter output.
 - Real-case CLI path to prepare a new evidence JSON package and submit a fresh Casper Testnet attestation from a local funded signing key.
 
 ## What Is Simulated
@@ -85,7 +85,7 @@ This is more than a frontend dashboard: the repository includes deterministic ev
 
 ## How To Verify
 
-1. Open the [live Vercel demo](https://casper-proofpay-agent-web.vercel.app/) and use the Judge walkthrough: Cockpit, Trust, Evidence, Casper, Dossier.
+1. Open the [live Vercel demo](https://casper-proofpay-agent-web.vercel.app/) and use the Judge walkthrough: Cockpit, Commerce, Trust, Evidence, Casper, Dossier.
 2. In Casper, switch clean / hold / reject scenarios, open `View on cspr.live`, and compare transaction hash, block height, named key, stored URef, evidence hash, and decision hash.
 3. In Trust, load each evidence intake sample, click `Assess evidence`, and confirm the recomputed decision, risk score, confidence, evidence hash, decision hash, reasons, actions, and mini dossier preview. On a Next server this calls `POST /api/evidence/intake`; on GitHub Pages it falls back to deterministic client replay.
 4. Locally run `npm install`, `npm test`, `npm run typecheck`, `npm run build`, `npm run pages:build`, and `npm run submission:check`.
@@ -113,11 +113,12 @@ ProofPay does not try to replace escrow custody in this prototype. It creates th
 | --- | --- | --- |
 | 1 | Cockpit | The current milestone, readiness score, risk score, evidence coverage, and decision path are visible immediately. |
 | 2 | Journey | Evidence intake, participant roles, scenario evaluation, and MCP/x402/Casper hooks are separated into tabs. |
-| 3 | Trust | External evidence, agent decision, human release control, and Casper verification are shown as one proof chain. |
-| 4 | Charts | Risk, cold-chain telemetry, escrow cashflow, and evidence coverage are shown with reusable chart components. |
-| 5 | Evidence | Invoice, bill of lading, delivery note, temperature log, supplier registry, claims, timeline, and follow-up actions are reviewable. |
-| 6 | Casper | The selected scenario shows Testnet transaction hash, block, named key, stored URef, payload, and deploy command. |
-| 7 | Dossier | The portable review package combines evidence hash, decision hash, Casper proof facts, checklist, and JSON artifact. |
+| 3 | Commerce | The dashboard runs x402 proof-review, MCP settlement-tool, and settlement-adapter calls against the current host. |
+| 4 | Trust | External evidence, agent decision, human release control, and Casper verification are shown as one proof chain. |
+| 5 | Charts | Risk, cold-chain telemetry, escrow cashflow, and evidence coverage are shown with reusable chart components. |
+| 6 | Evidence | Invoice, bill of lading, delivery note, temperature log, supplier registry, claims, timeline, and follow-up actions are reviewable. |
+| 7 | Casper | The selected scenario shows Testnet transaction hash, block, named key, stored URef, payload, and deploy command. |
+| 8 | Dossier | The portable review package combines evidence hash, decision hash, Casper proof facts, checklist, and JSON artifact. |
 
 ## What Judges Should Notice
 
@@ -129,7 +130,7 @@ ProofPay does not try to replace escrow custody in this prototype. It creates th
 | Casper evidence | Each judge scenario has a recorded Casper Testnet transaction, not only a local mock. |
 | Fresh case proof | A new cold-chain evidence package was run through ProofPay and anchored on Casper Testnet after the seeded scenarios. |
 | Replayable proof | Evidence hash, decision hash, named key, stored URef, and transaction hash are packaged together. |
-| Integration surface | Local APIs demonstrate evidence intake, MCP-style access, x402-style release gating, and attestation retrieval. |
+| Integration surface | Local APIs demonstrate evidence intake, MCP-style tool invocation, x402-style paid proof review, settlement adapter output, and attestation retrieval. |
 | Submission discipline | Hackathon rules, CLI runbook, demo script, Testnet notes, and final checklist are committed in the repo. |
 
 ## System Thesis
@@ -222,10 +223,11 @@ docs                           Submission, demo, Testnet, and runbook documentat
 
 Core dashboard capabilities:
 
-- Scroll-tracked operator sidebar for the seven judge sections.
-- Compact Judge walkthrough for Cockpit, Trust, Evidence, Casper, and Dossier.
+- Scroll-tracked operator sidebar for the eight judge sections.
+- Compact Judge walkthrough for Cockpit, Commerce, Trust, Evidence, Casper, and Dossier.
 - Scenario switcher for `approve`, `hold`, and `reject` payment flows.
 - Evidence room for documents, claims, timeline, reasons, and follow-up actions.
+- Agent Commerce panel that actually calls `POST /api/x402/proof-review`, `POST /api/mcp`, and `POST /api/settlement-adapter` from the deployed dashboard.
 - Recharts-based visuals for risk, cold-chain telemetry, cashflow, evidence coverage, Casper checks, and audit trace distribution.
 - Evidence intake playground with JSON sample loaders, API-first assessment through `POST /api/evidence/intake`, static fallback replay, hashes, reasons, next actions, and mini dossier preview.
 - Casper proof workbench with CSPR.live links, copy buttons, transaction hash, block height, named key, stored URef, deploy command, explicit verification states, and readiness gates.
@@ -241,10 +243,12 @@ GET  /api/health
 POST /api/evidence/intake
 POST /api/real-case/prepare
 GET  /api/mcp
-POST /api/x402/release-decision
+POST /api/mcp
+POST /api/x402/proof-review
+POST /api/settlement-adapter
 ```
 
-These endpoints are demo hooks, not production payment infrastructure. They show how ProofPay can accept an external evidence bundle, return an agent decision, create a Casper attestation payload, verify recorded Testnet proof fields, and hand settlement actions or audit dossiers to MCP-style clients or x402-gated agent commerce.
+These endpoints are demo hooks, not production payment infrastructure. They show how ProofPay can accept an external evidence bundle, return an agent decision, create a Casper attestation payload, verify recorded Testnet proof fields, sell or gate proof review through an x402-style handshake, invoke MCP-style tools, and hand no-custody settlement instructions to operators.
 
 ## Local Development
 

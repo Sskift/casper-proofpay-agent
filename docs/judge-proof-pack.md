@@ -20,6 +20,9 @@ This is the single verification entry point for judges who want to check what is
 - `GET /api/attestation/clean`, `GET /api/attestation/amountMismatch`, and `GET /api/attestation/duplicateInvoice` return recorded Casper Testnet proof facts.
 - `POST /api/evidence/intake` accepts normalized external evidence JSON and recomputes the decision, risk score, evidence hash, decision hash, and dossier data.
 - `POST /api/real-case/prepare` prepares a new real-case payload for local signing.
+- `POST /api/x402/proof-review` performs a runnable x402-style payment challenge and paid proof-review response.
+- `POST /api/mcp` invokes ProofPay MCP-style tools for evidence assessment, judge proof, and settlement instruction.
+- `POST /api/settlement-adapter` returns a human-controlled, no-custody settlement instruction from the evidence decision.
 - Four Casper Testnet transactions are recorded: clean release, finance hold, duplicate reject, and the fresh video-integrated cold-chain case.
 
 ## What Is Simulated Or Bounded
@@ -27,7 +30,7 @@ This is the single verification entry point for judges who want to check what is
 - ProofPay does not custody, release, refund, or settle real funds in this prototype.
 - The three judge scenarios use synthetic evidence for repeatable demonstration.
 - New Casper Testnet submissions require local signing with a funded local key. Private keys are not stored in the repository, Vercel, DoraHacks, or the video.
-- The x402 and MCP surfaces are demo integration hooks, not production payment settlement or a hosted MCP session.
+- The x402, MCP, and settlement adapter surfaces are runnable demo integration hooks, not production payment settlement, hosted production MCP sessions, or automatic release of funds.
 
 ## Casper Testnet Proofs
 
@@ -50,8 +53,9 @@ Explorer links:
 1. Open the live demo and use the Judge walkthrough.
 2. Open `GET /api/health` and confirm `status: ok`.
 3. Open `GET /api/judge-proof` and confirm it returns the same public links and transaction hashes listed above.
-4. Open the fresh case CSPR.live transaction and confirm it is a Casper Testnet transaction.
-5. Read `docs/real-case-execution.md` for the evidence hash, decision hash, stored URef, and replay commands.
+4. In the Commerce section, click `Run commerce checks` and confirm x402, MCP, and settlement adapter cards pass.
+5. Open the fresh case CSPR.live transaction and confirm it is a Casper Testnet transaction.
+6. Read `docs/real-case-execution.md` for the evidence hash, decision hash, stored URef, and replay commands.
 
 ## Local Verification Commands
 

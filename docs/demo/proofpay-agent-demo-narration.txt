@@ -8,6 +8,8 @@ First, the cockpit shows the current release state: readiness, risk, confidence,
 
 Next, the Trust Chain recomputes the case. The API accepts the evidence JSON, checks that every required document is present, and produces a decision, risk score, confidence, reasons, next actions, evidence hash, and decision hash.
 
+The Commerce panel shows how this becomes an agent service, not just a report. The browser runs the paid proof-review route, the MCP-style settlement tool, and the no-custody settlement adapter. A duplicate invoice becomes dispute-blocked, an amount mismatch becomes finance review, and a clean shipment becomes release-ready for human approval.
+
 In the clean case, the invoice amount matches the milestone, the shipment IDs line up, the receiver signed, the supplier registry matches, and temperature stayed inside the two to eight degree band. ProofPay recommends approve.
 
 Then the same system handles bad cases. If the invoice amount is higher than the escrowed milestone, ProofPay does not fake confidence. It routes the case to finance review. If the invoice fingerprint has already been settled, ProofPay rejects the release and escalates fraud review.

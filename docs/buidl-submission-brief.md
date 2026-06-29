@@ -26,13 +26,13 @@ The agent normalizes five evidence sources: invoice, bill of lading, signed deli
 
 Every assessment produces an evidence hash and decision hash. All three judge scenarios are anchored on Casper Testnet through the `proofpay-attestation` contract path. A fourth video-integrated fresh case was also prepared from a new redacted evidence JSON package and anchored on Casper Testnet as transaction `d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca`. The dashboard shows the Testnet transaction hash, block height, named key, stored URef, public key, deploy command, session arguments, submission readiness gates, and a portable Audit Dossier.
 
-The user experience is designed for judges and operators: a scroll-tracked left navigation, clear Cockpit, Journey, Trust, Charts, Evidence, Casper, and Dossier sections, a compact Judge walkthrough, an API-first evidence intake playground with clean/hold/reject JSON samples and static replay fallback, a settlement runbook, a Casper payload-to-Testnet verifier, an Evidence review workbench, a Casper proof workbench with CSPR.live links and copy buttons, and an Audit Dossier that packages the reasoning trace, hashes, Testnet proof facts, CLI command, and reviewer checklist into a copy-ready JSON artifact.
+The user experience is designed for judges and operators: a scroll-tracked left navigation, clear Cockpit, Journey, Commerce, Trust, Charts, Evidence, Casper, and Dossier sections, a compact Judge walkthrough, an API-first evidence intake playground with clean/hold/reject JSON samples and static replay fallback, a runnable Agent Commerce panel for x402-style proof review, MCP-style tool invocation, and settlement-adapter output, a settlement runbook, a Casper payload-to-Testnet verifier, an Evidence review workbench, a Casper proof workbench with CSPR.live links and copy buttons, and an Audit Dossier that packages the reasoning trace, hashes, Testnet proof facts, CLI command, and reviewer checklist into a copy-ready JSON artifact.
 
 The core advantage is the trust chain, not the UI alone: external evidence enters as a validated package, AI produces a bounded and explainable payment decision, Casper makes the decision auditable, and humans still control the final release, hold, or dispute action. The repo also includes a `realcase:*` CLI path so a new redacted evidence JSON can be prepared and signed into a fresh Casper Testnet attestation without relying on the pre-recorded judge transactions.
 
 Prototype boundary: ProofPay does not custody real funds or claim production automatic settlement. It creates the missing RWA evidence decision layer before release: evidence normalization, bounded AI review, human release control, and Casper attestations that make the decision replayable.
 
-Full-stack demo note: the public Vercel deployment at `https://casper-proofpay-agent-web.vercel.app/` lets judges call `GET /api/health`, `GET /api/attestation/clean`, `POST /api/evidence/intake`, and `POST /api/real-case/prepare`. GitHub Pages remains the static fallback dashboard.
+Full-stack demo note: the public Vercel deployment at `https://casper-proofpay-agent-web.vercel.app/` lets judges call `GET /api/health`, `GET /api/attestation/clean`, `POST /api/evidence/intake`, `POST /api/real-case/prepare`, `POST /api/x402/proof-review`, `POST /api/mcp`, and `POST /api/settlement-adapter`. GitHub Pages remains the static fallback dashboard.
 
 Judge proof pack: `https://github.com/Sskift/casper-proofpay-agent/blob/main/docs/judge-proof-pack.md`
 
@@ -130,8 +130,8 @@ Record with `docs/demo-script.md`.
 
 The prepared video follows this flow:
 
-1. Open the dashboard and show the seven operator sections.
-2. Use the Judge walkthrough to move through Cockpit, Trust, Evidence, Casper, and Dossier.
+1. Open the dashboard and show the eight operator sections.
+2. Use the Judge walkthrough to move through Cockpit, Commerce, Trust, Evidence, Casper, and Dossier.
 3. Select `Clean release` and explain the approve decision.
 4. In Trust, load a sample evidence bundle and click `Assess evidence`; on a dynamic Next server the dashboard calls `POST /api/evidence/intake`, while GitHub Pages falls back to deterministic client replay.
 5. Open the Evidence room and show document, claim, and timeline drilldowns.
@@ -141,7 +141,8 @@ The prepared video follows this flow:
 9. Switch to `Reject duplicate` and explain duplicate invoice blocking.
 10. Open the repository docs and point to `docs/casper-testnet.md` and `docs/real-world-use.md`.
 11. Open the `Run real case` panel and show the fresh Testnet transaction `d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca` for the video-integrated cold-chain case.
-12. If the Vercel deployment is live, open `/api/health` and show the public API route returning Testnet proof metadata.
+12. In Commerce, click `Run commerce checks` and show the 402 handshake, paid proof review, MCP settlement instruction, and no-custody settlement adapter passing on the deployed app.
+13. If the Vercel deployment is live, open `/api/health` and show the public API route returning Testnet proof metadata.
 
 ## CSPR.fans Community Pitch
 

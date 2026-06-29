@@ -57,8 +57,9 @@ Avoid presenting ProofPay as:
 Current implementation status:
 
 - P0 Casper Proof Workbench: completed in the dashboard with CSPR.live links, copy buttons, scenario-specific Testnet facts, verification states, and docs links.
-- P0 Judge Walkthrough Mode: completed with Cockpit, Trust, Evidence, Casper, and Dossier scroll steps.
+- P0 Judge Walkthrough Mode: completed with Cockpit, Commerce, Trust, Evidence, Casper, and Dossier scroll steps.
 - P1 Evidence Intake Playground: completed with API-first `POST /api/evidence/intake` assessment on a dynamic Next server, GitHub Pages client replay fallback, sample loaders, explicit assessment, invalid JSON handling, hashes, reasons, next actions, and mini dossier preview.
+- P1 Agent Commerce Surface: completed with browser-run `POST /api/x402/proof-review`, `POST /api/mcp`, and `POST /api/settlement-adapter` checks on the full-stack dashboard.
 - P1 CI and Repository Signals: completed with a dedicated Node 22 GitHub Actions workflow and README badge.
 - P1 Full-Stack Hosted Demo: completed through the public Vercel deployment at `https://casper-proofpay-agent-web.vercel.app/`, while GitHub Pages remains the static public backup with client replay fallback.
 - P1 Fresh Real Case: completed with `examples/video-integrated-cold-chain-real-case.json`, local signing, and Casper Testnet transaction `d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca`.
@@ -89,7 +90,7 @@ Goal: make the first three minutes deterministic for judges.
 Expected user-facing improvements:
 
 - Add a compact "Judge walkthrough" control near the top of the dashboard.
-- The walkthrough lists five steps: Cockpit, Trust, Evidence, Casper, Dossier.
+- The walkthrough lists six steps: Cockpit, Commerce, Trust, Evidence, Casper, Dossier.
 - Clicking a step scrolls to the relevant section and highlights the proof the judge should inspect.
 - The walkthrough includes a progress state so judges know where they are.
 
@@ -207,7 +208,7 @@ Primary tasks, in order:
    - Link to docs/casper-testnet.md and docs/casper-cli-runbook.md.
 
 2. Add a Judge walkthrough mode:
-   - Five steps: Cockpit, Trust, Evidence, Casper, Dossier.
+   - Six steps: Cockpit, Commerce, Trust, Evidence, Casper, Dossier.
    - Clicking a step scrolls to the section and highlights what to inspect.
    - No layout overlap with the left navigation.
    - Works at desktop and mobile widths.

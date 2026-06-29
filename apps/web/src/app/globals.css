@@ -2027,6 +2027,202 @@ h1 {
   overflow-x: auto;
 }
 
+.commerce-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.36fr);
+  gap: 12px;
+  align-items: stretch;
+}
+
+.commerce-control-panel,
+.commerce-boundary-panel,
+.commerce-command-card {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.commerce-control-panel {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+.commerce-control-panel__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+}
+
+.commerce-control-panel__head span,
+.commerce-boundary-panel__head span,
+.commerce-check__head span,
+.commerce-boundary-list span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.commerce-control-panel__head strong,
+.commerce-boundary-panel__head strong,
+.commerce-check__head strong,
+.commerce-boundary-list strong {
+  display: block;
+  margin-top: 3px;
+  color: #1d2939;
+  font-size: 0.92rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.commerce-control-panel__head p,
+.commerce-boundary-panel p,
+.commerce-check p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.commerce-check-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.commerce-check {
+  display: grid;
+  gap: 9px;
+  min-height: 146px;
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+
+.commerce-check__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: start;
+}
+
+.commerce-check__result {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  margin-top: auto;
+}
+
+.commerce-check__result code {
+  padding: 6px 7px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #ffffff;
+  color: #344054;
+  font-size: 0.72rem;
+}
+
+.commerce-check__result strong {
+  color: #1d2939;
+  font-size: 0.84rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.commerce-check--passed {
+  border-color: #c7ead4;
+  background: #fbfffd;
+}
+
+.commerce-check--running {
+  border-color: #f0d7a5;
+  background: #fffdf7;
+}
+
+.commerce-check--failed {
+  border-color: #f4b5ca;
+  background: #fff7fa;
+}
+
+.commerce-boundary-panel {
+  display: grid;
+  gap: 12px;
+  padding: 12px;
+  background: #f8fbff;
+}
+
+.commerce-boundary-panel__head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 9px;
+  align-items: start;
+}
+
+.commerce-boundary-panel__head svg {
+  color: var(--success);
+}
+
+.commerce-boundary-list {
+  display: grid;
+  gap: 8px;
+}
+
+.commerce-boundary-list > div {
+  min-width: 0;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.commerce-command-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.commerce-command-card {
+  display: grid;
+  gap: 9px;
+  padding: 11px;
+}
+
+.commerce-command-card > div {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  color: #1d2939;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.commerce-command-card > div svg {
+  color: var(--primary);
+}
+
+.commerce-command-card pre {
+  min-height: 118px;
+  max-height: 150px;
+  margin: 0;
+  overflow: auto;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #0f172a;
+  color: #e5e7eb;
+  font-size: 0.69rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .trust-chain {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -3147,6 +3343,7 @@ h1 {
   .proof-workbench,
   .viz-grid,
   .realuse-grid,
+  .commerce-grid,
   .realcase-proof__grid,
   .realcase-run__grid,
   .judge-walkthrough,
@@ -3161,6 +3358,7 @@ h1 {
   .cockpit-kpis,
   .status-strip,
   .deal-strip,
+  .commerce-command-grid,
   .proof-verification-grid,
   .readiness-grid,
   .chart-summary-strip {
@@ -3212,6 +3410,9 @@ h1 {
   .intake-grid,
   .role-flow,
   .ecosystem-hooks,
+  .commerce-grid,
+  .commerce-check-grid,
+  .commerce-command-grid,
   .trust-chain,
   .trust-mini-charts,
   .realuse-grid,
@@ -3277,6 +3478,9 @@ h1 {
   .document-card__head,
   .intake-card__head,
   .ecosystem-card__head,
+  .commerce-control-panel__head,
+  .commerce-check__head,
+  .commerce-check__result,
   .claim-card,
   .readiness-card {
     grid-template-columns: minmax(0, 1fr);

@@ -70,8 +70,9 @@ import {
 } from "@/components/DashboardCharts";
 
 type ScenarioKey = keyof typeof seededEvidenceBundles;
-type SectionId = "cockpit" | "journey" | "trust" | "charts" | "evidence" | "casper" | "dossier";
+type SectionId = "cockpit" | "journey" | "commerce" | "trust" | "charts" | "evidence" | "casper" | "dossier";
 type ChipColor = "success" | "warning" | "danger" | "default" | "accent";
+type CommerceCheckState = "idle" | "running" | "passed" | "failed";
 
 const scenarioCopy: Record<ScenarioKey, { label: string; short: string; operator: string }> = {
   clean: {
@@ -109,33 +110,39 @@ const dashboardSections: Array<{ id: SectionId; label: string; eyebrow: string; 
     detail: "Intake and roles"
   },
   {
+    id: "commerce",
+    label: "Commerce",
+    eyebrow: "03",
+    detail: "x402 and MCP"
+  },
+  {
     id: "trust",
     label: "Trust",
-    eyebrow: "03",
+    eyebrow: "04",
     detail: "Real-use chain"
   },
   {
     id: "charts",
     label: "Charts",
-    eyebrow: "04",
+    eyebrow: "05",
     detail: "Risk and cash"
   },
   {
     id: "evidence",
     label: "Evidence",
-    eyebrow: "05",
+    eyebrow: "06",
     detail: "Claims and documents"
   },
   {
     id: "casper",
     label: "Casper",
-    eyebrow: "06",
+    eyebrow: "07",
     detail: "Testnet proof"
   },
   {
     id: "dossier",
     label: "Dossier",
-    eyebrow: "07",
+    eyebrow: "08",
     detail: "Audit package"
   }
 ];
@@ -143,11 +150,16 @@ const dashboardSections: Array<{ id: SectionId; label: string; eyebrow: string; 
 const dashboardSectionIds = dashboardSections.map((section) => section.id);
 const repositoryBlobBaseUrl = "https://github.com/Sskift/casper-proofpay-agent/blob/main";
 
-const judgeWalkthroughSteps: Array<{ id: Extract<SectionId, "cockpit" | "trust" | "evidence" | "casper" | "dossier">; label: string; detail: string }> = [
+const judgeWalkthroughSteps: Array<{ id: Extract<SectionId, "cockpit" | "commerce" | "trust" | "evidence" | "casper" | "dossier">; label: string; detail: string }> = [
   {
     id: "cockpit",
     label: "Cockpit",
     detail: "See the release decision."
+  },
+  {
+    id: "commerce",
+    label: "Commerce",
+    detail: "Run x402 and MCP routes."
   },
   {
     id: "trust",
@@ -241,6 +253,107 @@ type ApiRouteStatus =
       status: "static_fallback";
       message: string;
     };
+
+type CommerceCheck = {
+  id: string;
+  label: string;
+  endpoint: string;
+  expected: string;
+  state: CommerceCheckState;
+  statusCode?: number;
+  result?: string;
+  detail?: string;
+};
+
+const commerceCheckTemplates: Array<Omit<CommerceCheck, "state">> = [
+  {
+    id: "x402-handshake",
+    label: "x402 proof-review handshake",
+    endpoint: "POST /api/x402/proof-review",
+    expected: "402 payment challenge"
+  },
+  {
+    id: "x402-paid-review",
+    label: "Paid proof review",
+    endpoint: "POST /api/x402/proof-review",
+    expected: "reject -> dispute-blocked"
+  },
+  {
+    id: "mcp-settlement-tool",
+    label: "MCP settlement tool",
+    endpoint: "POST /api/mcp",
+    expected: "hold -> finance-review"
+  },
+  {
+    id: "settlement-adapter",
+    label: "Settlement adapter",
+    endpoint: "POST /api/settlement-adapter",
+    expected: "approve -> release-ready"
+  }
+];
+
+const commerceRunCommands = [
+  {
+    id: "x402",
+    label: "x402 paid proof review",
+    command:
+      "curl -i -X POST https://casper-proofpay-agent-web.vercel.app/api/x402/proof-review -H 'content-type: application/json' -H 'x-proofpay-demo-paid: true' --data @examples/video-integrated-cold-chain-real-case.json"
+  },
+  {
+    id: "mcp",
+    label: "MCP settlement instruction",
+    command:
+      'curl -s -X POST https://casper-proofpay-agent-web.vercel.app/api/mcp -H "content-type: application/json" --data \'{"tool":"proofpay.getSettlementInstruction","input":{"scenario":"amountMismatch"}}\''
+  },
+  {
+    id: "settlement",
+    label: "Settlement adapter",
+    command:
+      "curl -s -X POST https://casper-proofpay-agent-web.vercel.app/api/settlement-adapter -H 'content-type: application/json' --data @examples/video-integrated-cold-chain-real-case.json"
+  }
+];
+
+function createInitialCommerceChecks(): CommerceCheck[] {
+  return commerceCheckTemplates.map((item) => ({
+    ...item,
+    state: "idle"
+  }));
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function valueAtPath(value: unknown, path: string[]) {
+  return path.reduce<unknown>((current, key) => (isRecord(current) ? current[key] : undefined), value);
+}
+
+function stringAtPath(value: unknown, path: string[]) {
+  const nextValue = valueAtPath(value, path);
+  return typeof nextValue === "string" ? nextValue : undefined;
+}
+
+function booleanAtPath(value: unknown, path: string[]) {
+  const nextValue = valueAtPath(value, path);
+  return typeof nextValue === "boolean" ? nextValue : undefined;
+}
+
+async function postCommerceJson(path: string, body: unknown, headers: Record<string, string> = {}) {
+  const response = await fetch(path, {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+      ...headers
+    },
+    body: JSON.stringify(body)
+  });
+
+  return {
+    response,
+    data: await response.json() as unknown
+  };
+}
 
 type EvidenceIntakeApiResponse =
   | {
@@ -932,7 +1045,7 @@ function ChartsSection({ model }: { model: OperationsDashboardModel }) {
     <ShellCard
       id="charts"
       eyebrow="Signal room"
-      step="04"
+      step="05"
       title="Risk, cash, and evidence charts"
       sub="Charts mirror money-run's dense operating style, but tuned for RWA escrow evidence."
       action={<SectionBadge>4 live charts</SectionBadge>}
@@ -1091,6 +1204,231 @@ function JourneySection({ productDepth }: { productDepth: ProductDepthModel }) {
             </Tabs.Panel>
           </Tabs>
         </div>
+      </div>
+    </ShellCard>
+  );
+}
+
+function AgentCommerceSection() {
+  const [checks, setChecks] = useState<CommerceCheck[]>(() => createInitialCommerceChecks());
+  const [isRunning, setIsRunning] = useState(false);
+  const [summary, setSummary] = useState("Ready to execute the paid-review and tool-invocation path on this host.");
+  const [copiedCommand, setCopiedCommand] = useState<string | null>(null);
+
+  const updateCheck = (id: string, patch: Partial<CommerceCheck>) => {
+    setChecks((currentChecks) =>
+      currentChecks.map((check) => (check.id === id ? { ...check, ...patch } : check))
+    );
+  };
+
+  const runCommerceChecks = async () => {
+    setIsRunning(true);
+    setSummary("Running x402, MCP, and settlement adapter calls against this deployed app.");
+    setChecks(createInitialCommerceChecks());
+
+    let failed = 0;
+
+    const runStep = async (
+      id: string,
+      execute: () => Promise<{ statusCode: number; result: string; detail: string }>
+    ) => {
+      updateCheck(id, { state: "running", statusCode: undefined, result: undefined, detail: undefined });
+
+      try {
+        const result = await execute();
+        updateCheck(id, {
+          state: "passed",
+          statusCode: result.statusCode,
+          result: result.result,
+          detail: result.detail
+        });
+      } catch (error) {
+        failed += 1;
+        updateCheck(id, {
+          state: "failed",
+          result: "check failed",
+          detail: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    };
+
+    await runStep("x402-handshake", async () => {
+      const { response, data } = await postCommerceJson("/api/x402/proof-review", seededEvidenceBundles.clean);
+      const service = stringAtPath(data, ["service"]);
+      const paymentRequired = booleanAtPath(data, ["paymentRequired"]);
+
+      if (response.status !== 402 || !paymentRequired || service !== "proofpay.proofReview") {
+        throw new Error(`Expected 402 payment challenge, received ${response.status}.`);
+      }
+
+      return {
+        statusCode: response.status,
+        result: `${response.status} · ${service}`,
+        detail: stringAtPath(data, ["acceptedPaymentHeader"]) ?? "Payment header challenge returned."
+      };
+    });
+
+    await runStep("x402-paid-review", async () => {
+      const { response, data } = await postCommerceJson(
+        "/api/x402/proof-review",
+        seededEvidenceBundles.duplicateInvoice,
+        { "x-proofpay-demo-paid": "true" }
+      );
+      const decision = stringAtPath(data, ["assessment", "decision"]);
+      const state = stringAtPath(data, ["settlementInstruction", "state"]);
+      const casperStatus = stringAtPath(data, ["casper", "attestationVerification"]);
+
+      if (!response.ok || decision !== "reject" || state !== "dispute-blocked") {
+        throw new Error(`Expected reject/dispute-blocked, received ${response.status}.`);
+      }
+
+      return {
+        statusCode: response.status,
+        result: `${decision} -> ${state}`,
+        detail: `Casper attestation ${casperStatus ?? "unknown"}; duplicate invoice stays blocked.`
+      };
+    });
+
+    await runStep("mcp-settlement-tool", async () => {
+      const { response, data } = await postCommerceJson("/api/mcp", {
+        tool: "proofpay.getSettlementInstruction",
+        input: {
+          scenario: "amountMismatch"
+        }
+      });
+      const decision = stringAtPath(data, ["result", "assessment", "decision"]);
+      const state = stringAtPath(data, ["result", "settlementInstruction", "state"]);
+
+      if (!response.ok || decision !== "hold" || state !== "finance-review") {
+        throw new Error(`Expected MCP hold/finance-review, received ${response.status}.`);
+      }
+
+      return {
+        statusCode: response.status,
+        result: `${decision} -> ${state}`,
+        detail: "MCP-style tool invocation returned a human finance review instruction."
+      };
+    });
+
+    await runStep("settlement-adapter", async () => {
+      const { response, data } = await postCommerceJson("/api/settlement-adapter", seededEvidenceBundles.clean);
+      const decision = stringAtPath(data, ["assessment", "decision"]);
+      const state = stringAtPath(data, ["settlementInstruction", "state"]);
+      const noCustody = booleanAtPath(data, ["boundary", "noCustody"]);
+
+      if (!response.ok || decision !== "approve" || state !== "release-ready" || !noCustody) {
+        throw new Error(`Expected approve/release-ready/no-custody, received ${response.status}.`);
+      }
+
+      return {
+        statusCode: response.status,
+        result: `${decision} -> ${state}`,
+        detail: "Adapter prepared a human-controlled release instruction without custody."
+      };
+    });
+
+    setSummary(failed === 0
+      ? "All commerce checks passed on this host: paid proof review, MCP tool call, and settlement adapter are live."
+      : `${failed} commerce check${failed === 1 ? "" : "s"} failed; inspect the card details before presenting.`);
+    setIsRunning(false);
+  };
+
+  const copyCommand = async (command: string, id: string) => {
+    try {
+      await navigator.clipboard.writeText(command);
+      setCopiedCommand(id);
+      window.setTimeout(() => setCopiedCommand((current) => (current === id ? null : current)), 1400);
+    } catch {
+      setCopiedCommand(null);
+    }
+  };
+
+  const passedCount = checks.filter((check) => check.state === "passed").length;
+
+  return (
+    <ShellCard
+      id="commerce"
+      eyebrow="Agent commerce"
+      step="03"
+      title="Paid proof review, MCP tools, and settlement instructions"
+      sub="This is the competitive product surface: an x402-style paid evidence review, an MCP-style tool endpoint, and a no-custody settlement adapter that turns decisions into operator actions."
+      action={<SectionBadge tone={passedCount === checks.length ? "success" : isRunning ? "warning" : "accent"}>{passedCount}/{checks.length} live</SectionBadge>}
+    >
+      <div className="commerce-grid">
+        <div className="commerce-control-panel">
+          <div className="commerce-control-panel__head">
+            <div>
+              <span>Runnable integration path</span>
+              <strong>Execute the agent-commerce stack</strong>
+              <p>{summary}</p>
+            </div>
+            <button className="assess-button" disabled={isRunning} onClick={runCommerceChecks} type="button">
+              <RadioTower aria-hidden="true" size={15} />
+              {isRunning ? "Running" : "Run commerce checks"}
+            </button>
+          </div>
+          <div className="commerce-check-grid" aria-label="Agent commerce API checks">
+            {checks.map((check) => (
+              <article className={`commerce-check commerce-check--${check.state}`} key={check.id}>
+                <div className="commerce-check__head">
+                  <div>
+                    <span>{check.endpoint}</span>
+                    <strong>{check.label}</strong>
+                  </div>
+                  <Chip color={check.state === "passed" ? "success" : check.state === "failed" ? "danger" : check.state === "running" ? "warning" : "default"} variant="soft">
+                    {check.state}
+                  </Chip>
+                </div>
+                <p>{check.detail ?? check.expected}</p>
+                <div className="commerce-check__result">
+                  <code>{check.statusCode ? `HTTP ${check.statusCode}` : "not run"}</code>
+                  <strong>{check.result ?? check.expected}</strong>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <aside className="commerce-boundary-panel">
+          <div className="commerce-boundary-panel__head">
+            <ShieldCheck aria-hidden="true" size={20} />
+            <div>
+              <span>Settlement boundary</span>
+              <strong>No hosted custody</strong>
+            </div>
+          </div>
+          <p>ProofPay sells or exposes proof review as an agent service, then prepares settlement instructions. Buyer signing, dispute approval, and any real fund movement stay outside the hosted app.</p>
+          <div className="commerce-boundary-list">
+            <div>
+              <span>Paid access</span>
+              <strong>x402-compatible 402 challenge</strong>
+            </div>
+            <div>
+              <span>Agent access</span>
+              <strong>MCP-style POST tool call</strong>
+            </div>
+            <div>
+              <span>Payment action</span>
+              <strong>Human-controlled adapter output</strong>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div className="commerce-command-grid" aria-label="Copy-ready commerce commands">
+        {commerceRunCommands.map((item) => (
+          <article className="commerce-command-card" key={item.id}>
+            <div>
+              <Terminal aria-hidden="true" size={15} />
+              <strong>{item.label}</strong>
+            </div>
+            <pre><code>{item.command}</code></pre>
+            <button className="copy-proof-button" onClick={() => copyCommand(item.command, item.id)} type="button">
+              <CopyCheck aria-hidden="true" size={15} />
+              {copiedCommand === item.id ? "Copied" : "Copy command"}
+            </button>
+          </article>
+        ))}
       </div>
     </ShellCard>
   );
@@ -1320,7 +1658,7 @@ function TrustChainSection({
     <ShellCard
       id="trust"
       eyebrow="Real-use chain"
-      step="03"
+      step="04"
       title="From evidence to verifiable payment action"
       sub="The product value is the trust chain: external evidence in, explainable AI decision, human release control, and Casper proof verification out."
       action={<SectionBadge tone={attestationVerification.status === "verified" ? "success" : "warning"}>{statusLabel(attestationVerification.status)}</SectionBadge>}
@@ -1556,7 +1894,7 @@ function EvidenceSection({
     <ShellCard
       id="evidence"
       eyebrow="Evidence review"
-      step="05"
+      step="06"
       title="Evidence room"
       sub="A reviewer-first workspace for documents, normalized claims, and exception handling."
       action={<Bot aria-hidden="true" size={20} />}
@@ -1794,7 +2132,7 @@ function CasperSection({
     <ShellCard
       id="casper"
       eyebrow="On-chain proof"
-      step="06"
+      step="07"
       title="Casper attestation"
       sub={deployment ? "Selected scenario is anchored on Casper Testnet. ProofPay does not custody real funds in this prototype." : "This scenario is deploy-ready and waiting for a matching Testnet attestation. ProofPay does not custody real funds in this prototype."}
       action={<SectionBadge tone={deployment ? "success" : "warning"}>{deployment ? "on-chain" : "deploy-ready"}</SectionBadge>}
@@ -1991,7 +2329,7 @@ function DossierSection({ dossier }: { dossier: AuditDossier }) {
     <ShellCard
       id="dossier"
       eyebrow="Judge package"
-      step="07"
+      step="08"
       title="Audit dossier"
       sub="One portable package for the decision trace, hashes, Casper proof facts, and reproduction checklist."
       action={<SectionBadge>audit console</SectionBadge>}
@@ -2317,6 +2655,7 @@ export default function Home() {
             transaction={transaction}
           />
           <JourneySection productDepth={productDepth} />
+          <AgentCommerceSection />
           <TrustChainSection
             attestationVerification={attestationVerification}
             bundle={bundle}

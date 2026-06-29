@@ -5,13 +5,27 @@ import { GET as getAttestation } from "./attestation/[scenario]/route";
 import { POST as postEvidenceIntake } from "./evidence/intake/route";
 import { GET as getHealth } from "./health/route";
 import { GET as getJudgeProof } from "./judge-proof/route";
+import { GET as getMcp, POST as postMcp } from "./mcp/route";
 import { POST as postRealCasePrepare } from "./real-case/prepare/route";
+import { POST as postSettlementAdapter } from "./settlement-adapter/route";
+import { POST as postX402ProofReview } from "./x402/proof-review/route";
 
 function jsonRequest(body: unknown) {
   return new Request("http://127.0.0.1:3000/api/evidence/intake", {
     method: "POST",
     headers: {
       "content-type": "application/json"
+    },
+    body: JSON.stringify(body)
+  });
+}
+
+function jsonRequestTo(url: string, body: unknown, headers: Record<string, string> = {}) {
+  return new Request(url, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      ...headers
     },
     body: JSON.stringify(body)
   });
@@ -30,6 +44,9 @@ describe("ProofPay API routes", () => {
     expect(body.routes).toContain("POST /api/evidence/intake");
     expect(body.routes).toContain("POST /api/real-case/prepare");
     expect(body.routes).toContain("GET /api/judge-proof");
+    expect(body.routes).toContain("POST /api/x402/proof-review");
+    expect(body.routes).toContain("POST /api/mcp");
+    expect(body.routes).toContain("POST /api/settlement-adapter");
     expect(body.casperProofs.clean.transactionHash).toBe(
       "94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604"
     );
@@ -81,6 +98,76 @@ describe("ProofPay API routes", () => {
     expect(body.assessment.riskScore).toBe(88);
     expect(body.payload.evidenceHash).toBe("0x745f85d8760dde067cdf8b1e375139396e69bef7f40103209018acfea5c61ff9");
     expect(body.dossier.trace.find((step: { id: string; status: string }) => step.id === "duplicate-invoice")?.status).toBe("failed");
+  });
+
+  it("requires an x402-style paid handshake before proof review", async () => {
+    const response = await postX402ProofReview(jsonRequestTo(
+      "http://127.0.0.1:3000/api/x402/proof-review",
+      seededEvidenceBundles.clean
+    ));
+    const body = await response.json();
+
+    expect(response.status).toBe(402);
+    expect(body.schemaVersion).toBe("proofpay.x402.proofReviewPaymentRequired.v1");
+    expect(body.paymentRequired).toBe(true);
+    expect(body.acceptedPaymentHeader).toBe("x-proofpay-demo-paid: true");
+    expect(body.service).toBe("proofpay.proofReview");
+  });
+
+  it("returns a paid x402 proof review package for external evidence", async () => {
+    const response = await postX402ProofReview(jsonRequestTo(
+      "http://127.0.0.1:3000/api/x402/proof-review",
+      seededEvidenceBundles.duplicateInvoice,
+      { "x-proofpay-demo-paid": "true" }
+    ));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.schemaVersion).toBe("proofpay.x402.proofReview.v1");
+    expect(body.paymentRequired).toBe(false);
+    expect(body.x402.status).toBe("demo-paid");
+    expect(body.assessment.decision).toBe("reject");
+    expect(body.payload.decisionHash).toBe("0x95e24b90c3d51d52cd5babe1eaa3accb2d478c654f57ca7bb479b17cb515aa34");
+    expect(body.settlementInstruction.state).toBe("dispute-blocked");
+    expect(body.casper.attestationVerification).toBe("verified");
+    expect(body.casper.nextStep).toContain("recorded Casper Testnet transaction");
+  });
+
+  it("invokes MCP-style ProofPay tools over POST", async () => {
+    const manifestResponse = await getMcp();
+    const manifest = await manifestResponse.json();
+
+    expect(manifest.tools.map((tool: { name: string }) => tool.name)).toContain("proofpay.assessEvidence");
+    expect(manifest.tools.map((tool: { name: string }) => tool.name)).toContain("proofpay.getSettlementInstruction");
+
+    const response = await postMcp(jsonRequestTo("http://127.0.0.1:3000/api/mcp", {
+      tool: "proofpay.getSettlementInstruction",
+      input: {
+        scenario: "amountMismatch"
+      }
+    }));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.schemaVersion).toBe("proofpay.mcp.toolResult.v1");
+    expect(body.tool).toBe("proofpay.getSettlementInstruction");
+    expect(body.result.assessment.decision).toBe("hold");
+    expect(body.result.settlementInstruction.state).toBe("finance-review");
+  });
+
+  it("adapts evidence decisions into human-controlled settlement instructions", async () => {
+    const response = await postSettlementAdapter(jsonRequestTo(
+      "http://127.0.0.1:3000/api/settlement-adapter",
+      seededEvidenceBundles.clean
+    ));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.schemaVersion).toBe("proofpay.api.settlementAdapter.v1");
+    expect(body.settlementInstruction.state).toBe("release-ready");
+    expect(body.settlementInstruction.humanApprovalRequired).toBe(true);
+    expect(body.boundary.noCustody).toBe(true);
+    expect(body.casperAttestation.payloadHash).toBe("0x96232bd7a6224ade903c20cb89c38cc91e036facebe837475ab41cf26a4556e1");
   });
 
   it("prepares a new real case payload without a recorded deployment", async () => {

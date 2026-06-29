@@ -109,7 +109,7 @@ export interface EvaluationRow {
 }
 
 export interface EcosystemHook {
-  id: "attestation-api" | "mcp-tool" | "x402-gate";
+  id: "attestation-api" | "mcp-tool" | "x402-proof-review" | "settlement-adapter";
   label: string;
   endpoint: string;
   status: "live" | "demo";
@@ -474,17 +474,24 @@ export function createProductDepthModel({
       },
       {
         id: "mcp-tool",
-        label: "MCP tool manifest",
+        label: "MCP tool invocation",
         endpoint: "/api/mcp",
         status: "demo",
-        detail: "Describes assess_milestone_evidence and get_casper_attestation tools for agent clients."
+        detail: "Lists and invokes ProofPay evidence assessment, judge proof, and settlement instruction tools."
       },
       {
-        id: "x402-gate",
-        label: "x402-ready gate",
-        endpoint: "/api/x402/release-decision",
+        id: "x402-proof-review",
+        label: "x402 proof review",
+        endpoint: "/api/x402/proof-review",
         status: "demo",
-        detail: "Shows a payment-required handshake before returning a release decision package."
+        detail: "Shows a payment-required handshake before returning an evidence proof review package."
+      },
+      {
+        id: "settlement-adapter",
+        label: "Settlement adapter",
+        endpoint: "/api/settlement-adapter",
+        status: "demo",
+        detail: "Converts ProofPay decisions into human-controlled no-custody settlement instructions."
       }
     ]
   };

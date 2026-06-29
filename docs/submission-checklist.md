@@ -58,12 +58,13 @@ ProofPay Agent lets autonomous agents release real-world payments only when evid
 - `npm run submission:check` passes after the final commit.
 - `npm run casper:check` shows a funded Testnet account.
 - `npm run contract:deploy:testnet` returns a real Casper transaction hash.
-- Dashboard sidebar clearly shows the active Cockpit, Journey, Trust, Charts, Evidence, Casper, or Dossier section.
-- Dashboard Judge walkthrough scrolls to Cockpit, Trust, Evidence, Casper, and Dossier with a clear active state.
+- Dashboard sidebar clearly shows the active Cockpit, Journey, Commerce, Trust, Charts, Evidence, Casper, or Dossier section.
+- Dashboard Judge walkthrough scrolls to Cockpit, Commerce, Trust, Evidence, Casper, and Dossier with a clear active state.
+- Dashboard Commerce section runs `POST /api/x402/proof-review`, `POST /api/mcp`, and `POST /api/settlement-adapter` from the browser and shows pass/fail HTTP status cards.
 - Dashboard Trust section shows external evidence intake, settlement runbook actions, and Casper verifier checks.
 - Dashboard evidence intake playground loads clean, hold, and reject samples; `Assess evidence` calls `POST /api/evidence/intake` on a dynamic Next server, falls back to client replay on static GitHub Pages, and returns decision, risk score, confidence, evidence hash, decision hash, reasons, next actions, and mini dossier preview.
 - Dashboard evidence intake playground shows a friendly error for invalid JSON.
-- Local API smoke tests pass for `GET /api/attestation/clean`, `POST /api/evidence/intake`, and invalid evidence returning `422`.
+- Local API smoke tests pass for `GET /api/attestation/clean`, `POST /api/evidence/intake`, `POST /api/x402/proof-review`, `POST /api/mcp`, `POST /api/settlement-adapter`, and invalid evidence returning `422`.
 - Full-stack hosting runbook is ready in `docs/fullstack-hosting.md`.
 - Dashboard Evidence room shows reviewer summary, documents, claims, and timeline without table stacking.
 - Dashboard Casper proof workbench shows Testnet transaction, CSPR.live link, copy buttons, block height, named key, stored URef, deploy command, verification states, readiness gates, public key, and Casper session args.

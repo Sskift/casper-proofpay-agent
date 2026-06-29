@@ -33,7 +33,19 @@ Show:
 - The result grid with decision, risk score, confidence, evidence hash, decision hash, reasons, actions, and mini dossier preview.
 - Settlement runbook and Casper verifier checks.
 
-## Scene 3: Three Decision Paths
+## Scene 3: Agent Commerce Hooks
+
+ProofPay is not just a dashboard. The same evidence decision can be sold or called as an agent service, then converted into human-controlled settlement instructions.
+
+Show:
+
+- Commerce section.
+- Click `Run commerce checks`.
+- x402 proof-review returns a payment challenge, then a paid proof-review response.
+- MCP settlement tool returns `hold -> finance-review` for the amount mismatch case.
+- Settlement adapter returns `approve -> release-ready` while explicitly keeping custody outside the hosted app.
+
+## Scene 4: Three Decision Paths
 
 ProofPay demonstrates approve, hold, and reject. This is not a single happy-path dashboard.
 
@@ -44,7 +56,7 @@ Show:
 - `Reject duplicate`: duplicate invoice and fraud escalation.
 - Keep the decision cards and reviewer action queue visible after switching.
 
-## Scene 4: Evidence Room
+## Scene 5: Evidence Room
 
 The Evidence room keeps the AI explainable. Reviewers can inspect source documents, normalized claims, timeline events, reasons, and follow-up actions.
 
@@ -55,7 +67,7 @@ Show:
 - Timeline tab.
 - Reasons or follow-up tab.
 
-## Scene 5: Casper Proof
+## Scene 6: Casper Proof
 
 Casper is the trust anchor for the decision proof.
 
@@ -66,7 +78,7 @@ Show:
 - Testnet transaction hash, block height, named key, stored URef, public key, session args, and verification states.
 - Successful seeded clean transaction `94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604`.
 
-## Scene 6: Fresh Real Case
+## Scene 7: Fresh Real Case
 
 This is the proof that the system can run a new business event, not only replay the three seeded judge scenarios. The video-integrated fresh case is `examples/video-integrated-cold-chain-real-case.json`: a follow-on cold-chain shipment where the buyer needs payment-release confidence before approving a supplier milestone.
 
@@ -79,7 +91,7 @@ Show:
 - Block height, named key, stored URef, and verification checks visible on screen without reading long hashes aloud.
 - The boundary: the hosted app prepares and verifies the payload; the operator signs locally; ProofPay does not custody funds.
 
-## Scene 7: CSPR.live Verification
+## Scene 8: CSPR.live Verification
 
 Open or briefly show the CSPR.live transaction page for the fresh case as supporting proof, not as the main story.
 
@@ -89,7 +101,7 @@ Show:
   `https://testnet.cspr.live/transaction/d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca`
 - If the explorer is slow, keep the dashboard proof card visible and say the transaction executed, the API verifies the facts, and the full URL is documented in `docs/real-case-execution.md`.
 
-## Scene 8: Audit Dossier And Close
+## Scene 9: Audit Dossier And Close
 
 The Audit Dossier packages the case for buyers, suppliers, arbiters, and judges.
 

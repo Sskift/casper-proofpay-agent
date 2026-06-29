@@ -43,8 +43,10 @@ ProofPay closes that gap by separating speed, control, and trust anchoring:
 - `verifyCasperAttestation` compares the current payload against recorded Casper Testnet facts.
 - `POST /api/evidence/intake` accepts an external evidence bundle and returns the report, assessment, payload, verifier result, runbook, and dossier.
 - `/api/attestation/{scenario}` returns the seeded judge package with the same practical objects.
-- `/api/mcp` describes both seeded assessment and external evidence intake tools.
-- `/api/x402/release-decision` returns the decision package after the demo payment-required handshake.
+- `GET /api/mcp` describes the runnable ProofPay tool surface.
+- `POST /api/mcp` invokes `proofpay.assessEvidence`, `proofpay.getJudgeProof`, or `proofpay.getSettlementInstruction` for seeded scenarios or external evidence.
+- `POST /api/x402/proof-review` returns `402 Payment Required` until the demo paid header is supplied, then returns the proof review package.
+- `POST /api/settlement-adapter` turns an evidence decision into a human-controlled, no-custody settlement instruction.
 
 ## API Shape
 

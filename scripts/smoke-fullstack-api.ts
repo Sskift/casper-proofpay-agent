@@ -44,6 +44,20 @@ async function postJson(path: string, body: unknown) {
   return { response, body: responseBody };
 }
 
+async function postJsonWithHeaders(path: string, body: unknown, headers: Record<string, string>) {
+  const response = await fetch(`${baseUrl}${path}`, {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+      ...headers
+    },
+    body: JSON.stringify(body)
+  });
+  const responseBody = await readJson(response);
+  return { response, body: responseBody };
+}
+
 async function postRaw(path: string, body: string) {
   const response = await fetch(`${baseUrl}${path}`, {
     method: "POST",
@@ -65,6 +79,18 @@ async function main() {
   assert(
     Array.isArray(health.body.routes) && health.body.routes.includes("GET /api/judge-proof"),
     "Health route does not advertise judge proof API"
+  );
+  assert(
+    Array.isArray(health.body.routes) && health.body.routes.includes("POST /api/x402/proof-review"),
+    "Health route does not advertise x402 proof review API"
+  );
+  assert(
+    Array.isArray(health.body.routes) && health.body.routes.includes("POST /api/mcp"),
+    "Health route does not advertise MCP tool invocation API"
+  );
+  assert(
+    Array.isArray(health.body.routes) && health.body.routes.includes("POST /api/settlement-adapter"),
+    "Health route does not advertise settlement adapter API"
   );
 
   const attestation = await fetchJson("/api/attestation/clean");
@@ -99,6 +125,42 @@ async function main() {
   assert(duplicateIntake.body.accepted === true, "Duplicate intake was not accepted");
   assert(duplicateAssessment?.decision === "reject", "Duplicate intake did not reject");
   assert(duplicateAssessment?.riskScore === 88, "Duplicate intake risk score mismatch");
+
+  const unpaidProofReview = await postJson("/api/x402/proof-review", seededEvidenceBundles.clean);
+  assert(unpaidProofReview.response.status === 402, `Unpaid x402 proof review returned ${unpaidProofReview.response.status}`);
+  assert(unpaidProofReview.body.paymentRequired === true, "Unpaid x402 proof review should require payment");
+
+  const paidProofReview = await postJsonWithHeaders(
+    "/api/x402/proof-review",
+    seededEvidenceBundles.duplicateInvoice,
+    { "x-proofpay-demo-paid": "true" }
+  );
+  const paidProofAssessment = paidProofReview.body.assessment as JsonObject | undefined;
+  const paidProofInstruction = paidProofReview.body.settlementInstruction as JsonObject | undefined;
+  assert(paidProofReview.response.status === 200, `Paid x402 proof review returned ${paidProofReview.response.status}`);
+  assert(paidProofReview.body.schemaVersion === "proofpay.x402.proofReview.v1", "Paid x402 proof review schema mismatch");
+  assert(paidProofAssessment?.decision === "reject", "Paid x402 proof review did not reject duplicate evidence");
+  assert(paidProofInstruction?.state === "dispute-blocked", "Paid x402 proof review settlement state mismatch");
+
+  const mcpSettlement = await postJson("/api/mcp", {
+    tool: "proofpay.getSettlementInstruction",
+    input: {
+      scenario: "amountMismatch"
+    }
+  });
+  const mcpSettlementResult = mcpSettlement.body.result as JsonObject | undefined;
+  const mcpSettlementAssessment = mcpSettlementResult?.assessment as JsonObject | undefined;
+  const mcpSettlementInstruction = mcpSettlementResult?.settlementInstruction as JsonObject | undefined;
+  assert(mcpSettlement.response.status === 200, `MCP settlement tool returned ${mcpSettlement.response.status}`);
+  assert(mcpSettlement.body.schemaVersion === "proofpay.mcp.toolResult.v1", "MCP tool result schema mismatch");
+  assert(mcpSettlementAssessment?.decision === "hold", "MCP settlement tool did not hold amount mismatch");
+  assert(mcpSettlementInstruction?.state === "finance-review", "MCP settlement tool state mismatch");
+
+  const settlementAdapter = await postJson("/api/settlement-adapter", seededEvidenceBundles.clean);
+  const settlementInstruction = settlementAdapter.body.settlementInstruction as JsonObject | undefined;
+  assert(settlementAdapter.response.status === 200, `Settlement adapter returned ${settlementAdapter.response.status}`);
+  assert(settlementAdapter.body.schemaVersion === "proofpay.api.settlementAdapter.v1", "Settlement adapter schema mismatch");
+  assert(settlementInstruction?.state === "release-ready", "Settlement adapter clean state mismatch");
 
   const invalidJson = await postRaw("/api/evidence/intake", "{ invalid json");
   assert(invalidJson.response.status === 400, `Invalid JSON returned ${invalidJson.response.status}`);
@@ -144,6 +206,18 @@ async function main() {
       duplicateIntake: {
         decision: duplicateAssessment.decision,
         riskScore: duplicateAssessment.riskScore
+      },
+      x402ProofReview: {
+        unpaid: unpaidProofReview.response.status,
+        paidDecision: paidProofAssessment.decision,
+        settlementState: paidProofInstruction.state
+      },
+      mcpSettlement: {
+        decision: mcpSettlementAssessment.decision,
+        settlementState: mcpSettlementInstruction.state
+      },
+      settlementAdapter: {
+        settlementState: settlementInstruction.state
       },
       realCasePrepare: {
         milestoneId: realCasePayload.milestoneId,

@@ -202,7 +202,12 @@ describe("ProofPay evidence agent", () => {
     expect(model.workflow.find((role) => role.role === "Casper")?.status).toBe("recorded");
     expect(model.evaluation.rows.map((row) => row.scenario)).toEqual(["clean", "amountMismatch", "duplicateInvoice"]);
     expect(model.evaluation.rows.every((row) => row.passed)).toBe(true);
-    expect(model.ecosystemHooks.map((hook) => hook.id)).toEqual(["attestation-api", "mcp-tool", "x402-gate"]);
+    expect(model.ecosystemHooks.map((hook) => hook.id)).toEqual([
+      "attestation-api",
+      "mcp-tool",
+      "x402-proof-review",
+      "settlement-adapter"
+    ]);
   });
 
   it("validates external evidence bundles before assessment", () => {

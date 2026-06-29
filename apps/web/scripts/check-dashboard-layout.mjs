@@ -35,6 +35,11 @@ const requiredPageContracts = [
   ["role-flow", "Role workflow should be visible as a product flow."],
   ["evaluation-matrix", "Agent evaluation should show scenario coverage."],
   ["ecosystem-hooks", "Casper ecosystem hooks should be visible without a long text wall."],
+  ['id="commerce"', "The dashboard needs a Commerce section for runnable x402, MCP, and settlement adapter checks."],
+  ["AgentCommerceSection", "The runnable agent-commerce API surface should be rendered as a dedicated workbench."],
+  ["Run commerce checks", "The Commerce section should execute live API checks from the dashboard."],
+  ["/api/x402/proof-review", "The dashboard should call the current x402 proof review endpoint."],
+  ["/api/settlement-adapter", "The dashboard should call the settlement adapter endpoint."],
   ['id="trust"', "The dashboard needs a Trust section that explains the real evidence-to-payment chain."],
   ["TrustChainSection", "The real-use trust chain should be rendered as a dedicated workbench."],
   ["parseEvidenceBundle", "The dashboard should let reviewers validate an external evidence package."],
@@ -93,6 +98,9 @@ const requiredCssContracts = [
   [".role-flow", "Role workflow styles are missing."],
   [".evaluation-matrix", "Evaluation matrix styles are missing."],
   [".ecosystem-hooks", "Ecosystem hook card styles are missing."],
+  [".commerce-grid", "Commerce workbench layout styles are missing."],
+  [".commerce-check-grid", "Commerce API check card styles are missing."],
+  [".commerce-command-grid", "Commerce copy-ready command styles are missing."],
   [".trust-chain", "Trust chain layout styles are missing."],
   [".intake-lab", "External evidence intake lab styles are missing."],
   [".runbook-actions", "Settlement runbook action styles are missing."],
@@ -157,7 +165,8 @@ const requiredRouteFiles = [
   "src/app/api/attestation/[scenario]/route.ts",
   "src/app/api/evidence/intake/route.ts",
   "src/app/api/mcp/route.ts",
-  "src/app/api/x402/release-decision/route.ts"
+  "src/app/api/x402/proof-review/route.ts",
+  "src/app/api/settlement-adapter/route.ts"
 ];
 
 for (const routeFile of requiredRouteFiles) {
@@ -167,16 +176,21 @@ for (const routeFile of requiredRouteFiles) {
 }
 
 const mcpRoute = readFileSync(resolve(root, "src/app/api/mcp/route.ts"), "utf8");
-const x402Route = readFileSync(resolve(root, "src/app/api/x402/release-decision/route.ts"), "utf8");
+const x402ProofReviewRoute = readFileSync(resolve(root, "src/app/api/x402/proof-review/route.ts"), "utf8");
+const settlementAdapterRoute = readFileSync(resolve(root, "src/app/api/settlement-adapter/route.ts"), "utf8");
 const dataRoute = readFileSync(resolve(root, "src/app/api/proofpay-data.ts"), "utf8");
 const intakeRoute = readFileSync(resolve(root, "src/app/api/evidence/intake/route.ts"), "utf8");
 
 for (const [source, needle, message] of [
-  [mcpRoute, "assess_milestone_evidence", "MCP route should expose the assessment tool name."],
-  [mcpRoute, "get_casper_attestation", "MCP route should expose the Casper attestation lookup tool name."],
-  [mcpRoute, "submit_external_evidence_pack", "MCP route should expose the external evidence intake tool name."],
-  [x402Route, "x-proofpay-demo-paid", "x402 route should require the explicit demo payment header."],
-  [x402Route, "paymentRequired", "x402 route should honestly report payment-required metadata."],
+  [mcpRoute, "proofpay.assessEvidence", "MCP route should expose the assessment tool name."],
+  [mcpRoute, "proofpay.getJudgeProof", "MCP route should expose the Casper proof lookup tool name."],
+  [mcpRoute, "proofpay.getSettlementInstruction", "MCP route should expose the settlement instruction tool name."],
+  [x402ProofReviewRoute, "x-proofpay-demo-paid", "x402 proof review route should require the explicit demo payment header."],
+  [x402ProofReviewRoute, "paymentRequired", "x402 proof review route should honestly report payment-required metadata."],
+  [x402ProofReviewRoute, "proofpay.proofReview", "x402 proof review route should expose a paid proof review service."],
+  [x402ProofReviewRoute, "createSettlementInstruction", "x402 proof review route should return a settlement instruction."],
+  [settlementAdapterRoute, "proofpay.api.settlementAdapter.v1", "Settlement adapter route should expose its schema."],
+  [settlementAdapterRoute, "noCustody", "Settlement adapter route should state the no-custody boundary."],
   [dataRoute, "createCasperVerificationSummary", "API data helper should include Casper verification summaries."],
   [dataRoute, "verifyCasperAttestation", "API data helper should include payload-to-Testnet attestation verification."],
   [dataRoute, "createSettlementRunbook", "API data helper should include a real settlement runbook."],

@@ -46,7 +46,9 @@ export async function GET() {
       "POST /api/real-case/prepare",
       "GET /api/judge-proof",
       "GET /api/mcp",
-      "POST /api/x402/release-decision"
+      "POST /api/mcp",
+      "POST /api/x402/proof-review",
+      "POST /api/settlement-adapter"
     ],
     boundary: {
       testnetOnly: true,

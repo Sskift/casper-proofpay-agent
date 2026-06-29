@@ -137,13 +137,14 @@ Use `docs/demo-script.md` as the canonical structure. The current recommended fl
 
 1. Product thesis: show the cockpit, Judge walkthrough, and the evidence-to-payment attestation positioning.
 2. Trust Chain: show evidence intake, API-backed assessment, settlement actions, and Casper verifier checks.
-3. Decision paths: switch clean release, hold for finance, and reject duplicate.
-4. Evidence room: show documents, claims, timeline, reasons, and follow-up actions.
-5. Casper proof: show seeded Testnet transaction, named key, stored URef, public key, replay command, and copy controls.
-6. Fresh real case: show the recorded fresh Casper Testnet transaction `d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca` and its verified API path.
-7. CSPR.live verification: briefly open or show the explorer page for the fresh transaction.
-8. Audit Dossier: show policy trace cards, verification chain, copy-ready JSON, and reviewer checklist.
-9. Close: restate the trust chain: evidence, agent decision, human release control, Casper attestation.
+3. Agent Commerce: click `Run commerce checks` and show x402 proof review, MCP settlement instruction, and settlement adapter passing on the current host.
+4. Decision paths: switch clean release, hold for finance, and reject duplicate.
+5. Evidence room: show documents, claims, timeline, reasons, and follow-up actions.
+6. Casper proof: show seeded Testnet transaction, named key, stored URef, public key, replay command, and copy controls.
+7. Fresh real case: show the recorded fresh Casper Testnet transaction `d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca` and its verified API path.
+8. CSPR.live verification: briefly open or show the explorer page for the fresh transaction.
+9. Audit Dossier: show policy trace cards, verification chain, copy-ready JSON, and reviewer checklist.
+10. Close: restate the trust chain: evidence, agent decision, human release control, Casper attestation.
 
 Target length:
 

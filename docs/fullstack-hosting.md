@@ -59,6 +59,18 @@ Expected result:
       "decision": "reject",
       "riskScore": 88
     },
+    "x402ProofReview": {
+      "handshake": 402,
+      "decision": "reject"
+    },
+    "mcpSettlementInstruction": {
+      "decision": "hold",
+      "state": "finance-review"
+    },
+    "settlementAdapter": {
+      "decision": "approve",
+      "state": "release-ready"
+    },
     "invalidJson": 400,
     "incompleteEvidence": 422
   }
@@ -76,10 +88,12 @@ GET  https://YOUR-VERCEL-URL/api/attestation/amountMismatch
 GET  https://YOUR-VERCEL-URL/api/attestation/duplicateInvoice
 POST https://YOUR-VERCEL-URL/api/evidence/intake
 GET  https://YOUR-VERCEL-URL/api/mcp
-POST https://YOUR-VERCEL-URL/api/x402/release-decision
+POST https://YOUR-VERCEL-URL/api/mcp
+POST https://YOUR-VERCEL-URL/api/x402/proof-review
+POST https://YOUR-VERCEL-URL/api/settlement-adapter
 ```
 
-The dashboard Trust section should show `Dynamic API route` instead of static fallback on the Vercel URL.
+The dashboard Trust section should show `Dynamic API route` instead of static fallback on the Vercel URL. The dashboard Commerce section should pass all four browser-run checks on the same Vercel URL.
 
 Do not submit a random deployment URL such as `https://casper-proofpay-agent-web-...vercel.app` unless it passes the smoke check without a Vercel login. Vercel may protect deployment URLs, while the stable production domain above is public.
 
@@ -108,5 +122,5 @@ Keep GitHub Pages as the stable fallback URL. Since the Vercel smoke check has p
 
 1. Use `https://casper-proofpay-agent-web.vercel.app/` as the DoraHacks live demo URL.
 2. Keep the GitHub Pages link in README as the static backup.
-3. Mention that `/api/health` and `/api/evidence/intake` are publicly callable on the Vercel deployment.
-4. Consider re-recording the demo video because the judge story now includes a real public API route.
+3. Mention that `/api/health`, `/api/evidence/intake`, `/api/x402/proof-review`, `/api/mcp`, and `/api/settlement-adapter` are publicly callable on the Vercel deployment.
+4. Consider re-recording the demo video because the judge story now includes a browser-run Agent Commerce panel.
