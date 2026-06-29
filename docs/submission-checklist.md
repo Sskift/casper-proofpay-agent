@@ -11,6 +11,7 @@ Use this checklist before manually submitting ProofPay Agent through the Casper 
 - Track: `Casper Innovation Track`
 - Public project summary: use the copy below.
 - Copy-ready BUIDL fields: `docs/buidl-submission-brief.md`.
+- Judge quick entry: `docs/judge-entry.md`.
 - Judge proof pack: `docs/judge-proof-pack.md`.
 - Judge proof API: `https://casper-proofpay-agent-web.vercel.app/api/judge-proof`.
 - Casper Testnet transaction hashes: `94fdd43e24b713a0644b560c5f9e107cc8b6e0e317bc31b2d8d3940619511604`, `c92cdcd8f11f6453134745900ea2c91defa0f8b37f4c6782dd38b2aa7a720d84`, `08995093b6ef978b381c4cee7d8faeb960f31bb64083544c8cfa0c3c8952e885`
@@ -72,6 +73,7 @@ ProofPay Agent lets autonomous agents release real-world payments only when evid
 - Demo video is reviewed locally, hosted on Vercel, and linked from DoraHacks; `docs/demo/proofpay-agent-demo.mp4` is an ignored local render artifact, not a tracked GitHub asset.
 - Casper Testnet transaction hash and stored attestation are documented in `docs/casper-testnet.md`.
 - DoraHacks form copy is ready in `docs/buidl-submission-brief.md`.
+- Judge quick entry is consolidated in `docs/judge-entry.md`.
 - Judge proof links and Testnet hashes are consolidated in `docs/judge-proof-pack.md`.
 - Public proof API is available at `/api/judge-proof`.
 - README links to contract, testnet docs, and demo script.

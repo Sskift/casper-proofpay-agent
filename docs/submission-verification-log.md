@@ -1,8 +1,8 @@
 # Submission Verification Log
 
-Verification date: `2026-06-28 13:30:39 CST`
+Verification date: `2026-06-29 16:46:11 CST`
 
-Scope: P0/P1 submission hardening after adding the Judge Proof Pack and `GET /api/judge-proof`.
+Scope: P0/P1 submission hardening after adding the Judge Proof Pack, Judge Entry, and `GET /api/judge-proof`.
 
 ## Local Verification
 
@@ -36,15 +36,35 @@ Local smoke output included:
 | GitHub repository | Passed | `curl -I -L` returned HTTP `200` for `https://github.com/Sskift/casper-proofpay-agent`. |
 | Fresh CSPR.live transaction | Passed | `curl` returned HTTP `200`, `9296` bytes for the fresh Testnet transaction page. |
 | DoraHacks BUIDL public page | Blocked by site WAF | `curl` returned HTTP `405` with a human-verification page. Browser session is required for direct visual verification. |
-| Vercel full-stack domain | Network timeout from this environment | `curl` and in-app browser navigation to `https://casper-proofpay-agent-web.vercel.app/api/health` timed out. |
-| Vercel-hosted demo video | Network timeout from this environment | `curl -I -L` to `https://dorahacks-video.vercel.app/proofpay-agent-demo.mp4` timed out. |
+| Vercel full-stack health API | Passed | `curl` returned HTTP `200`, `2339` bytes for `https://casper-proofpay-agent-web.vercel.app/api/health`. |
+| Vercel judge proof API | Passed | Returned `proofpay.api.judgeProof.v1`, `status: ok`, three seeded scenarios, and fresh transaction `d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca`. |
+| Vercel-hosted demo video | Passed | `curl` returned HTTP `200`, `11166614` bytes for `https://dorahacks-video.vercel.app/proofpay-agent-demo.mp4`. |
 
-## Post-push Check
+## Earlier Network Limitation
 
 - `git push origin main` completed for commit `070bad9`.
 - `npm run fullstack:smoke -- https://casper-proofpay-agent-web.vercel.app` was retried after the push and still returned `fetch failed` from this machine.
 - The in-app browser could not navigate directly to the production API route either; it timed out on the Vercel page navigation.
 - This repository does not contain `.vercel/project.json`, and the Vercel CLI is not installed locally. The deployment path for this repo is the GitHub main branch integration already configured in Vercel.
+- This earlier Vercel timeout is superseded by the final public API check below.
+
+## Final Public API Check
+
+On `2026-06-29 16:46:11 CST`, the production smoke check passed from this machine:
+
+```bash
+npm run fullstack:smoke -- https://casper-proofpay-agent-web.vercel.app
+```
+
+The smoke covered:
+
+- `GET /api/health`
+- `GET /api/attestation/clean`
+- `GET /api/judge-proof`
+- `POST /api/evidence/intake`
+- invalid JSON returning `400`
+- incomplete evidence returning `422`
+- `POST /api/real-case/prepare`
 
 ## Public Proof URLs
 
@@ -58,10 +78,4 @@ Local smoke output included:
 
 ## Follow-up
 
-From a network path that can reach Vercel, re-run:
-
-```bash
-npm run fullstack:smoke -- https://casper-proofpay-agent-web.vercel.app
-```
-
-If that network also times out on Vercel, verify the live demo and demo video from the browser session used for the final DoraHacks submission.
+The only remaining manual check is the DoraHacks form itself. Direct `curl` access to `https://dorahacks.io/buidl/45992` returns a human-verification page, so the final form fields must be checked in a real browser session.

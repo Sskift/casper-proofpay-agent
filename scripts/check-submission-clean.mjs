@@ -53,6 +53,7 @@ const requiredFiles = [
   "docs/hackathon-constraints.md",
   "docs/submission-checklist.md",
   "docs/buidl-submission-brief.md",
+  "docs/judge-entry.md",
   "docs/judge-proof-pack.md",
   "docs/submission-verification-log.md",
   "docs/demo-script.md",
@@ -80,6 +81,10 @@ const requiredContentChecks = [
   {
     file: "docs/buidl-submission-brief.md",
     text: "https://dorahacks-video.vercel.app/proofpay-agent-demo.mp4"
+  },
+  {
+    file: "docs/judge-entry.md",
+    text: "https://casper-proofpay-agent-web.vercel.app/api/judge-proof"
   },
   {
     file: "docs/judge-proof-pack.md",

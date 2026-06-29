@@ -24,6 +24,18 @@
 
 ProofPay Agent is a verifiable RWA payment decision chain: external delivery evidence enters the system, an agent produces an explainable `approve`, `hold`, or `reject` recommendation, and Casper Testnet anchors the evidence hash and decision hash for later audit.
 
+## Judge Entry
+
+Use this 30-second path if you are reviewing the submission:
+
+| Step | Link | What to verify |
+| --- | --- | --- |
+| 1 | [Live full-stack demo](https://casper-proofpay-agent-web.vercel.app/) | Walk Cockpit, Trust, Evidence, Casper, and Dossier. |
+| 2 | [Demo video](https://dorahacks-video.vercel.app/proofpay-agent-demo.mp4) | Watch the real-case flow and Casper proof handoff. |
+| 3 | [Judge proof API](https://casper-proofpay-agent-web.vercel.app/api/judge-proof) | Confirm public links, scenario proof facts, and fresh Testnet transaction. |
+| 4 | [Fresh CSPR.live transaction](https://testnet.cspr.live/transaction/d285146cbf4db68b63ae20ca5c8b9d3e86f6626f254e54f71512553723c8a2ca) | Confirm the video-integrated case is recorded on Casper Testnet. |
+| 5 | [Judge entry note](docs/judge-entry.md) | Read the compact real/simulated boundary and replay commands. |
+
 ## Buildathon Snapshot
 
 | Field | ProofPay Agent |
@@ -272,6 +284,7 @@ Prepared submission materials:
 
 - [docs/buidl-submission-brief.md](docs/buidl-submission-brief.md)
 - [docs/submission-checklist.md](docs/submission-checklist.md)
+- [docs/judge-entry.md](docs/judge-entry.md)
 - [docs/judge-proof-pack.md](docs/judge-proof-pack.md)
 - [docs/submission-verification-log.md](docs/submission-verification-log.md)
 - [docs/demo-script.md](docs/demo-script.md)

@@ -38,6 +38,8 @@ Judge proof pack: `https://github.com/Sskift/casper-proofpay-agent/blob/main/doc
 
 Judge proof API: `https://casper-proofpay-agent-web.vercel.app/api/judge-proof`
 
+Judge quick entry: `https://github.com/Sskift/casper-proofpay-agent/blob/main/docs/judge-entry.md`
+
 ## Casper Integration
 
 ProofPay uses Casper as the trust anchor for agentic RWA payment decisions.
