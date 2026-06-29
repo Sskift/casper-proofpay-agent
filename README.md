@@ -236,6 +236,8 @@ These endpoints are demo hooks, not production payment infrastructure. They show
 
 ## Local Development
 
+Prerequisites: Node.js `22+` and npm `11+`. The GitHub Actions CI runs on Node `22` with npm `11`.
+
 ```bash
 npm install
 npm run test
